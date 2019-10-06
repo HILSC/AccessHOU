@@ -1,0 +1,8 @@
+body {
+  margin: 0;
+  font-family: 'Roboto Slab', serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Need to make sure the css from material ui is not taking over the font */

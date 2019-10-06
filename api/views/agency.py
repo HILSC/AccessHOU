@@ -1,389 +1,645 @@
 from django.db import transaction
 from django.http import JsonResponse
-from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
 from django.core import serializers
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator
 from django.utils.text import slugify
 from django.forms.models import model_to_dict
 
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
-from rest_framework.generics import GenericAPIView
 from rest_framework import permissions
-from rest_framework import authentication
-from rest_framework.views import status
-from rest_framework.response import Response
 
 from api.models.agency import Agency
 from api.models.agency import AgencyQueue
+from api.models.agency import AgencyEmergencyQueue
+from api.models.action_log import ActionLog
+from api.models.user import Role
+from api.models.app_settings import AppSettings
 
 from api.models.program import Program
+from api.utils import getGeocodingByAddress
+from api.utils import getMapURL
+from api.utils import UserActions
+from api.models.user import Role
 
 import logging
 import json
 import re
 
-logger=logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
-def migrateOldProgramsToNewPrograms():
-  from api.models.oldprogram import OldPrograms
-  from api.models.agency import Agency
-  from api.models.program import Program
-
-  agencies = Agency.objects.all()
-
-  try:
-    for agency in agencies:
-      old_programs = OldPrograms.objects.filter(agency_id=agency.old_id)
-      for old_program in old_programs:
-
-        website = old_program.website
-        if old_program.website == '' or old_program.website == None:
-          website = agency.website
-
-        street = old_program.physical_address
-        if old_program.physical_address == '' or old_program.physical_address == None:
-          street = agency.street
-
-        next_steps = old_program.next_steps
-        if old_program.next_steps == '' or old_program.next_steps == None:
-          next_steps = agency.next_steps
-
-        payment_options = old_program.fee_structure
-        if old_program.fee_structure == '' or old_program.fee_structure == None:
-          payment_options = agency.payment_options
-
-        age_groups = old_program.age_eligibility
-        if old_program.age_eligibility == '' or old_program.age_eligibility == None:
-          age_groups = agency.age_groups
-
-        zip_codes = old_program.zipcode_eligibility
-        if old_program.zipcode_eligibility == '' or old_program.zipcode_eligibility == None:
-          zip_codes = agency.zip_codes
-
-        immigration_statuses = old_program.immigration_status
-        if old_program.immigration_status == '' or old_program.immigration_status == None:
-          immigration_statuses = agency.immigration_statuses
-
-        schedule = old_program.schedule
-        if old_program.schedule == '' or old_program.schedule == None:
-          schedule = agency.schedule
-
-        schedule_notes = old_program.schedule_notes
-        if old_program.schedule_notes == '' or old_program.schedule_notes == None:
-          schedule_notes = agency.schedule_notes
-
-        holiday_schedule = old_program.holiday_schedule
-        if old_program.holiday_schedule == '' or old_program.holiday_schedule == None:
-          holiday_schedule = agency.holiday_schedule
-
-        languages = old_program.frontline_languages
-        if old_program.frontline_languages == '' or old_program.frontline_languages == None:
-          languages = agency.languages
-
-        appointment_required = old_program.appointment_required
-        if appointment_required in ['Yes', 'yes', 'y', 'Y']:
-          appointment_required = True
-        elif appointment_required in ['No', 'no', 'n', 'N']:
-          appointment_required = False
-        else:
-          appointment_required = None
-
-        service_available_intake = old_program.service_available_intake
-        if service_available_intake in ['Yes', 'yes', 'y', 'Y']:
-          service_available_intake = True
-        elif service_available_intake in ['No', 'no', 'n', 'N']:
-          service_available_intake = False
-        else:
-          service_available_intake = None
-        
-        disaster_only = old_program.disaster_only
-        if disaster_only in ['Yes', 'yes', 'y', 'Y']:
-          disaster_only = True
-        elif disaster_only in ['No', 'no', 'n', 'N']:
-          disaster_only = False
-        else:
-          disaster_only = None
-
-        consultation_opportunity = old_program.consultation_opportunity
-        if consultation_opportunity in ['Yes', 'yes', 'y', 'Y']:
-          consultation_opportunity = True
-        elif consultation_opportunity in ['No', 'no', 'n', 'N']:
-          consultation_opportunity = False
-        else:
-          consultation_opportunity = None
-
-        Program.objects.create(
-          name=old_program.name,
-          slug=slugify(old_program.name),
-          description=old_program.description,
-          service_types=old_program.service_type,
-          website=website,
-          phone=agency.phone,
-          street=street,
-          
-          next_steps=next_steps,
-          payment_service_cost=old_program.service_cost,
-          payment_options=payment_options,
-
-          age_groups=age_groups,
-          zip_codes=zip_codes,
-
-          incomes_percent_poverty_level=old_program.income_eligibility,
-          immigration_statuses=immigration_statuses,
-          requires_enrollment_in=old_program.other_program_enrollment,
-
-          other_requirements=old_program.other_eligibility,
-          schedule=schedule,
-
-          schedule_notes=schedule_notes,
-          holiday_schedule=holiday_schedule,
-
-          appointment_required=appointment_required,
-          appointment_notes=old_program.appointment_required_notes,
-          documents_required=old_program.documents_required,
-          service_same_day_intake=service_available_intake,
-
-          intake_notes=old_program.service_available_intake_notes,
-
-          languages=languages,
-
-          crisis=old_program.crisis_services_offered,
-          disaster_recovery=disaster_only,
-          transportation=old_program.transportation,
-          client_consult=consultation_opportunity,
-
-          agency=agency
-        )
-  except Exception as e:
-    print(e)
 
 class AgencyQueueView(APIView):
-  permission_classes=(permissions.AllowAny,)
+    permission_classes = (permissions.AllowAny,)
 
-  @transaction.atomic
-  def post(self, request, *args, **kwargs):
-    """
-    Save Agency Queue
-    """
-    try:
-      agency_name=request.data.get("name", None)
-      slug=slugify(agency_name)
-      
-      # Verify if agency exists with that slug
-      if Agency.objects.filter(slug=slug).exists() or AgencyQueue.objects.filter(slug=slug).exists():
-        return JsonResponse(
-          {
-            'error': "An Agency with that name already exists.",
-          },
-          status=400
-        )
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        try:
+            agency_name = request.data.get("name", None)
+            slug = slugify(agency_name)
 
-      # Zip codes
-      zip_codes = list(request.data.get('zip_codes', '').split(","))
-      
-      agency=AgencyQueue.objects.create(
-        name=agency_name,
-        slug=slug,
-        phone=request.data.get("phone", None),
-        website=request.data.get("website", None),
-        street=request.data.get('street', None),
-        city=request.data.get('city', None),
-        state=request.data.get('state', None),
-        zip_code=request.data.get('zip_code', None),
-        next_steps=request.data.get('next_steps', None),
-        payment_options=request.data.get('payment_options', None),
+            # Verify if agency exists with that slug
+            if (
+                Agency.objects.filter(slug=slug).exists()
+                or AgencyQueue.objects.filter(slug=slug).exists()
+            ):
+                return JsonResponse(
+                    {
+                        "error": True,
+                        "message": "An Agency with that name already exists.",
+                    },
+                    status=200,
+                )
 
-        age_groups=request.data.get('age_groups', None),
-        zip_codes=zip_codes,
-        gender=request.data.get('gender', None),
-        immigration_statuses=request.data.get('immigration_statuses', None),
+            # Address
+            street = request.data.get("street", None)
+            city = request.data.get("city", None)
+            state = request.data.get("state", None)
+            zip_code = request.data.get("zip_code", None)
+            geocode = None
 
-        accepted_ids_current=request.data.get('accepted_ids_current', None),
-        accepted_ids_expired=request.data.get('accepted_ids_expired', None),
-        notes=request.data.get('notes', None),
-        proof_of_address=request.data.get('proof_of_address', None),
+            # Geocode
+            if street and city and state and zip_code:
+                geocode = getGeocodingByAddress(
+                    street=street,
+                    city=city,
+                    state=state,
+                    zip_code=zip_code,
+                )
 
-        schedule=request.data.get('schedules', None),
-        schedule_notes=request.data.get('schedule_notes', None),
-        holiday_schedule=request.data.get('holiday_schedule', None),
+            agency = AgencyQueue.objects.create(
+                name=agency_name,
+                slug=slug,
+                website=request.data.get("website", None),
+                phone=request.data.get("phone", None),
+                
+                # Address
+                street=street,
+                city=city,
+                state=state,
+                zip_code=zip_code,
+                geocode=geocode,
 
-        languages=request.data.get('languages', None),
-        documents_languages=request.data.get('documents_languages', None),
-        website_languages=request.data.get('website_languages', None),
-        frontline_staff_languages=request.data.get('frontline_staff_languages', None),
-        interpretations_available=request.data.get('interpretations_available', None),
+                next_steps=request.data.get("next_steps", None),
+                payment_options=request.data.get("payment_options", None),
 
-        assistance_with_forms=True if request.data.get('assistance_with_forms', False) else False,
-        visual_aids=True if request.data.get('visual_aids', False) else False,
-        ada_accessible=True if request.data.get('ada_accessible', False) else False,
+                # Eligibility
+                age_groups=request.data.get("age_groups", None),
+                zip_codes=request.data.get("zip_codes", None),
+                gender=request.data.get("gender", None),
+                immigration_statuses=request.data.get("immigration_statuses", None),
 
-        response_requests=True if request.data.get('response_requests', False) else False,
-        cultural_training=request.data.get('cultural_training', None),
-        
-        requested_by_name=request.data.get('requested_by_name', None),
-        requested_by_email=request.data.get('requested_by_email', None),
-        action='add'
-      )
+                # Requirements
+                accepted_ids_current=request.data.get("accepted_ids_current", None),
+                accepted_ids_expired=request.data.get("accepted_ids_expired", None),
+                notes=request.data.get("notes", None),
+                proof_of_address=request.data.get("proof_of_address", None),
 
-      return JsonResponse(
-        {
-          'id': agency.id,
-          'slug': agency.slug,
-          'name': agency.name,
-          'new': True
-        }
-      )
-    except Exception:
-      logger.error('Error creating a new agency')
-      return JsonResponse(
-          {
-            'error': "Agency cannot be created. Please try again!",
-          },
-          status=500
-        )
-  
+                # Schedule
+                schedule=request.data.get("schedules", None),
+                schedule_notes=request.data.get("schedule_notes", None),
+                holiday_schedule=request.data.get("holiday_schedule", None),
+
+                # Languages
+                languages=request.data.get("languages", None),
+                documents_languages=request.data.get("documents_languages", None),
+                website_languages=request.data.get("website_languages", None),
+                frontline_staff_languages=request.data.get(
+                    "frontline_staff_languages", None
+                ),
+                interpretations_available=request.data.get(
+                    "interpretations_available", None
+                ),
+
+                # Services
+                assistance_with_forms=request.data.get(
+                    "assistance_with_forms", None
+                ),
+                visual_aids=request.data.get("visual_aids", None),
+                ada_accessible=request.data.get("ada_accessible", None),
+
+                # Policies
+                response_requests=request.data.get("response_requests", None),
+                cultural_training=request.data.get("cultural_training", None),
+
+                requested_by_name=request.data.get("requested_by_name", None),
+                requested_by_email=request.data.get("requested_by_email", None),
+                action=UserActions.ADD.value,
+            )
+
+            # Check if in Emergency Mode
+            app_settings = AppSettings.objects.first()
+            if agency and app_settings and app_settings.emergency_mode:
+                agency.emergency_mode = app_settings.emergency_mode
+                agency.save()
+
+                # Create the agency in the final table api_agencies with emergency_mode equal to True
+                Agency.custom_create(agency=agency)
+
+            return JsonResponse(
+                {
+                    "agency": {
+                        "id": agency.id,
+                        "slug": agency.slug,
+                        "name": agency.name,
+                        "emergency_mode": agency.emergency_mode
+                    },
+                    "model": "queue",
+                }
+            )
+        except Exception:
+            logger.error("Error requesting to create a new agency")
+            return JsonResponse(
+                {"message": "Request couldn't be completed. Please try again!",}, status=500
+            )
+
+    @transaction.atomic
+    def put(self, request, *args, **kwargs):
+        try:
+            agency_name = request.data.get("name", None)
+            slug = slugify(agency_name)
+
+            # Agency
+            related_agency_id = int(request.data.get("id", 0))
+            related_agency = Agency.objects.get(id=related_agency_id)
+
+            # Verify if agency exists with that slug
+            if (
+                Agency.objects.filter(slug=slug).exclude(id=related_agency_id).exists()
+                or AgencyQueue.objects.filter(slug=slug)
+                .exclude(related_agency_id=related_agency_id)
+                .exists()
+            ):
+                return JsonResponse(
+                    {
+                        "error": True,
+                        "message": "An Agency with that name already exists."
+                    }, status=200
+                )
+
+            # Address
+            street = request.data.get("street", None)
+            city = request.data.get("city", None)
+            state = request.data.get("state", None)
+            zip_code = request.data.get("zip_code", None)
+            geocode = related_agency.geocode
+
+            # Geocode
+            if related_agency.street != street or related_agency.city != city or related_agency.state != state or related_agency.zip_code != zip_code:
+                geocode = getGeocodingByAddress(
+                    street=street,
+                    city=city,
+                    state=state,
+                    zip_code=zip_code,
+                )
+
+            agency = AgencyQueue.objects.create(
+                name=agency_name,
+                slug=slug,
+                website=request.data.get("website", None),
+                phone=request.data.get("phone", None),
+                
+                # Address
+                street=street,
+                city=city,
+                state=state,
+                zip_code=zip_code,
+                geocode=geocode,
+
+                next_steps=request.data.get("next_steps", None),
+                payment_options=request.data.get("payment_options", None),
+
+                # Eligibility
+                age_groups=request.data.get("age_groups", None),
+                zip_codes=request.data.get("zip_codes", None),
+                gender=request.data.get("gender", None),
+                immigration_statuses=request.data.get("immigration_statuses", None),
+
+                # Requirements
+                accepted_ids_current=request.data.get("accepted_ids_current", None),
+                accepted_ids_expired=request.data.get("accepted_ids_expired", None),
+                notes=request.data.get("notes", None),
+                proof_of_address=request.data.get("proof_of_address", None),
+
+                # Schedule
+                schedule=request.data.get("schedules", None),
+                schedule_notes=request.data.get("schedule_notes", None),
+                holiday_schedule=request.data.get("holiday_schedule", None),
+
+                # Languages
+                languages=request.data.get("languages", None),
+                documents_languages=request.data.get("documents_languages", None),
+                website_languages=request.data.get("website_languages", None),
+                frontline_staff_languages=request.data.get(
+                    "frontline_staff_languages", None
+                ),
+                interpretations_available=request.data.get(
+                    "interpretations_available", None
+                ),
+
+                # Services
+                assistance_with_forms=request.data.get(
+                    "assistance_with_forms", None
+                ),
+                visual_aids=request.data.get("visual_aids", None),
+                ada_accessible=request.data.get("ada_accessible", None),
+
+                # Policies
+                response_requests=request.data.get("response_requests", None),
+                cultural_training=request.data.get("cultural_training", None),
+
+                requested_by_name=request.data.get("requested_by_name", None),
+                requested_by_email=request.data.get("requested_by_email", None),
+                related_agency=related_agency,
+                action=UserActions.UPDATE.value,
+            )
+
+            # Check if in Emergency Mode
+            app_settings = AppSettings.objects.first()
+            if agency and app_settings and app_settings.emergency_mode:
+                agency.emergency_mode = app_settings.emergency_mode
+                agency.save()
+
+                # Save original agency in temporary emergency backup table
+                AgencyEmergencyQueue.custom_create(agency=related_agency)
+
+                # Update the agency in the final table api_agencies with emergency_mode equal to True
+                Agency.custom_update(agency=agency, agency_id=related_agency.id)
+
+            return JsonResponse(
+                {
+                    "agency": {
+                        "id": related_agency.id,
+                        "slug": agency.slug,
+                        "name": agency.name,
+                        "emergency_mode": agency.emergency_mode
+                    },
+                    "model": "queue",
+                }
+            )
+        except Exception:
+            logger.error("Error requesting to update agency {}".format(related_agency.name))
+            return JsonResponse(
+                {"message": "Request couldn't be completed. Please try again!",}, status=500
+            )
+
+
+class AgencyQueueDeleteView(APIView):
+    permission_classes = (permissions.AllowAny,)
+
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        try:
+            related_agency_id = int(request.data.get("id", 0))
+            related_agency = Agency.objects.get(id=related_agency_id)
+
+            AgencyQueue.objects.create(
+                name=related_agency.name,
+                slug=related_agency.name,
+                requested_by_name=request.data.get("requested_by_name", None),
+                requested_by_email=request.data.get("requested_by_email", None),
+                related_agency=related_agency,
+                action=UserActions.DELETE.value
+            )
+
+            return JsonResponse(
+                {
+                    "agency": {
+                        "id": related_agency.id,
+                        "slug": related_agency.slug,
+                        "name": related_agency.name,
+                    },
+                    "model": "queue",
+                }
+            )
+        except Exception:
+            logger.error("Error requesting to delete an agency")
+            return JsonResponse(
+                {"message": "Request couldn't be completed. Please try again!",}, status=500
+            )
+
+
 class AgencyQueueListView(APIView):
-  permission_classes=(permissions.AllowAny,)
+    permission_classes = (permissions.AllowAny,)
 
-  def get(self, request):
-    pass
+    def get(self, request):
+        pass
+
 
 class AgencyView(APIView):
-  permission_classes=(permissions.AllowAny,)
+    permission_classes = (permissions.AllowAny,)
 
-  def get(self, request, property_name, property_value):
-    agency = None
-    try:
-      kw = {property_name:property_value}
-      agency = Agency.objects.get(**kw)
-    except ObjectDoesNotExist:
-      logger.error('Is not in Agency table')
+    def get(self, request, property_name, property_value):
+        try:
+            kw = {property_name: property_value}
+            agency = Agency.objects.get(**kw)
+            agency_dict = model_to_dict(agency)
+            agency_programs = Program.objects.filter(agency_id=agency.id)
+            agency_program_list = []
+            for program in agency_programs:
+                agency_program_list.append(model_to_dict(program))
 
-    if agency == None:
-      try:
-        agency = AgencyQueue.objects.get(**kw)
-      except:
-        logger.error('Is not in Agency Queue table')
-        return JsonResponse(
-          {
-            'message': "Agency with {} {} doesn't exists.".format(property_name, property_value),
-          }
-        )
+            agency_dict['state'] = None
+            if agency.state:
+                agency_dict['state'] = agency.state.capitalize()
 
-    agency_dict = model_to_dict(agency)
-    agency_programs = Program.objects.filter(agency_id=agency.id)
-    agency_program_list = []
-    for program in agency_programs:
-      agency_program_list.append(model_to_dict(program))
+            agency_dict["programs"] = agency_program_list
+            agency_dict['map_url'] = getMapURL(agency)
+            agency_dict['update_at'] = agency.updated_at.strftime('%b/%d/%Y')
+            return JsonResponse(agency_dict, safe=False)
+        except ObjectDoesNotExist:
+            return JsonResponse(
+                {
+                    "error": True,
+                    "message": "Agency with {} {} doesn't exists.".format(
+                        property_name, property_value
+                    ),
+                }
+            )
 
-    agency_dict['programs'] = agency_program_list
-    return JsonResponse(agency_dict, safe=False)
+    @transaction.atomic
+    def post(self, request, *args, **kwargs):
+        try:
+            if request.user and request.user.is_active:
+                agency_name = request.data.get("name", None)
+                slug = slugify(agency_name)
 
-  @transaction.atomic
-  def post(self, request, *args, **kwargs):
-    """
-    Save Agency
-    """
-    try:
-      agency_name = request.data.get("name", None)
-      slug = slugify(agency_name)
+                # Verify if agency exists with that slug
+                if Agency.objects.filter(slug=slug).exists():
+                    return JsonResponse(
+                        {
+                            "error": True,
+                            "message": "An agency with that name already exists.",
+                        }
+                    )
 
-      # Verify if agency exists with that slug
-      if Agency.objects.filter(slug=slug).exists():
-        return JsonResponse(
-          {
-            'error': "An Agency with that name already exists.",
-          },
-          status=400
-        )
+                # Address
+                street = request.data.get("street", None)
+                city = request.data.get("city", None)
+                state = request.data.get("state", None)
+                zip_code = request.data.get("zip_code", None)
+                geocode = None
 
-      # Zip codes list
-      zip_codes = list(request.data.get('zip_codes', '').split(","))
+                # Geocode
+                if street and city and state and zip_code:
+                    geocode = getGeocodingByAddress(
+                        street=street,
+                        city=city,
+                        state=state,
+                        zip_code=zip_code,
+                    )
 
-      # If user is logged in, this agency doesn't have to go to the queue.
-      if request.user:
-        agency=Agency.objects.create(
-          name=agency_name,
-          slug=slug,
-          phone=request.data.get("phone", None),
-          website=request.data.get("website", None),
-          street=request.data.get('street', None),
-          city=request.data.get('city', None),
-          state=request.data.get('state', None),
-          zip_code=request.data.get('zip_code', None),
-          next_steps=request.data.get('next_steps', None),
-          payment_options=request.data.get('payment_options', None),
+                agency = Agency.objects.create(
+                    name=agency_name,
+                    slug=slug,
+                    phone=request.data.get("phone", None),
+                    website=request.data.get("website", None),
+                    street=street,
+                    city=city,
+                    state=state,
+                    zip_code=zip_code,
+                    geocode=geocode,
+                    next_steps=request.data.get("next_steps", None),
+                    payment_options=request.data.get("payment_options", None),
+                    age_groups=request.data.get("age_groups", None),
+                    zip_codes=request.data.get("zip_codes", None),
+                    gender=request.data.get("gender", None),
+                    immigration_statuses=request.data.get("immigration_statuses", None),
+                    accepted_ids_current=request.data.get("accepted_ids_current", None),
+                    accepted_ids_expired=request.data.get("accepted_ids_expired", None),
+                    notes=request.data.get("notes", None),
+                    proof_of_address=request.data.get("proof_of_address", None),
+                    schedule=request.data.get("schedules", None),
+                    schedule_notes=request.data.get("schedule_notes", None),
+                    holiday_schedule=request.data.get("holiday_schedule", None),
+                    languages=request.data.get("languages", None),
+                    documents_languages=request.data.get("documents_languages", None),
+                    website_languages=request.data.get("website_languages", None),
+                    frontline_staff_languages=request.data.get(
+                        "frontline_staff_languages", None
+                    ),
+                    interpretations_available=request.data.get(
+                        "interpretations_available", None
+                    ),
+                    assistance_with_forms=request.data.get(
+                        "assistance_with_forms", None
+                    ),
+                    visual_aids=request.data.get("visual_aids", None),
+                    ada_accessible=request.data.get("ada_accessible", None),
+                    response_requests=request.data.get("response_requests", None),
+                    cultural_training=request.data.get("cultural_training", None),
+                    hilsc_verified=request.user.profile.role.HILSC_verified,
+                    created_by=request.user,
+                )
 
-          age_groups=request.data.get('age_groups', None),
-          zip_codes=zip_codes,
-          gender=request.data.get('gender', None),
-          immigration_statuses=request.data.get('immigration_statuses', None),
+                return JsonResponse(
+                    {
+                        "agency": {
+                            "id": agency.id,
+                            "slug": agency.slug,
+                            "name": agency.name,
+                        },
+                        "model": "agency",
+                    }
+                )
 
-          accepted_ids_current=request.data.get('accepted_ids_current', None),
-          accepted_ids_expired=request.data.get('accepted_ids_expired', None),
-          notes=request.data.get('notes', None),
-          proof_of_address=request.data.get('proof_of_address', None),
+            raise Exception('User does not have permissions.')
+        except Exception as e:
+            logger.error("Error creating a new agency: {}".format(str(e)))
+            return JsonResponse(
+                {"error": "Agency cannot be created. Please try again!",}, status=500
+            )
 
-          schedule=request.data.get('schedules', None),
-          schedule_notes=request.data.get('schedule_notes', None),
-          holiday_schedule=request.data.get('holiday_schedule', None),
+    @transaction.atomic
+    def put(self, request, *args, **kwargs):
+        try:
+            if request.user and request.user.is_active:
+                # Find agency
+                id = int(request.data.get("id", 0))
+                agency = Agency.objects.get(id=id)
 
-          languages=request.data.get('languages', None),
-          documents_languages=request.data.get('documents_languages', None),
-          website_languages=request.data.get('website_languages', None),
-          frontline_staff_languages=request.data.get('frontline_staff_languages', None),
-          interpretations_available=request.data.get('interpretations_available', None),
+                agency_name = request.data.get("name", None)
+                slug = slugify(agency_name)
 
-          assistance_with_forms=True if request.data.get('assistance_with_forms', False) else False,
-          visual_aids=True if request.data.get('visual_aids', False) else False,
-          ada_accessible=True if request.data.get('ada_accessible', False) else False,
+                # Verify if agency exists with that slug
+                if (
+                    Agency.objects.filter(slug=slug).exclude(id=agency.id).exists()
+                    or AgencyQueue.objects.filter(slug=slug)
+                    .exclude(related_agency_id=agency.id)
+                    .exists()
+                ):
+                    return JsonResponse(
+                        {
+                            "error": True,
+                            "message": "An Agency with that name already exists.",
+                        },
+                        status=200,
+                    )
 
-          response_requests=True if request.data.get('response_requests', False) else False,
-          cultural_training=request.data.get('cultural_training', None),
-          
-          created_by=request.user
-        )
+                street = request.data.get("street", None)
+                city = request.data.get("city", None)
+                state = request.data.get("state", None)
+                zip_code = request.data.get("zip_code", None)
+                geocode = agency.geocode
 
-      return JsonResponse(
-        {
-          'id': agency.id,
-          'slug': agency.slug,
-          'name': agency.name,
-          'new': True
-        }
-      )
-    except Exception:
-      logger.error('Error creating a new agency')
-      return JsonResponse(
-          {
-            'error': "Agency cannot be created. Please try again!",
-          },
-          status=500
-        )
+                if agency.street != street or agency.city != city or agency.state != state or agency.zip_code != zip_code:
+                    geocode = getGeocodingByAddress(
+                        street=street,
+                        city=city,
+                        state=state,
+                        zip_code=zip_code,
+                    )
+
+                # If user is logged in, this agency doesn't have to go to the queue.
+                agency, created = Agency.objects.update_or_create(
+                    id=id,
+                    defaults={
+                        "name": agency_name,
+                        "slug": slug,
+                        "phone": request.data.get("phone", None),
+                        "website": request.data.get("website", None),
+                        "street": street,
+                        "city": city,
+                        "state": state,
+                        "zip_code": zip_code,
+                        "geocode": geocode,
+                        "next_steps": request.data.get("next_steps", None),
+                        "payment_options": request.data.get("payment_options", None),
+                        "age_groups": request.data.get("age_groups", None),
+                        "zip_codes": request.data.get("zip_codes", None),
+                        "gender": request.data.get("gender", None),
+                        "immigration_statuses": request.data.get(
+                            "immigration_statuses", None
+                        ),
+                        "accepted_ids_current": request.data.get(
+                            "accepted_ids_current", None
+                        ),
+                        "accepted_ids_expired": request.data.get(
+                            "accepted_ids_expired", None
+                        ),
+                        "notes": request.data.get("notes", None),
+                        "proof_of_address": request.data.get("proof_of_address", None),
+                        "schedule": request.data.get("schedules", None),
+                        "schedule_notes": request.data.get("schedule_notes", None),
+                        "holiday_schedule": request.data.get("holiday_schedule", None),
+                        "languages": request.data.get("languages", None),
+                        "documents_languages": request.data.get(
+                            "documents_languages", None
+                        ),
+                        "website_languages": request.data.get(
+                            "website_languages", None
+                        ),
+                        "frontline_staff_languages": request.data.get(
+                            "frontline_staff_languages", None
+                        ),
+                        "interpretations_available": request.data.get(
+                            "interpretations_available", None
+                        ),
+                        "assistance_with_forms": request.data.get(
+                            "assistance_with_forms", None
+                        ),
+                        "visual_aids": request.data.get("visual_aids", None),
+                        "ada_accessible": request.data.get("ada_accessible", None),
+                        "response_requests": request.data.get(
+                            "response_requests", None
+                        ),
+                        "cultural_training": request.data.get(
+                            "cultural_training", None
+                        ),
+                        "hilsc_verified": request.user.profile.role.HILSC_verified,
+                        "updated_by": request.user,
+                    },
+                )
+                return JsonResponse(
+                    {
+                        "agency": {
+                            "id": agency.id,
+                            "slug": agency.slug,
+                            "name": agency.name,
+                        },
+                        "model": "agency",
+                    }
+                )
+
+            raise Exception('User does not have permissions.')
+        except Exception as e:
+            logger.error("Error updating agency: {}".format(str(e)))
+            return JsonResponse(
+                {"message": "Agency cannot be updated. Please try again!",}, status=500
+            )
+
+    @transaction.atomic
+    def delete(self, request, id, *args, **kwargs):
+        agency = None
+        agency_name = None
+        try:
+            if request.user and request.user.is_active:
+                agency = Agency.objects.get(id=id)
+                agency_name = agency.name
+                agency_programs = list(Program.objects.filter(agency_id=agency.id).values_list('name', flat=True))
+                
+                ActionLog.objects.create(
+                    info=agency.name,
+                    additional_info=agency_programs,
+                    action="delete",
+                    model="agency",
+                    created_by=request.user
+                )
+
+                agency.delete()
+
+                return JsonResponse(
+                    {
+                        "agency": {
+                            "name": agency_name
+                        },
+                        "model": "agency",
+                    }
+                )
+
+            raise Exception('User does not have permissions.')
+        except Exception as e:
+            logger.error("Error deleting agency {}".format(str(e)))
+            return JsonResponse(
+                {"message": "Agency cannot be deleted. Please try again!",}, status=500
+            )
+
 
 class AgencyListView(APIView):
-  permission_classes=(permissions.AllowAny,)
+    permission_classes = (permissions.AllowAny,)
 
-  def get(self, request, property_name, property_value):
-    agencies = []
+    def get(self, request, property_name, property_value, page):
+        agency_list = None
+        try:
+            if property_value != "null":
+                kw = {"{}__icontains".format(property_name): property_value}
+                agency_list = Agency.objects.filter(**kw)
+            else:
+                agency_list = Agency.objects.all().order_by(
+                    "-updated_at", "-created_at", "name"
+                )
 
-    try:
-      if property_value != 'null':
-        kw = {'{}__icontains'.format(property_name):property_value}
-        agencies = Agency.objects.filter(**kw)[:10]
-      else:
-        agencies = Agency.objects.all().order_by('-updated_at', '-created_at', 'name')[:15]
-
-      agency_list = []
-      for agency in agencies:
-        agency_list.append(model_to_dict(agency))
-
-      return JsonResponse(agency_list, safe=False)
-    except ObjectDoesNotExist:
-      logger.error('Agency does not exists.')
-      return JsonResponse(
-          {
-            'message': "Agency with {} {} doesn't exists.".format(property_name, property_value),
-          }
-        )
+            paginator = Paginator(agency_list, 10)  # Show 10 agencies per page
+            agencies = paginator.get_page(page)
+            agencies_json = serializers.serialize("json", agencies.object_list)
+            return JsonResponse(
+                {
+                    "results": json.loads(agencies_json),
+                    "total_records": paginator.count,
+                    "total_pages": paginator.num_pages,
+                    "page": agencies.number,
+                    "has_next": agencies.has_next(),
+                    "has_prev": agencies.has_previous(),
+                },
+                safe=False,
+            )
+        except ObjectDoesNotExist:
+            logger.error("Agency does not exists.")
+            return JsonResponse(
+                {
+                    "error": True,
+                    "message": "Agency with {} {} doesn't exists.".format(
+                        property_name, property_value
+                    ),
+                }
+            )

@@ -1,6 +1,25 @@
 from django.contrib import admin
-from api.models.language import Language
-from api.models.user import UserProfile
+from api.models.user import Profile
+from api.models.user import Role
 
-admin.site.register(Language)
-admin.site.register(UserProfile)
+from api.models.agency import Agency
+from api.models.agency import AgencyQueue
+
+from api.models.program import Program
+from api.models.program import ProgramQueue
+
+from api.models.action_log import ActionLog
+
+from api.models.zip_code import ZipCodeData
+
+admin.site.register(Agency)
+admin.site.register(AgencyQueue)
+
+admin.site.register(Program)
+admin.site.register(ProgramQueue)
+
+admin.site.register(Profile)
+admin.site.register(Role)
+
+admin.site.register(ActionLog)
+admin.site.register(ZipCodeData)

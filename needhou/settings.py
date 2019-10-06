@@ -17,20 +17,19 @@ import django_heroku
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '2^@of(lnx13-2w*#8*syrctkvcm@npqaa)lw$5braq@&1i8$$$'
+SECRET_KEY = os.getenv('SECRET_KEY', None)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
-    "qa-needhou.herokuapp.com"
+    "qa-needhou.herokuapp.com",
+    "needhou.brightanchor.com"
 ]
-
 
 # Application definition
 
@@ -72,8 +71,8 @@ CORS_ORIGIN_ALLOW_ALL = True
 CSRF_COOKIE_NAME = "csrftoken"
 
 CORS_ORIGIN_WHITELIST = [
-    "http://localhost:8000",
-    "http://localhost:3000",
+    "https://qa-needhou.herokuapp.com",
+    "https://needhou.brightanchor.com",
 ]
 
 CORS_URLS_REGEX = r'^/api/.*$'
@@ -88,10 +87,13 @@ CORS_ALLOW_METHODS = [
 
 ROOT_URLCONF = 'needhou.urls'
 
+# Get static files from React app
+REACT_APP_DIR = os.path.join(BASE_DIR, 'frontend')
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(REACT_APP_DIR, 'build')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -113,14 +115,11 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
-
     'AUTH_HEADER_TYPES': ('Bearer',),
-
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
 
@@ -156,27 +155,24 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Activate Django-Heroku.
+django_heroku.settings(locals())
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
-
-# Get static files from React app
-REACT_APP_DIR = os.path.join(BASE_DIR, 'frontend')
 
 STATICFILES_DIRS = [
     os.path.join(REACT_APP_DIR, 'build', 'static'),
 ]
 
-# Activate Django-Heroku.
-django_heroku.settings(locals())
-
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
-
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# GEOLOCATION
+GEOLOCATOR_API_KEY = os.getenv('GEOLOCATOR_API_KEY', None)
 
 # DATABASE
 import dj_database_url
