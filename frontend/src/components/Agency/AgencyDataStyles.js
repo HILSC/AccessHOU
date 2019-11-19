@@ -7,4 +7,10 @@ export default (theme) => ({
   customLink: {
     fontSize: '16px',
   },
+  infoDeleted: {
+    color: 'red'
+  },
+  infoChanged: {
+    color: 'green'
+  }
 });

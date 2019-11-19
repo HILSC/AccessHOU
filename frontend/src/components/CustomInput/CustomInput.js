@@ -20,7 +20,7 @@ import Input from '@material-ui/core/Input';
 
 // Styles
 import { makeStyles } from "@material-ui/core/styles";
-import styles from "components/CustomInput/CustomInputStyles";
+import styles from "./CustomInputStyles";
 const useStyles = makeStyles(styles);
 
 // Masked input

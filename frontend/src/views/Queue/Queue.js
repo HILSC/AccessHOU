@@ -3,6 +3,8 @@ import React, {
   useEffect,
 } from 'react';
 
+import { NavLink } from "react-router-dom";
+
 import {
   useSelector,
 } from 'react-redux';
@@ -14,7 +16,6 @@ import {
 
 // Material UI components
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -26,20 +27,6 @@ import TablePagination from '@material-ui/core/TablePagination';
 import { makeStyles } from '@material-ui/core/styles';
 import styles from './QueueStyles';
 const useStyles = makeStyles(styles);
-
-const ViewTableCell = ({ queue, handleAction }) =>{
-  const handleClick = () => {
-    handleAction(queue);
-  }
-
-  return (
-    <TableCell align="center">
-      <Button size="small" variant="contained" color="default" onClick={handleClick}>
-        View
-      </Button>
-    </TableCell>
-  )
-}
 
 export default () => {
   const classes = useStyles();
@@ -62,14 +49,11 @@ export default () => {
     });
   }, [
     token,
+    filters,
   ]);
 
   const handleChangePage = (event, page) => {
     setFilters(data => ({...data, page: page + 1}));
-  }
-
-  const handleViewClick = (queue) => {
-    alert("In Progress...")
   }
 
   return (
@@ -82,20 +66,29 @@ export default () => {
           <TableHead>
             <TableRow>
               <TableCell align="center">Name</TableCell>
-              <TableCell align="center">Type</TableCell>
               <TableCell align="center">Action</TableCell>
+              <TableCell align="center">Type</TableCell>
               <TableCell align="center">Requestor Email</TableCell>
               <TableCell align="center"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {data.queue.map(queue => (
-              <TableRow key={queue.id}>
+              <TableRow key={queue.id} classes={{
+                "root": queue.emergency_mode ? classes.emergencyMode : null,
+              }}>
                 <TableCell align="left">{queue.name}</TableCell>
-                <TableCell align="center">{queue.model}</TableCell>
                 <TableCell align="center">{queue.action}</TableCell>
+                <TableCell align="center">{queue.model}</TableCell>
                 <TableCell align="center">{queue.requestor_email}</TableCell>
-                <ViewTableCell queue={queue} handleAction={handleViewClick} />
+                <TableCell align="center">
+                  <NavLink
+                    to={queue.model === 'Agency' ? `/private/queue/agency/${queue.id}` : `/private/queue/program/${queue.id}`}
+                    className={classes.customLink}
+                  >
+                    View
+                  </NavLink>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

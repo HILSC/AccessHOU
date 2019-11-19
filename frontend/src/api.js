@@ -23,22 +23,22 @@ client.interceptors.response.use( (response) => {
   // Logout user if token refresh didn't work or user is disabled
   // TODO: when deploy change to API_URL in prod
 
-  if (error.config.url === "https://qa-needhou.herokuapp.com/api/token/refresh/") {
-    const {store, persistor} = configureStore();
-    store.dispatch(signOutAction())
-    //persistor.purge()
-
-    return new Promise.reject(error);
-  }
-  
-  // if (error.config.url === "http://localhost:8000/api/token/refresh/") {
-
+  // if (error.config.url === "https://qa-needhou.herokuapp.com/api/token/refresh/") {
   //   const {store, persistor} = configureStore();
   //   store.dispatch(signOutAction())
   //   //persistor.purge()
 
-  //   return Promise.reject(error);
+  //   return new Promise.reject(error);
   // }
+  
+  if (error.config.url === "http://localhost:8000/api/token/refresh/") {
+
+    const {store, persistor} = configureStore();
+    store.dispatch(signOutAction())
+    //persistor.purge()
+
+    return Promise.reject(error);
+  }
 
   // grab refresh token
   //const persistedState = JSON.parse(window.localStorage.getItem('persist:root'));
@@ -348,6 +348,28 @@ const getQueue = (token, params) => {
   )
 }
 
+const getAgencyQueue = (token, id) => {
+  return client.get(
+    `/queue/agency/${id}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  )
+}
+
+const getProgramQueue = (token, id) => {
+  return client.get(
+    `/queue/program/${id}`,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  )
+}
+
 export {
   signIn,
   refreshToken,
@@ -373,5 +395,7 @@ export {
   getAppSettings,
   updateEmergencyMode,
 
-  getQueue
+  getQueue,
+  getAgencyQueue,
+  getProgramQueue,
 }

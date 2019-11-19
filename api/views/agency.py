@@ -1,7 +1,6 @@
 from django.db import transaction
 from django.http import JsonResponse
 from django.core import serializers
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.utils.text import slugify
 from django.forms.models import model_to_dict
@@ -347,7 +346,7 @@ class AgencyView(APIView):
             agency_dict['map_url'] = getMapURL(agency)
             agency_dict['update_at'] = agency.updated_at.strftime('%b/%d/%Y')
             return JsonResponse(agency_dict, safe=False)
-        except ObjectDoesNotExist:
+        except (Agency.DoesNotExist, Program.DoesNotExist):
             return JsonResponse(
                 {
                     "error": True,
@@ -633,7 +632,7 @@ class AgencyListView(APIView):
                 },
                 safe=False,
             )
-        except ObjectDoesNotExist:
+        except Agency.DoesNotExist:
             logger.error("Agency does not exists.")
             return JsonResponse(
                 {

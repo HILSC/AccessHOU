@@ -14,6 +14,11 @@ import DataLabel from 'components/DataLabel/DataLabel';
 import ScheduleData from 'components/Schedule/ScheduleData';
 import ProgramItems from 'components/Program/ProgramItems';
 
+import {
+  ACTION_CLASS,
+  ACTION_MESSAGE
+} from 'constants.js';
+
 import { 
   formatURL,
   hasSchedule,
@@ -24,7 +29,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import styles from './AgencyDataStyles';
 const useStyles = makeStyles(styles);
 
-export default ({ agency, showMissingData }) => {
+export default ({ agency, showMissingData, queueAgencyData=null }) => {
   const classes = useStyles();
 
   const [selectedProgram, setSelectedProgram] = useState({})
@@ -44,13 +49,30 @@ export default ({ agency, showMissingData }) => {
         <CssBaseline />
         <Grid container spacing={3}>
           <Grid item xs={12} sm={12} md={12}>
-            <Label text={agency.name} variant="h4" color="inherit" />
+          {
+            queueAgencyData && queueAgencyData.name !== agency.name  ? (
+              <Label text={agency.name} variant="h4" color="inherit" classes={{
+                root: classes.infoChanged
+              }} />
+            ) : (
+              <Label text={agency.name} variant="h4" color="inherit" />
+            )
+          }
           </Grid>
           <Grid item xs={12} sm={12} md={12}>
             <Label text="General Info" variant="h5" color="primary" />
           </Grid>
           {
             // Website
+            queueAgencyData && queueAgencyData.website !== agency.website ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Website'}
+                  dataText={queueAgencyData.website ? formatURL(queueAgencyData.website) : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.website ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.website) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -62,6 +84,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Phone
+            queueAgencyData && queueAgencyData.phone !== agency.phone ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Phone'}
+                  dataText={queueAgencyData.phone ? queueAgencyData.phone : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.phone ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED}
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.phone) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -73,6 +104,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Street
+            queueAgencyData && queueAgencyData.street !== agency.street ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Street'}
+                  dataText={queueAgencyData.street ? queueAgencyData.street : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.street ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.street) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -84,6 +124,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // City
+            queueAgencyData && queueAgencyData.city !== agency.city ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'City'}
+                  dataText={queueAgencyData.city ? queueAgencyData.city : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.city ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.city) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -95,6 +144,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // State
+            queueAgencyData && queueAgencyData.state !== agency.state ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'State'}
+                  dataText={queueAgencyData.state ? queueAgencyData.state : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.state ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.state) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -106,6 +164,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Zip Code
+            queueAgencyData && queueAgencyData.zip_code !== agency.zip_code ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Zip Code'}
+                  dataText={queueAgencyData.zip_code ? queueAgencyData.zip_code : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.zip_code ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.zip_code) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -116,6 +183,8 @@ export default ({ agency, showMissingData }) => {
             ) : null
           }
           {
+            // Directions
+            queueAgencyData ? null :
             showMissingData || (agency && agency.map_url) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <a 
@@ -130,6 +199,8 @@ export default ({ agency, showMissingData }) => {
             ) : null
           }
           {
+            // Map
+            queueAgencyData ? null :
             showMissingData || (agency && agency.map_url) ? (
               <Grid item xs={12} sm={12} md={12}>
                 <iframe
@@ -143,6 +214,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Next Steps
+            queueAgencyData && queueAgencyData.next_steps !== agency.next_steps ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Next steps for client to take'}
+                  dataText={queueAgencyData.next_steps ? queueAgencyData.next_steps : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.next_steps ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.next_steps) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -154,6 +234,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Payment Options
+            queueAgencyData && queueAgencyData.payment_options !== agency.payment_options ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Payment options'}
+                  dataText={queueAgencyData.payment_options ? queueAgencyData.payment_options : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.payment_options ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.payment_options) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -175,6 +264,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Age Groups
+            queueAgencyData && queueAgencyData.age_groups !== agency.age_groups ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Age groups'}
+                  dataText={queueAgencyData.age_groups ? queueAgencyData.age_groups : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.age_groups ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.age_groups) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -187,6 +285,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Gender
+            queueAgencyData && queueAgencyData.gender !== agency.gender ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Gender'}
+                  dataText={queueAgencyData.gender ? queueAgencyData.gender : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.gender ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.gender) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -198,6 +305,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Zip Codes
+            queueAgencyData && queueAgencyData.zip_codes !== agency.zip_codes ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Zip Codes'}
+                  dataText={queueAgencyData.zip_codes ? queueAgencyData.zip_codes : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.zip_codes ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.zip_codes) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -209,6 +325,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Immigration Statu(es)
+            queueAgencyData && queueAgencyData.immigration_statuses !== agency.immigration_statuses ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Immigration status(es)'}
+                  dataText={queueAgencyData.immigration_statuses ? queueAgencyData.immigration_statuses : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.immigration_statuses ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.immigration_statuses) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -231,6 +356,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Accepted IDS current
+            queueAgencyData && queueAgencyData.accepted_ids_current !== agency.accepted_ids_current ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'IDs accepted -- current'}
+                  dataText={queueAgencyData.accepted_ids_current ? queueAgencyData.accepted_ids_current : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.accepted_ids_current ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.accepted_ids_current) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -243,6 +377,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Accepted IDS expired
+            queueAgencyData && queueAgencyData.accepted_ids_expired !== agency.accepted_ids_expired ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'IDs accepted -- expired'}
+                  dataText={queueAgencyData.accepted_ids_expired ? queueAgencyData.accepted_ids_expired : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.accepted_ids_expired ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.accepted_ids_expired) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -255,6 +398,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Requirements Notes
+            queueAgencyData && queueAgencyData.notes !== agency.notes ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Notes'}
+                  dataText={queueAgencyData.notes ? queueAgencyData.notes : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.notes ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.notes) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -266,6 +418,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Proof of address
+            queueAgencyData && queueAgencyData.proof_of_address !== agency.proof_of_address ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Proof of address?'}
+                  dataText={queueAgencyData.proof_of_address ? queueAgencyData.proof_of_address : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.proof_of_address ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.proof_of_address) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -294,6 +455,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Schedule notes
+            queueAgencyData && queueAgencyData.schedule_notes !== agency.schedule_notes ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Notes'}
+                  dataText={queueAgencyData.schedule_notes ? queueAgencyData.schedule_notes : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.schedule_notes ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.schedule_notes) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -305,6 +475,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Holiday schedule notes
+            queueAgencyData && queueAgencyData.holiday_schedule !== agency.holiday_schedule ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Holiday Schedule'}
+                  dataText={queueAgencyData.holiday_schedule ? queueAgencyData.holiday_schedule : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.holiday_schedule ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.holiday_schedule) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -326,6 +505,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Agency languages
+            queueAgencyData && queueAgencyData.languages !== agency.languages ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Agency'}
+                  dataText={queueAgencyData.languages ? queueAgencyData.languages : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.languages ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.languages) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -338,6 +526,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Documents languages
+            queueAgencyData && queueAgencyData.documents_languages !== agency.documents_languages ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Documents'}
+                  dataText={queueAgencyData.documents_languages ? queueAgencyData.documents_languages : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.documents_languages ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.documents_languages) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -350,6 +547,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Website languages
+            queueAgencyData && queueAgencyData.website_languages !== agency.website_languages ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Website'}
+                  dataText={queueAgencyData.website_languages ? queueAgencyData.website_languages : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.website_languages ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.website_languages) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -362,6 +568,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Frontline staff languages
+            queueAgencyData && queueAgencyData.frontline_staff_languages !== agency.frontline_staff_languages ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Frontline staff'}
+                  dataText={queueAgencyData.frontline_staff_languages ? queueAgencyData.frontline_staff_languages : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.frontline_staff_languages ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.frontline_staff_languages) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -374,6 +589,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Interprestation available
+            queueAgencyData && queueAgencyData.interpretations_available !== agency.interpretations_available ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Interpretation available?'}
+                  dataText={queueAgencyData.interpretations_available ? queueAgencyData.interpretations_available : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.interpretations_available ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.interpretations_available) ? (
               <Grid item xs={12} sm={12} md={12}>
                 <DataLabel
@@ -396,6 +620,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Assitance fill out intake
+            queueAgencyData && queueAgencyData.assistance_with_forms !== agency.assistance_with_forms ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Assitance to fill out intake forms?'}
+                  dataText={queueAgencyData.assistance_with_forms ? queueAgencyData.assistance_with_forms : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.assistance_with_forms ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.assistance_with_forms) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -407,6 +640,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Visual aids
+            queueAgencyData && queueAgencyData.visual_aids !== agency.visual_aids ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Visual aids for low-literacy clients?'}
+                  dataText={queueAgencyData.visual_aids ? queueAgencyData.visual_aids : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.visual_aids ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.visual_aids) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -418,6 +660,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // ADA accesible
+            queueAgencyData && queueAgencyData.ada_accessible !== agency.ada_accessible ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'ADA accesible'}
+                  dataText={queueAgencyData.ada_accessible ? queueAgencyData.ada_accessible : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.ada_accessible ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.ada_accessible) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -429,6 +680,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Response requests
+            queueAgencyData && queueAgencyData.response_requests !== agency.response_requests ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Response to Immigrations and Customs Enforcement requests?'}
+                  dataText={queueAgencyData.response_requests ? queueAgencyData.response_requests : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.response_requests ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.response_requests) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -440,6 +700,15 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Staff cultural
+            queueAgencyData && queueAgencyData.cultural_training !== agency.cultural_training ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Staff cultural competency/effectiveness training?'}
+                  dataText={queueAgencyData.cultural_training ? queueAgencyData.cultural_training : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueAgencyData.cultural_training ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
             showMissingData || (agency && agency.cultural_training) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
@@ -451,7 +720,8 @@ export default ({ agency, showMissingData }) => {
           }
           {
             // Programs
-            showMissingData || (agency && agency.programs.length) ? (
+            queueAgencyData ? null :
+            showMissingData || (agency && agency.programs.length > 0) ? (
               <React.Fragment>
                 <Grid item xs={12} sm={12} md={12}>
                   <Label text="Agency programs" variant="h5" color="primary" />

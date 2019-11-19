@@ -23,6 +23,9 @@ import ProgramEdit from 'views/Program/ProgramEdit';
 import Results from 'views/Search/Results';
 
 import Queue from 'views/Queue/Queue';
+import AgencyQueue from 'views/Queue/AgencyQueue';
+import ProgramQueue from 'views/Queue/ProgramQueue';
+
 import Users from 'views/UserManagement/UserManagement';
 import Settings from 'views/Settings/Settings';
 
@@ -53,6 +56,8 @@ const App = () => {
 
           <PrivateRoute exact path="/private" component={Dashboard} layout={DashboardLayout} />
           <PrivateRoute exact path="/private/queue" component={Queue} layout={DashboardLayout} />
+          <PrivateRoute exact path="/private/queue/agency/:queueId" component={AgencyQueue} layout={DashboardLayout} />
+          <PrivateRoute exact path="/private/queue/program/:queueId" component={ProgramQueue} layout={DashboardLayout} />
 
           <AdminRoute exact path="/private/users" component={Users} layout={DashboardLayout} />
           <AdminRoute exact path="/private/settings" component={Settings} layout={DashboardLayout} />

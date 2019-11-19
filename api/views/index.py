@@ -21,8 +21,6 @@ from api.models.app_settings import AppSettings
 
 from api.utils import getZipCodeRadiusRawSQL
 
-
-
 import os
 import logging
 import json
@@ -332,64 +330,3 @@ class SearchAppView(APIView):
             )
 
 
-class QueueAppView(APIView):
-    def get(self, request):
-        try:
-            if request.user and request.user.is_active:
-                page = request.GET.get("page", 1)
-
-                agency_queue = AgencyQueue.objects.all()
-                results = []
-
-                for agency_q in agency_queue:
-                    results.append({
-                        "id": agency_q.id,
-                        "name": agency_q.name,
-                        "model": "Agency",
-                        "model_id": agency_q.related_agency_id,
-                        "action": agency_q.action,
-                        "requestor_name": agency_q.requested_by_name,
-                        "requestor_email": agency_q.requested_by_email,
-                        "emergency_mode": agency_q.emergency_mode,
-                    })
-
-                program_queue = ProgramQueue.objects.all()
-                for program_q in program_queue:
-                    results.append({
-                        "id": program_q.id,
-                        "name": program_q.name,
-                        "model": "Program",
-                        "model_id": program_q.related_program_id,
-                        "action": program_q.action,
-                        "requestor_name": program_q.requested_by_name,
-                        "requestor_email": program_q.requested_by_email,
-                        "emergency_mode": program_q.emergency_mode,
-                    })
-
-                # Paginate results
-                paginator = Paginator(results, 10)  # Show 10 results per page
-                results_page = paginator.get_page(page)
-                results_json = json.dumps(results_page.object_list)
-
-                return JsonResponse(
-                    {
-                        "results": json.loads(results_json),
-                        "total_records": paginator.count,
-                        "total_pages": paginator.num_pages,
-                        "page": results_page.number,
-                        "has_next": results_page.has_next(),
-                        "has_prev": results_page.has_previous(),
-                    },
-                    safe=False,
-                )
-        except Exception as e:
-            logger.error("Error getting Queue", e)
-            return JsonResponse(
-                {
-                    "error": True,
-                    "message": "Error getting results",
-                }, status=500
-            )
-
-    def post(self, request):
-        pass

@@ -1,10 +1,19 @@
-const API_URL = 'https://qa-needhou.herokuapp.com/api/';
-//const API_URL = 'http://localhost:8000/api/';
+//const API_URL = 'https://qa-needhou.herokuapp.com/api/';
+const API_URL = 'http://localhost:8000/api/';
 
 const USER_ACTIONS = {
     ADD: 'ADD',
     UPDATE: 'UPDATE',
     DELETE: 'DELETE',
+}
+
+const ACTION_CLASS = {
+    DELETED: 'DELETED',
+    CHANGED: 'CHANGED',
+}
+
+const ACTION_MESSAGE = {
+    DELETED: '(deleted)'
 }
 
 const AGE_GROUPS = [
@@ -561,6 +570,8 @@ const LANGUAGES = [
 export {
   API_URL,
   USER_ACTIONS,
+  ACTION_CLASS,
+  ACTION_MESSAGE,
   LANGUAGES,
   AGE_GROUPS,
   USA_STATES,

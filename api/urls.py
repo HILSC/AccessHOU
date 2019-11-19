@@ -19,7 +19,11 @@ from api.views.program import ProgramQueueListView
 from api.views.program import ProgramQueueDeleteView
 
 from api.views.index import SearchAppView
-from api.views.index import QueueAppView
+
+from api.views.queue import QueueListView
+from api.views.queue import QueueAgencyView
+from api.views.queue import QueueProgramView
+
 from api.views.app_settings import AppSettingsView
 
 urlpatterns = [
@@ -50,5 +54,7 @@ urlpatterns = [
     path('users/', UserListView.as_view()),
     path('user/', UserView.as_view()),
 
-    path('queue/', QueueAppView.as_view()),
+    path('queue/', QueueListView.as_view()),
+    path('queue/agency/<int:id>', QueueAgencyView.as_view()),
+    path('queue/program/<int:id>', QueueProgramView.as_view()),
 ]

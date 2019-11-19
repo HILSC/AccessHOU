@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class UserActions(Enum):
-  ADD = 'add'
+  ADD = 'new'
   DELETE = 'delete'
   UPDATE = 'update'
 

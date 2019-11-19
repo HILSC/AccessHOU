@@ -1,7 +1,6 @@
 from django.db import transaction
 from django.http import JsonResponse
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
 from django.core import serializers
 from django.utils.text import slugify
 from django.forms.models import model_to_dict
@@ -392,7 +391,7 @@ class ProgramView(APIView):
             program_dict['map_url'] = getMapURL(program)
             program_dict['update_at'] = program.updated_at.strftime('%b/%d/%Y')
             return JsonResponse(program_dict, safe=False)
-        except ObjectDoesNotExist:
+        except Program.DoesNotExist:
             return JsonResponse(
                 {
                     "error": True,
@@ -717,7 +716,7 @@ class ProgramListView(APIView):
                 },
                 safe=False,
             )
-        except ObjectDoesNotExist:
+        except Program.DoesNotExist:
             logger.error("Program does not exists.")
             return JsonResponse(
                 {
