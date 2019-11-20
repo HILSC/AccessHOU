@@ -3,11 +3,25 @@ import React from "react";
 // Custom components
 import Label from 'components/Label/Label';
 
+// Constants
 import { 
   WEEKDAYS,
+  ACTION_CLASS
 } from "constants.js";
 
-export default ({ values }) => {
+// Styles
+import { makeStyles } from '@material-ui/core/styles';
+import styles from './ScheduleDataStyles';
+const useStyles = makeStyles(styles);
+
+export default ({ values, dataTextClass }) => {
+  const classes = useStyles();
+
+  const textClass = dataTextClass && dataTextClass === ACTION_CLASS.CHANGED ? classes.infoChanged :
+    dataTextClass && dataTextClass === ACTION_CLASS.DELETED ? classes.infoDeleted : null;
+
+  console.log('text class', textClass)
+
   /*
   Sunday 9AM - 4PM
   Monday 9AM - 4PM
@@ -21,11 +35,11 @@ export default ({ values }) => {
 
           if (from && to) {
             return (
-              <div key={idx}>
+              <div key={idx} className={textClass}>
                 <Label 
                   text={`${day} - ${from ? from : ''} - ${to ? to : ''}`}
                   variant="body2"
-                  color="textSecondary" />
+                  color={textClass ? null : "textSecondary"} />
               </div>
             )
           }

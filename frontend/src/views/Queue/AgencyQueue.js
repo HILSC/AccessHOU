@@ -74,29 +74,30 @@ const AgencyQueue = ({ match }) => {
               <CircularProgress className={classes.progress} color="primary" />
             </div>
           ) : (
-            <AgencyData agency={pageData.agency} showMissingData={false} queueAgencyData={pageData.agencyQueue} />
+            <React.Fragment>
+              <AgencyData agency={pageData.agency} showMissingData={false} queueAgencyData={pageData.agencyQueue} />
+              <div className={classes.buttons}>
+                <Button
+                variant="contained"
+                color="primary"
+                type="button"
+                className={classes.button}
+              >
+                Reject
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                type="submit"
+                className={classes.button}
+              >
+                Approve
+              </Button>
+            </div>
+            </React.Fragment>
+            
           )
         }
-      </Grid>
-      <Grid item xs={12} sm={12} md={12}>
-        <div className={classes.buttons}>
-            <Button
-            variant="contained"
-            color="primary"
-            type="button"
-            className={classes.button}
-          >
-            Reject
-          </Button>
-          <Button
-            variant="contained"
-            color="secondary"
-            type="submit"
-            className={classes.button}
-          >
-            Approve
-          </Button>
-        </div>
       </Grid>
     </Grid>
   )

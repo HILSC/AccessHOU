@@ -7,4 +7,10 @@ export default (theme) => ({
   chip: {
     margin: theme.spacing(1),
   },
+  infoDeleted: {
+    color: 'red'
+  },
+  infoChanged: {
+    color: 'green'
+  }
 });

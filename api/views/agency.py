@@ -269,8 +269,8 @@ class AgencyQueueView(APIView):
                 {
                     "agency": {
                         "id": related_agency.id,
-                        "slug": agency.slug,
-                        "name": agency.name,
+                        "slug": related_agency.slug,
+                        "name": related_agency.name,
                         "emergency_mode": agency.emergency_mode
                     },
                     "model": "queue",

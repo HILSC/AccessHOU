@@ -12,7 +12,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import styles from "./DataLabelStyles";
 const useStyles = makeStyles(styles);
 
-export default ({ labelText, dataText, dataTextClass, isAList=false }) => {
+export default ({ labelText, dataText, dataTextWithFormat, dataTextClass, isAList=false }) => {
   const classes = useStyles();
 
   const textClass = dataTextClass && dataTextClass === ACTION_CLASS.CHANGED ? classes.infoChanged :
@@ -25,10 +25,10 @@ export default ({ labelText, dataText, dataTextClass, isAList=false }) => {
       </Typography>
       {
         isAList ? (
-          <BadgeList items={dataText} />
-        ) : labelText === "Website" ? (
-              <a href={dataText} target="_blank" rel="noopener noreferrer" className={textClass}>{dataText}</a>
-          ): 
+          <BadgeList items={dataText} dataTextClass={dataTextClass} />
+        ) : labelText === "Website" ? dataTextWithFormat !== '' ? (
+              <a href={dataTextWithFormat} target="_blank" rel="noopener noreferrer" className={textClass}>{dataText}</a>
+          ): {dataText} :
           (
             <Typography variant="body1" align="left" color="textPrimary" classes={{
               root: textClass

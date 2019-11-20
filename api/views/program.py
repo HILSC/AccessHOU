@@ -316,9 +316,9 @@ class ProgramQueueView(APIView):
             return JsonResponse(
                 {
                     "program": {
-                        "id": program.id,
-                        "slug": program.slug,
-                        "name": program.name,
+                        "id": related_program.id,
+                        "slug": related_program.slug,
+                        "name": related_program.name,
                         "emergency_mode": program.emergency_mode
                     },
                     "model": "queue",

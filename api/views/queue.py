@@ -76,47 +76,76 @@ class QueueListView(APIView):
       )
 
 class QueueAgencyView(APIView):
-    def get(self, request, id):
+  def get(self, request, id):
+    try:
+      agency_queue = AgencyQueue.objects.get(id=id)
+      agency_dict = None
+
       try:
-        agency_queue = AgencyQueue.objects.get(id=id)
-        agency_dict = None
-
-        try:
-          agency = Agency.objects.get(id=agency_queue.related_agency_id)
-          agency_dict = model_to_dict(agency)
-        except Agency.DoesNotExist:
-          pass
-
-        agency_queue_dict = model_to_dict(agency_queue)
-        if not agency_dict:
-          agency_dict = agency_queue_dict
-
-        return JsonResponse(
-            {
-                "agency": agency_dict,
-                "agency_queue": agency_queue_dict
-            },
-            safe=False,
-        )
-      except Exception as e:
-        logger.error("Error getting Agency queue", e)
-        return JsonResponse(
-          {
-            "error": True,
-            "message": "Error getting agency queue",
-          }, status=200
-        )
-      
-    def post(self, request):
+        agency = Agency.objects.get(id=agency_queue.related_agency_id)
+        agency_dict = model_to_dict(agency)
+      except Agency.DoesNotExist:
         pass
+
+      agency_queue_dict = model_to_dict(agency_queue)
+      if not agency_dict:
+        agency_dict = agency_queue_dict
+
+      return JsonResponse(
+          {
+              "agency": agency_dict,
+              "agency_queue": agency_queue_dict
+          },
+          safe=False,
+      )
+    except Exception as e:
+      logger.error("Error getting Agency queue", e)
+      return JsonResponse(
+        {
+          "error": True,
+          "message": "Error getting agency queue",
+        }, status=200
+      )
+    
+  def post(self, request):
+    # Approve or Reject
+    pass
 
 
 class QueueProgramView(APIView):
-    def get(self, request, id):
-      import pdb; pdb.set_trace()
-      print(id)
-      
-      
+  def get(self, request, id):
+    try:
+      program_queue = ProgramQueue.objects.get(id=id)
+      program_dict = None
 
-    def post(self, request):
+      try:
+        program = Program.objects.get(id=program_queue.related_program_id)
+        program_dict = model_to_dict(program)
+        program_dict["agency_name"] = program.agency.name
+        program_dict["agency_slug"] = program.agency.slug
+      except Program.DoesNotExist:
         pass
+
+      program_queue_dict = model_to_dict(program_queue)
+      if not program_dict:
+        program_dict = program_queue_dict
+
+      return JsonResponse(
+          {
+              "program": program_dict,
+              "program_queue": program_queue_dict
+          },
+          safe=False,
+      )
+    except Exception as e:
+      logger.error("Error getting Program queue", e)
+      return JsonResponse(
+        {
+          "error": True,
+          "message": "Error getting Program queue",
+        }, status=200
+      )
+    
+  def post(self, request):
+    # Approve or Reject
+    pass

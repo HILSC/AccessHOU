@@ -1,15 +1,22 @@
 import React from 'react';
+import clsx from 'clsx';
 
 import Chip from '@material-ui/core/Chip';
 
+import {
+  ACTION_CLASS
+} from 'constants.js';
+
+// Styles
 import { makeStyles } from '@material-ui/core/styles';
-
 import styles from './BadgeListStyles';
-
 const useStyles = makeStyles(styles);
 
-export default ({ items }) => {
+export default ({ items, dataTextClass }) => {
   const classes = useStyles();
+
+  const textClass = dataTextClass && dataTextClass === ACTION_CLASS.CHANGED ? classes.infoChanged :
+    dataTextClass && dataTextClass === ACTION_CLASS.DELETED ? classes.infoDeleted : null;
 
   return (
     <div className={classes.root}>
@@ -19,7 +26,7 @@ export default ({ items }) => {
           variant="default"
           size="small"
           label={item}
-          className={classes.chip}
+          className={clsx(classes.chip, textClass)}
         />
       ))) :
       null }

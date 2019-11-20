@@ -8,5 +8,12 @@ export default (theme) => ({
   programTitle:{
     color: '#969696',
     fontSize: '28px',
+  },
+  infoDeleted: {
+    color: 'red'
+  },
+  infoChanged: {
+    color: 'green',
+    fontSize: '28px',
   }
 });
