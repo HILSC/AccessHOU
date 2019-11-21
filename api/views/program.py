@@ -657,7 +657,7 @@ class ProgramView(APIView):
             if request.user and request.user.is_active:
                 program = Program.objects.get(id=id)
                 program_name = program.name
-                
+
                 ActionLog.objects.create(
                     info=program.name,
                     additional_info=[program.agency.name, str(program.agency.id)],

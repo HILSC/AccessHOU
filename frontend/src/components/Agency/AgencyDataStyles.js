@@ -12,5 +12,9 @@ export default (theme) => ({
   },
   infoChanged: {
     color: 'green'
-  }
+  },
+  agencyCustomLink: {
+    textDecoration: 'none',
+    color: 'black'
+  },
 });

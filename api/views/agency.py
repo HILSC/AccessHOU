@@ -576,7 +576,7 @@ class AgencyView(APIView):
                 agency = Agency.objects.get(id=id)
                 agency_name = agency.name
                 agency_programs = list(Program.objects.filter(agency_id=agency.id).values_list('name', flat=True))
-                
+
                 ActionLog.objects.create(
                     info=agency.name,
                     additional_info=agency_programs,

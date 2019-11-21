@@ -9,7 +9,8 @@ import {
 
 // API
 import {
-  getAgencyQueue
+  getAgencyQueue,
+  approveRejectAgencyQueue,
 } from 'api';
 
 // Material UI Components
@@ -20,6 +21,9 @@ import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import QueueIcon from '@material-ui/icons/Queue';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogActions from '@material-ui/core/DialogActions';
 
 // Custom components
 import AgencyData from 'components/Agency/AgencyData';
@@ -39,6 +43,7 @@ const AgencyQueue = ({ match }) => {
   const [pageData, setPageData] = useState({
     loading: true
   });
+  const [confirmation, setConfirmation] = useState({ isOpen: false});
 
   useEffect(() => {
     getAgencyQueue(token, queueId).then(resulSet => {
@@ -53,6 +58,39 @@ const AgencyQueue = ({ match }) => {
     token,
     queueId
   ]);
+
+  const handleApproveClick = () => {
+    setConfirmation(data => ({
+      ...data,
+      isOpen: true,
+      action: "approve"
+    }));
+  }
+
+  const handleRejectClick = () => {
+    setConfirmation(data => ({
+      ...data,
+      isOpen: true,
+      action: "reject"
+    }));
+  }
+
+  const handleDialogClose = () => {
+    setConfirmation(data => ({
+      ...data,
+      isOpen: false,
+      action: null
+    }));
+  }
+
+  const handleConfirmation = () => {
+    approveRejectAgencyQueue(token, {
+      queue_id: pageData.agencyQueue.id,
+      action: confirmation.action
+    }).then(result => {
+
+    });
+  }
 
   return(
     <Grid container spacing={3}>
@@ -82,6 +120,7 @@ const AgencyQueue = ({ match }) => {
                 color="primary"
                 type="button"
                 className={classes.button}
+                onClick={handleRejectClick}
               >
                 Reject
               </Button>
@@ -90,6 +129,7 @@ const AgencyQueue = ({ match }) => {
                 color="secondary"
                 type="submit"
                 className={classes.button}
+                onClick={handleApproveClick}
               >
                 Approve
               </Button>
@@ -98,6 +138,24 @@ const AgencyQueue = ({ match }) => {
             
           )
         }
+        <Dialog
+          open={confirmation.isOpen}
+          onClose={handleDialogClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {`Are you sure you want to ${confirmation.action} this request?`}
+          </DialogTitle>
+          <DialogActions>
+            <Button variant="contained" onClick={handleDialogClose} color="primary">
+              No
+            </Button>
+            <Button variant="contained" onClick={handleConfirmation} color="secondary" autoFocus>
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>          
       </Grid>
     </Grid>
   )

@@ -1,7 +1,7 @@
 import React, {
   useState
 } from 'react';
-import { Redirect } from 'react-router-dom';
+import { NavLink, Redirect } from 'react-router-dom';
 
 // Material UI components
 import Container from '@material-ui/core/Container';
@@ -49,11 +49,15 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           <Grid item xs={12} sm={12} md={12}>
           {
             queueAgencyData && queueAgencyData.name !== agency.name  ? (
-              <Label text={queueAgencyData.name} variant="h4" color="inherit" classes={{
-                root: classes.infoChanged
-              }} />
+              <NavLink to={`/agency/${agency.slug}`} target="_blank" className={classes.agencyCustomLink}>
+                <Label text={queueAgencyData.name} variant="h4" color="inherit" classes={{
+                  root: classes.infoChanged
+                }} />
+              </NavLink>
             ) : (
-              <Label text={agency.name} variant="h4" color="inherit" />
+              <NavLink to={`/agency/${agency.slug}`} target="_blank" className={classes.agencyCustomLink}>
+                <Label text={agency.name} variant="h4" color="inherit" />
+              </NavLink>
             )
           }
           </Grid>
@@ -450,7 +454,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           }
           {
             // Schedule section
-            queueAgencyData && hasSchedule(queueAgencyData.schedule) ||
+            (queueAgencyData && hasSchedule(queueAgencyData.schedule)) ||
             (queueAgencyData && queueAgencyData.schedule_notes) ||
             (queueAgencyData && queueAgencyData.holiday_schedule) ||
             showMissingData || (agency && agency.schedule && hasSchedule(agency.schedule)) ||

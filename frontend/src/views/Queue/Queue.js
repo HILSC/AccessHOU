@@ -74,7 +74,7 @@ export default () => {
           </TableHead>
           <TableBody>
             {data.queue.map(queue => (
-              <TableRow key={queue.id} classes={{
+              <TableRow key={`${queue.model}-${queue.id}`} classes={{
                 "root": queue.emergency_mode ? classes.emergencyMode : null,
               }}>
                 <TableCell align="left">{queue.name}</TableCell>

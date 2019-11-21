@@ -55,6 +55,11 @@ urlpatterns = [
     path('user/', UserView.as_view()),
 
     path('queue/', QueueListView.as_view()),
+
     path('queue/agency/<int:id>', QueueAgencyView.as_view()),
     path('queue/program/<int:id>', QueueProgramView.as_view()),
+
+    path('queue/agency/', QueueAgencyView.as_view()),
+    path('queue/program/', QueueProgramView.as_view()),
+
 ]

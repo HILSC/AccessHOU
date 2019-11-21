@@ -20,8 +20,6 @@ export default ({ values, dataTextClass }) => {
   const textClass = dataTextClass && dataTextClass === ACTION_CLASS.CHANGED ? classes.infoChanged :
     dataTextClass && dataTextClass === ACTION_CLASS.DELETED ? classes.infoDeleted : null;
 
-  console.log('text class', textClass)
-
   /*
   Sunday 9AM - 4PM
   Monday 9AM - 4PM

@@ -37,13 +37,17 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
           <Grid item xs={12} sm={12} md={12}>
             {
               queueProgramData && queueProgramData.name !== program.name ? (
-                <Typography className={classes.infoChanged}>
-                  {queueProgramData.name}
-                </Typography>
+                <NavLink to={`/program/${program.slug}`} target="_blank" className={classes.programCustomLink}>
+                  <Typography className={classes.infoChanged}>
+                    {queueProgramData.name}
+                  </Typography>
+                </NavLink>
               ) : (
-                <Typography className={classes.programTitle}>
-                  {program.name}
-                </Typography>
+                <NavLink to={`/program/${program.slug}`} target="_blank" className={classes.programCustomLink}>
+                  <Typography className={classes.programTitle}>
+                    {program.name}
+                  </Typography>
+                </NavLink>
               )
             }
             <NavLink to={`/agency/${program.agency_slug}`} target="_blank" className={classes.agencyCustomLink}>

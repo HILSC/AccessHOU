@@ -5,6 +5,9 @@ export default (theme) => ({
     fontWeight: 400,
     textDecoration: 'none'
   },
+  programCustomLink: {
+    textDecoration: 'none'
+  },
   programTitle:{
     color: '#969696',
     fontSize: '28px',
