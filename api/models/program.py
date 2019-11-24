@@ -8,6 +8,8 @@ from django.contrib import admin
 from api.models.base import Base
 from api.models.agency import Agency
 
+from datetime import datetime
+
 class ProgramBase(Base):
     # General
     name = models.CharField(max_length=250, null=False)
@@ -107,7 +109,7 @@ class Program(ProgramBase):
         verbose_name_plural = "Programs"
         ordering = ["agency", "name"]
 
-    def custom_create(program=None, emergency_mode=True):
+    def custom_create(request, program=None, emergency_mode=True):
         if program:
             return Program.objects.create(
                 # General
@@ -166,10 +168,11 @@ class Program(ProgramBase):
                 immigration_accessibility_profile=program.immigration_accessibility_profile,
 
                 agency=program.agency,
-                emergency_mode=emergency_mode
+                emergency_mode=emergency_mode,
+                created_by=request.user,
             )
 
-    def custom_update(program=None, program_id=None, emergency_mode=True):
+    def custom_update(request, program=None, program_id=None, emergency_mode=True):
         if program and program_id:
             Program.objects.update_or_create(
                 id=program_id,
@@ -230,6 +233,8 @@ class Program(ProgramBase):
                     "immigration_accessibility_profile":program.immigration_accessibility_profile,
 
                     "emergency_mode": emergency_mode,
+                    "updated_by": request.user,
+                    "updated_at": datetime.now(),
                 },
             )
 

@@ -109,7 +109,7 @@ class QueueAgencyView(APIView):
         {
           "error": True,
           "message": "Error getting agency queue",
-        }, status=200
+        }, status=500
       )
     
   @transaction.atomic
@@ -120,7 +120,6 @@ class QueueAgencyView(APIView):
         queue_id = request.data.get("queue_id", None)
         action = request.data.get("action", None)
 
-        import pdb; pdb.set_trace()
         if queue_id and action:
           agency_queue = AgencyQueue.objects.get(id=queue_id)
 
@@ -144,11 +143,11 @@ class QueueAgencyView(APIView):
 
             ActionLog.objects.create(
                 info=agency_queue.name,
-                additional_info="{} requested to {} agency. Related agency id {}".format(
+                additional_info=[
                   agency_queue.requested_by_email,
                   agency_queue.action,
                   agency_queue.related_agency_id
-                ),
+                ],
                 action="approved",
                 model="agency queue",
                 created_by=request.user
@@ -157,7 +156,10 @@ class QueueAgencyView(APIView):
           else:
             ActionLog.objects.create(
                 info=agency_queue.name,
-                additional_info="{} requested to {} agency".format(agency_queue.requested_by_email, agency_queue.action),
+                additional_info=[
+                  agency_queue.requested_by_email,
+                  agency_queue.action
+                ],
                 action="rejected",
                 model="agency queue",
                 created_by=request.user
@@ -165,13 +167,18 @@ class QueueAgencyView(APIView):
 
           agency_queue.delete()
 
+          return JsonResponse(
+            {
+              "message": "Agency queue {} successfully.".format(action),
+            }, status=200
+          )
     except Exception as e:
       logger.error("Error approving/rejecting agency queue", e)
       return JsonResponse(
         {
           "error": True,
           "message": "Error approving/rejecting agency queue",
-        }, status=200
+        }, status=500
       )
 
 class QueueProgramView(APIView):
@@ -215,7 +222,6 @@ class QueueProgramView(APIView):
         queue_id = request.data.get("queue_id", None)
         action = request.data.get("action", None)
 
-        import pdb; pdb.set_trace()
         if queue_id and action:
           program_queue = ProgramQueue.objects.get(id=queue_id)
 
@@ -237,11 +243,11 @@ class QueueProgramView(APIView):
 
             ActionLog.objects.create(
                 info=program_queue.name,
-                additional_info="{} requested to {} program. Related program id {}".format(
+                additional_info=[
                   program_queue.requested_by_email,
                   program_queue.action,
                   program_queue.related_program_id
-                ),
+                ],
                 action="approved",
                 model="program queue",
                 created_by=request.user
@@ -250,10 +256,10 @@ class QueueProgramView(APIView):
           else:
             ActionLog.objects.create(
                 info=program_queue.name,
-                additional_info="{} requested to {} program".format(
+                additional_info=[
                   program_queue.requested_by_email,
                   program_queue.action
-                ),
+                ],
                 action="rejected",
                 model="program queue",
                 created_by=request.user
@@ -261,11 +267,16 @@ class QueueProgramView(APIView):
 
           program_queue.delete()
 
+          return JsonResponse(
+            {
+              "message": "Program queue {} successfully.".format(action),
+            }, status=200
+          )
     except Exception as e:
       logger.error("Error approving/rejecting program queue", e)
       return JsonResponse(
         {
           "error": True,
           "message": "Error approving/rejecting program queue",
-        }, status=200
+        }, status=500
       )

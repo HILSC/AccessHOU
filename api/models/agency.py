@@ -6,6 +6,8 @@ from django.contrib import admin
 
 from api.models.base import Base
 
+from datetime import datetime
+
 class AgencyBase(Base):
     # General
     name = models.CharField(max_length=250, null=False, blank=False)
@@ -94,7 +96,7 @@ class Agency(AgencyBase):
         verbose_name_plural = "Agencies"
         ordering = ["name"]
 
-    def custom_create(agency=None, hilsc_verified=False, emergency_mode=True):
+    def custom_create(request, agency=None, hilsc_verified=False, emergency_mode=True):
         if agency:
             return Agency.objects.create(
                 name=agency.name,
@@ -148,10 +150,12 @@ class Agency(AgencyBase):
                 # Verified
                 hilsc_verified=hilsc_verified,
 
-                emergency_mode=emergency_mode
+                emergency_mode=emergency_mode,
+
+                created_by=request.user
             )
 
-    def custom_update(agency=None, agency_id=None, hilsc_verified=False, emergency_mode=True):
+    def custom_update(request, agency=None, agency_id=None, hilsc_verified=False, emergency_mode=True):
         if agency and agency_id:
             Agency.objects.update_or_create(
                 id=agency_id,
@@ -207,6 +211,9 @@ class Agency(AgencyBase):
                     "hilsc_verified": hilsc_verified,
 
                     "emergency_mode": emergency_mode,
+
+                    "updated_by": request.user,
+                    "updated_at": datetime.now(),
                 },
             )
 

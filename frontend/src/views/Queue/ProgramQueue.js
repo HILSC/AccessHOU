@@ -27,6 +27,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 
 // Custom components
 import ProgramData from 'components/Program/ProgramData';
+import Alert from 'components/Alert/Alert';
 
 // Styles
 import { makeStyles } from '@material-ui/core/styles';
@@ -52,6 +53,12 @@ const ProgramQueue = ({ match }) => {
         program: resulSet.data.program,
         programQueue: resulSet.data.program_queue,
         loading: false
+      }));
+    }).catch(() => {
+      setConfirmation(data => ({
+        ...data,
+        message: 'There was a problem while trying to get this queue. Most likely, these queue does not exist.',
+        messageType: 'error'
       }));
     });
   }, [
@@ -85,11 +92,32 @@ const ProgramQueue = ({ match }) => {
 
   const handleConfirmation = () => {
     approveRejectProgramQueue(token, {
-      queue_id: pageData.agencyQueue.id,
+      queue_id: pageData.programQueue.id,
       action: confirmation.action
     }).then(result => {
-
+      setConfirmation(data => ({
+        ...data,
+        isOpen: false,
+        action: null,
+        messageType: 'success',
+        message: result.data.message,
+      }));
+    }).catch(() => {
+      setConfirmation(data => ({
+        ...data,
+        message: 'There was a problem while trying to approve/reject this queue.',
+        messageType: 'error'
+      }));
     });
+  }
+
+  if(confirmation && confirmation.message){
+    return (
+      <Alert
+        variant={confirmation.messageType}
+        message={confirmation.message}
+      />
+    );
   }
 
   return(

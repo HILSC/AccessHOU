@@ -110,9 +110,16 @@ export default ({ children }) =>{
       </main>
       <footer className={classes.footer}>
         <Container maxWidth="lg">
-          <Typography variant="caption" align="center">
-            The NeedHOU Houston Social Services Database is a product of <a rel="noopener noreferrer" href="https://www.houstonimmigration.org/" target="_blank"><abbr title="Houston Immigration Legal Services Collaborative">HILSC</abbr></a>. Only HILSC Verified data has been accounted for by HILSC.
-          </Typography>
+          <p>
+            <Typography variant="caption">
+              The NeedHOU Houston Social Services Database is a product of <a rel="noopener noreferrer" href="https://www.houstonimmigration.org/" target="_blank"><abbr title="Houston Immigration Legal Services Collaborative">HILSC</abbr></a>. Only HILSC Verified data has been accounted for by HILSC.
+            </Typography>
+          </p>
+          <p>
+            <Typography variant="caption">
+              Want to request adding a new agency or program? <a rel="noopener noreferrer" href="/editor" target="_blank">Request here</a>
+            </Typography>
+          </p>
         </Container>
       </footer>
     </div>

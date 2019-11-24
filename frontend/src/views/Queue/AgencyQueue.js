@@ -27,6 +27,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 
 // Custom components
 import AgencyData from 'components/Agency/AgencyData';
+import Alert from 'components/Alert/Alert';
 
 // Styles
 import { makeStyles } from '@material-ui/core/styles';
@@ -40,11 +41,10 @@ const AgencyQueue = ({ match }) => {
 
   const { queueId } = match.params;
 
-  const [pageData, setPageData] = useState({
-    loading: true
-  });
-  const [confirmation, setConfirmation] = useState({ isOpen: false});
+  const [pageData, setPageData] = useState({ loading: true });
 
+  const [confirmation, setConfirmation] = useState({ isOpen: false });
+  
   useEffect(() => {
     getAgencyQueue(token, queueId).then(resulSet => {
       setPageData(data => ({
@@ -52,6 +52,12 @@ const AgencyQueue = ({ match }) => {
         agency: resulSet.data.agency,
         agencyQueue: resulSet.data.agency_queue,
         loading: false
+      }));
+    }).catch(() => {
+      setConfirmation(data => ({
+        ...data,
+        message: 'There was a problem while trying to get this queue. Most likely, these queue does not exist.',
+        messageType: 'error'
       }));
     });
   }, [
@@ -88,8 +94,29 @@ const AgencyQueue = ({ match }) => {
       queue_id: pageData.agencyQueue.id,
       action: confirmation.action
     }).then(result => {
-
+      setConfirmation(data => ({
+        ...data,
+        isOpen: false,
+        action: null,
+        messageType: 'success',
+        message: result.data.message,
+      }));
+    }).catch(() => {
+      setConfirmation(data => ({
+        ...data,
+        message: 'There was a problem while trying to approve/reject this queue.',
+        messageType: 'error'
+      }));
     });
+  }
+
+  if(confirmation && confirmation.message){
+    return (
+      <Alert
+        variant={confirmation.messageType}
+        message={confirmation.message}
+      />
+    );
   }
 
   return(

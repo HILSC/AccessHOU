@@ -64,6 +64,7 @@ class AppSettingsView(APIView):
                     return JsonResponse(
                         {
                             "emergency_mode": app_settings.emergency_mode,
+                            "emergency_message": app_settings.emergency_message,
                         },
                         safe=False,
                     )
@@ -89,13 +90,13 @@ class AppSettingsView(APIView):
             if request.user and request.user.is_active and request.user.profile.is_admin:
                 app_settings = AppSettings.objects.first()
                 if app_settings:
-                    if app_settings.emergency_mode:
-                        app_settings.emergency_mode = False
+                    app_settings.emergency_mode = request.data.get("mode_state", None)
 
+                    if not app_settings.emergency_mode:
                         # If it is turned off, we have to check for changes to rollback
                         process_emergency_off()
-                    else:
-                        app_settings.emergency_mode = True
+                
+                    app_settings.emergency_message = request.data.get("emergency_message", None)
                     app_settings.save()
                 else:
                     app_settings = AppSettings.objects.create(emergency_mode=True)
@@ -103,6 +104,7 @@ class AppSettingsView(APIView):
                 return JsonResponse(
                     {
                         "emergency_mode": app_settings.emergency_mode,
+                        "emergency_message": app_settings.emergency_message,
                     },
                     safe=False,
                 )

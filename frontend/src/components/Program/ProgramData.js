@@ -20,7 +20,8 @@ import {
 // Utils
 import { 
   formatURL,
-  hasSchedule 
+  hasSchedule,
+  sameSchedule,
 } from 'utils';
 
 // Styles
@@ -579,11 +580,11 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
           }
           {
             // Schedule
-            queueProgramData && hasSchedule(queueProgramData.schedule) && queueProgramData.schedule !== program.schedule ? (
+            queueProgramData && hasSchedule(queueProgramData.schedule) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <ScheduleData
                   values={queueProgramData.schedule ? queueProgramData.schedule : []} 
-                  dataTextClass={ACTION_CLASS.CHANGED}
+                  dataTextClass={sameSchedule(queueProgramData.schedule, program.schedule) ? null : ACTION_CLASS.CHANGED}
                 />
               </Grid>
             ) :
@@ -604,11 +605,11 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
           }
           {
             // Walk in hours
-            queueProgramData && hasSchedule(queueProgramData.walk_in_schedule) && queueProgramData.walk_in_schedule !== program.walk_in_schedule ? (
+            queueProgramData && hasSchedule(queueProgramData.walk_in_schedule) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <ScheduleData
                   values={queueProgramData.walk_in_schedule ? queueProgramData.walk_in_schedule : []} 
-                  dataTextClass={ACTION_CLASS.CHANGED}
+                  dataTextClass={sameSchedule(queueProgramData.walk_in_schedule, program.walk_in_schedule) ? null : ACTION_CLASS.CHANGED}
                 />
               </Grid>
             ) :

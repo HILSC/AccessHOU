@@ -21,6 +21,7 @@ import {
 import { 
   formatURL,
   hasSchedule,
+  sameSchedule,
 } from 'utils';
 
 // Styles
@@ -466,11 +467,11 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           }
           {
             // Schedule
-            queueAgencyData && hasSchedule(queueAgencyData.schedule) && queueAgencyData.schedule !== agency.schedule ? (
+            queueAgencyData && hasSchedule(queueAgencyData.schedule) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <ScheduleData
                   values={queueAgencyData.schedule ? queueAgencyData.schedule : []} 
-                  dataTextClass={ACTION_CLASS.CHANGED}
+                  dataTextClass={sameSchedule(queueAgencyData.schedule, agency.schedule) ? null : ACTION_CLASS.CHANGED}
                 />
               </Grid>
             ) :

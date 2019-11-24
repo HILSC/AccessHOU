@@ -169,11 +169,12 @@ class SearchAppView(APIView):
 
             # ZipCodes
             if zip_code and radius is None:
-                program_filters &= models.Q(zip_codes__icontains=zip_code)
-                program_filters |= models.Q(zip_code=zip_code)
+                program_filters &= models.Q(zip_code=zip_code)
+                program_filters |= models.Q(zip_codes__icontains=zip_code)
 
-                agency_filters &= models.Q(zip_codes__icontains=zip_code)
-                agency_filters |= models.Q(zip_code=zip_code)
+                agency_filters &= models.Q(zip_code=zip_code)
+                agency_filters |= models.Q(zip_codes__icontains=zip_code)
+                
 
             # Program languages
             if languages and len(languages):

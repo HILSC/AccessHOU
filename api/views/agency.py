@@ -133,7 +133,7 @@ class AgencyQueueView(APIView):
                 agency.save()
 
                 # Create the agency in the final table api_agencies with emergency_mode equal to True
-                Agency.custom_create(agency=agency)
+                Agency.custom_create(request=request, agency=agency)
 
             return JsonResponse(
                 {
@@ -263,7 +263,7 @@ class AgencyQueueView(APIView):
                 AgencyEmergencyQueue.custom_create(agency=related_agency)
 
                 # Update the agency in the final table api_agencies with emergency_mode equal to True
-                Agency.custom_update(agency=agency, agency_id=related_agency.id)
+                Agency.custom_update(request=request, agency=agency, agency_id=related_agency.id)
 
             return JsonResponse(
                 {

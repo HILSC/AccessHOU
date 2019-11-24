@@ -28,9 +28,18 @@ const hasSchedule = (schedules) => {
   return false;
 }
 
+const sameSchedule = (scheduleOne, scheduleTwo) => {
+  if(scheduleOne && scheduleTwo){
+    return Object.keys(scheduleOne).every(k => scheduleOne[k] === scheduleTwo[k]);
+  }
+
+  return true;
+}
+
 export {
   isEmailValid,
   isValidURL,
   formatURL,
-  hasSchedule
+  hasSchedule,
+  sameSchedule,
 }

@@ -1,5 +1,5 @@
-//const API_URL = 'https://qa-needhou.herokuapp.com/api/';
-const API_URL = 'http://localhost:8000/api/';
+const API_URL = 'https://qa-needhou.herokuapp.com/api/';
+//const API_URL = 'http://localhost:8000/api/';
 
 const USER_ACTIONS = {
     ADD: 'ADD',
