@@ -26,7 +26,7 @@ export default (theme) => ({
     display: 'flex',
     alignItems: 'center',
   },
-  alertBox: {
-    marginBottom: theme.spacing(3),
-  }
+  // alertBox: {
+  //   marginBottom: theme.spacing(3),
+  // }
 });

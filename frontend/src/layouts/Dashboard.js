@@ -29,6 +29,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import SettingsIcon from '@material-ui/icons/Settings';
 import QueueIcon from '@material-ui/icons/Queue';
 import EditIcon from '@material-ui/icons/Edit';
+import AccountBoxIcon from '@material-ui/icons/AccountBox';
 
 import HomeIcon from '@material-ui/icons/Home';
 import DashboardIcon from '@material-ui/icons/Dashboard';
@@ -147,6 +148,14 @@ export default ({ children }) => {
               </React.Fragment>
             ) : null
           }
+          <NavLink to="/private/profile" className={classes.customLink}>
+            <ListItem button>
+              <ListItemIcon>
+                <AccountBoxIcon />
+              </ListItemIcon>
+              <ListItemText primary="Profile" />
+            </ListItem>
+          </NavLink>
           <ListItem button onClick={handleSignout}>
             <ListItemIcon>
               <ExitToAppIcon />

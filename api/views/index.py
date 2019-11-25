@@ -26,7 +26,6 @@ import logging
 import json
 import re
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -331,3 +330,21 @@ class SearchAppView(APIView):
             )
 
 
+class EmergencyModeView(APIView):
+    def get(self, request):
+        try:
+            app_settings = AppSettings.objects.first()
+            if app_settings:
+                return JsonResponse(
+                    {
+                        "emergency_mode": app_settings.emergency_mode,
+                        "emergency_message": app_settings.emergency_message,
+                    }, status=200
+                )
+        except Exception as e:
+            logger.error("Error getting emergency mode info", e)
+            return JsonResponse(
+                {
+                    "message": "Error getting emergency mode info",
+                }, status=500
+            )

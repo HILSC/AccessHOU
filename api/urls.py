@@ -3,6 +3,7 @@ from django.urls import path
 from api.views.user import UserAuthView
 from api.views.user import UserListView
 from api.views.user import UserView
+from api.views.user import UserProfileView
 
 from api.views.agency import AgencyView
 from api.views.agency import AgencyListView
@@ -19,6 +20,7 @@ from api.views.program import ProgramQueueListView
 from api.views.program import ProgramQueueDeleteView
 
 from api.views.index import SearchAppView
+from api.views.index import EmergencyModeView
 
 from api.views.queue import QueueListView
 from api.views.queue import QueueAgencyView
@@ -26,10 +28,12 @@ from api.views.queue import QueueProgramView
 
 from api.views.app_settings import AppSettingsView
 
+
 urlpatterns = [
     path('auth/', UserAuthView.as_view()),
 
     path('app/settings/', AppSettingsView.as_view()),
+    path('app/emergency/', EmergencyModeView.as_view()),
 
     path('agency/', AgencyView.as_view()),
     path('agency/<str:property_name>/<str:property_value>/', AgencyView.as_view()),
@@ -61,5 +65,7 @@ urlpatterns = [
 
     path('queue/agency/', QueueAgencyView.as_view()),
     path('queue/program/', QueueProgramView.as_view()),
+
+    path('user/profile/', UserProfileView.as_view()),
 
 ]

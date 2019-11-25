@@ -1,5 +1,6 @@
 import React, {
   useState,
+  useEffect,
 } from 'react';
 import { NavLink } from "react-router-dom";
 
@@ -12,6 +13,9 @@ import {
 import {
   signOutAction
 } from 'actions/user';
+
+// API
+import { getAppEmegencyMode } from 'api';
 
 // Materia UI Components
 import AppBar from '@material-ui/core/AppBar';
@@ -41,6 +45,17 @@ export default ({ children }) =>{
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openMenu, setOpenMenu] = useState(false);
+  const [emergencyMode, setEmergencyMode] = useState(null);
+
+  useEffect(() => {
+    getAppEmegencyMode().then(result => {
+      setEmergencyMode(data => ({
+        ...data,
+        "isActive": result.data.emergency_mode,
+        "message": result.data.emergency_message,
+      }));
+    })
+  }, []);
 
   const handleSignout = () => {
     dispatch(signOutAction());
@@ -102,20 +117,27 @@ export default ({ children }) =>{
           !isAuthenticated ? (
             <Alert 
               variant={"warning"}
-              message={"You are not authenticated. Please sign in!"}
-              queueMessage={false} /> 
+              message={"You are not authenticated. Please sign in!"}/> 
+          ) : null
+        }
+        {
+          emergencyMode && emergencyMode.isActive ? (
+            <Alert 
+              variant={"info"}
+              message={emergencyMode.message}/> 
           ) : null
         }
         {children}
       </main>
       <footer className={classes.footer}>
         <Container maxWidth="lg">
-          <p>
+          <div id="google_translate_element"></div>
+          <p className={classes.footerP}>
             <Typography variant="caption">
               The NeedHOU Houston Social Services Database is a product of <a rel="noopener noreferrer" href="https://www.houstonimmigration.org/" target="_blank"><abbr title="Houston Immigration Legal Services Collaborative">HILSC</abbr></a>. Only HILSC Verified data has been accounted for by HILSC.
             </Typography>
           </p>
-          <p>
+          <p className={classes.footerP}>
             <Typography variant="caption">
               Want to request adding a new agency or program? <a rel="noopener noreferrer" href="/editor" target="_blank">Request here</a>
             </Typography>

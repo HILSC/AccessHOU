@@ -68,9 +68,6 @@ class UserAuthView(APIView):
 class UserView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request, property_name, property_value):
-        pass
-
     @transaction.atomic
     def put(self, request):
         try:
@@ -247,8 +244,81 @@ class UserListView(APIView):
             return JsonResponse(
                 {
                     "error": True,
-                    "message": "User with {} {} doesn't exists.".format(
-                        property_name, property_value
-                    ),
-                }
+                    "message": "Error while trying to get the list of users.",
+                }, status=500
             )
+
+
+class UserProfileView(APIView):
+    def get(self, request):
+        try:
+            if request.user:
+                user_profile = Profile.objects.get(user=request.user)
+                return JsonResponse(
+                    {
+                        "id": user_profile.user.id,
+                        "email": user_profile.user.email,
+                        "first_name": user_profile.user.first_name,
+                        "last_name": user_profile.user.last_name,
+                        "agency": user_profile.agency,
+                        "role": user_profile.role.name,
+                    },
+                    safe=False,
+                )  
+        except Exception as e:
+            logger.error("Error while getting user info by id")
+            return JsonResponse(
+                {
+                    "error": True,
+                    "message": "Error getting user info.",
+                }, status=500
+            )
+
+    def put(self, request):
+        try:
+            if request.user:
+                email = request.data.get("email", None)
+                user_with_email = User.objects.filter(email=request.data.get("email")).exclude(id=request.user.id)
+                if user_with_email:
+                    return JsonResponse(
+                    {
+                        "error": True,
+                        "message": "Email [{}] is already in use.".format(email),
+                    },
+                    status=200
+                )
+
+                user = request.user
+
+                current_password =  request.data.get("old_password", None)
+                new_password = request.data.get("password", None)
+                current_password_valid = request.user.check_password(current_password)
+                if new_password and current_password_valid:
+                    user.set_password(new_password)
+                
+                user.email = email
+                user.profile.agency = request.data.get("agency", None)
+                user.first_name = request.data.get("first_name", None)
+                user.last_name = request.data.get("last_name", None)
+                user.save()
+
+                return JsonResponse(
+                    {
+                        "id": user.id,
+                        "email": user.email,
+                        "first_name": user.first_name,
+                        "last_name": user.last_name,
+                        "agency": user.profile.agency,
+                        "role": user.profile.role.name,
+                    },
+                    safe=False,
+                )
+        except Exception as e:
+            return JsonResponse(
+                {
+                    "error": True,
+                    "message": "Error while trying to update profile, Try again!",
+                },
+                status=200
+            )
+

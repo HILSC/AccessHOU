@@ -85,6 +85,30 @@ const refreshToken = (refreshToken) => {
   );
 }
 
+const getUserProfile = (token) => {
+  return client.get(
+    `/user/profile/`,
+    {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    },
+  );
+}
+
+const updateUserProfile = (token, data) => {
+  return client.put(
+    '/user/profile/',
+    JSON.stringify(data),
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  )
+}
+
 const createAgency = (token, data) => {
   let url = '/agency/queue/';
   let headers = {
@@ -396,9 +420,17 @@ const approveRejectProgramQueue = (token, params) => {
   )
 }
 
+const getAppEmegencyMode = () => {
+  return client.get(
+    '/app/emergency/'
+  )
+}
+
 export {
   signIn,
   refreshToken,
+  getUserProfile,
+  updateUserProfile,
 
   createAgency,
   updateAgency,
@@ -427,4 +459,6 @@ export {
 
   approveRejectAgencyQueue,
   approveRejectProgramQueue,
+
+  getAppEmegencyMode,
 }

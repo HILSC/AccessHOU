@@ -13,6 +13,9 @@ export default (theme) => ({
     marginTop: 'auto',
     backgroundColor: '#F5F5F5',
   },
+  footerP: {
+    margin: 0,
+  },
   title: {
     flexGrow: 1,
   },

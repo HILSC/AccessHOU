@@ -15,6 +15,7 @@ export default (theme) => ({
   buttons: {
     display: 'flex',
     justifyContent: 'center',
+    marginTop: theme.spacing(4),
   },
   button: {
     marginRight: '5px'
