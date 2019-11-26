@@ -52,8 +52,14 @@ class ProgramQueueView(APIView):
 
             # Verify if program exists with that slug
             if (
-                Program.objects.filter(slug=slug, agency_id=agency_id).exists()
-                or ProgramQueue.objects.filter(slug=slug, agency_id=agency_id).exists()
+                Program.objects.filter(
+                    slug=slug,
+                    agency_id=agency_id
+                ).exists()
+                or ProgramQueue.objects.filter(
+                    slug=slug,
+                    agency_id=agency_id
+                ).exists()
             ):
                 return JsonResponse(
                     {
@@ -197,12 +203,19 @@ class ProgramQueueView(APIView):
 
             # Verify if program exists with that slug
             if (
-                Program.objects.filter(slug=slug, agency_id=agency.id)
-                .exclude(id=related_program_id)
-                .exists()
-                or ProgramQueue.objects.filter(slug=slug, agency_id=agency.id)
-                .exclude(related_program_id=related_program_id)
-                .exists()
+                Program.objects.filter(
+                    slug=slug,
+                    agency_id=agency.id
+                )
+                .exclude(
+                    id=related_program_id
+                ).exists()
+                or ProgramQueue.objects.filter(
+                    slug=slug,
+                    agency_id=agency.id
+                ).exclude(
+                    related_program=related_program
+                ).exists()
             ):
                 return JsonResponse(
                     {
@@ -415,9 +428,13 @@ class ProgramView(APIView):
 
                 # Verify if program exists with that slug
                 if (
-                    Program.objects.filter(slug=slug, agency_id=agency_id).exists()
+                    Program.objects.filter(
+                        slug=slug,
+                        agency_id=agency_id
+                    ).exists()
                     or ProgramQueue.objects.filter(
-                        slug=slug, agency_id=agency_id
+                        slug=slug,
+                        agency_id=agency_id
                     ).exists()
                 ):
                     return JsonResponse(
@@ -531,11 +548,18 @@ class ProgramView(APIView):
 
                 # Verify if program exists with that slug
                 if (
-                    Program.objects.filter(slug=slug)
-                    .exclude(agency_id=agency.id)
-                    .exists()
-                    or ProgramQueue.objects.filter(slug=slug)
-                    .exclude(agency_id=agency.id)
+                    Program.objects.filter(
+                        slug=slug
+                    ).exclude(
+                        agency_id=agency.id,
+                        id=program.id
+                    ).exists()
+                    or ProgramQueue.objects.filter(
+                        slug=slug
+                    ).exclude(
+                        agency_id=agency.id,
+                        related_program=program
+                    )
                     .exists()
                 ):
                     return JsonResponse(
