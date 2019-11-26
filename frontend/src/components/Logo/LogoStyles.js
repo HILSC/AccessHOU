@@ -2,7 +2,7 @@ export default (theme) => ({
   logo: {
     fontSize: '1.25rem',
     '&::before': {
-      content: `'NeedHOU'`,
+      content: `'AccessHOU'`,
       color: '#e8463a',
       borderRight: '2px dotted #e8463a',
       paddingRight: '8px',

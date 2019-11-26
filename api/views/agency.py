@@ -164,10 +164,16 @@ class AgencyQueueView(APIView):
 
             # Verify if agency exists with that slug
             if (
-                Agency.objects.filter(slug=slug).exclude(id=related_agency_id).exists()
-                or AgencyQueue.objects.filter(slug=slug)
-                .exclude(related_agency_id=related_agency_id)
-                .exists()
+                Agency.objects.filter(
+                    slug=slug
+                ).exclude(
+                    id=related_agency_id
+                ).exists()
+                or AgencyQueue.objects.filter(
+                    slug=slug
+                ).exclude(
+                    related_agency=related_agency
+                ).exists()
             ):
                 return JsonResponse(
                     {

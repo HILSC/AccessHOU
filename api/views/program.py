@@ -549,18 +549,17 @@ class ProgramView(APIView):
                 # Verify if program exists with that slug
                 if (
                     Program.objects.filter(
-                        slug=slug
+                        slug=slug,
+                        agency=agency
                     ).exclude(
-                        agency_id=agency.id,
                         id=program.id
                     ).exists()
                     or ProgramQueue.objects.filter(
-                        slug=slug
+                        slug=slug,
+                        agency=agency
                     ).exclude(
-                        agency_id=agency.id,
                         related_program=program
-                    )
-                    .exists()
+                    ).exists()
                 ):
                     return JsonResponse(
                         {

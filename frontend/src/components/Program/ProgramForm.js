@@ -43,7 +43,6 @@ import styles from './ProgramFormStyles';
 const useStyles = makeStyles(styles);
 
 export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }) => {
-  console.log(data)
   const classes = useStyles();
 
   const nameRef = useRef(null);
@@ -156,9 +155,13 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }
         <Typography variant="h4">
           {data.name}
         </Typography>
-        <NavLink to={`/agency/${data.agency_slug}`} target="_blank" className={classes.agencyCustomLink}>
-          {`A program from: ${data.agency_name}`}
-        </NavLink>
+        {
+          data && data.agency_name ? (
+            <NavLink to={`/agency/${data.agency_slug}`} target="_blank" className={classes.agencyCustomLink}>
+              {`A program from: ${data.agency_name}`}
+            </NavLink>
+          ) : null
+        }
         <form onSubmit={handleSubmit}>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={12} md={12}>

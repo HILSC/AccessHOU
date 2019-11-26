@@ -134,7 +134,7 @@ export default ({ children }) =>{
           <div id="google_translate_element"></div>
           <p className={classes.footerP}>
             <Typography variant="caption">
-              The NeedHOU Houston Social Services Database is a product of <a rel="noopener noreferrer" href="https://www.houstonimmigration.org/" target="_blank"><abbr title="Houston Immigration Legal Services Collaborative">HILSC</abbr></a>. Only HILSC Verified data has been accounted for by HILSC.
+              The AccessHOU Houston Social Services Database is a product of <a rel="noopener noreferrer" href="https://www.houstonimmigration.org/" target="_blank"><abbr title="Houston Immigration Legal Services Collaborative">HILSC</abbr></a>. Only HILSC Verified data has been accounted for by HILSC.
             </Typography>
           </p>
           <p className={classes.footerP}>
