@@ -389,10 +389,10 @@ class ProgramQueueListView(APIView):
 class ProgramView(APIView):
     permission_classes = (permissions.AllowAny,)
 
-    def get(self, request, property_name, property_value):
+    def get(self, request, property_name, property_value, agency_id):
         try:
             kw = {property_name: property_value}
-            program = Program.objects.get(**kw)
+            program = Program.objects.get(**kw, agency_id=agency_id)
             program_dict = model_to_dict(program)
 
             program_dict['state'] = None

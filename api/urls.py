@@ -45,7 +45,7 @@ urlpatterns = [
     path('agencies/queue/', AgencyQueueListView.as_view()),
 
     path('program/', ProgramView.as_view()),
-    path('program/<str:property_name>/<str:property_value>/', ProgramView.as_view()),
+    path('program/<str:property_name>/<str:property_value>/<int:agency_id>', ProgramView.as_view()),
     path('programs/<str:property_name>/<str:property_value>/<int:page>', ProgramListView.as_view()),
     path('program/<int:id>', ProgramView.as_view()),
 

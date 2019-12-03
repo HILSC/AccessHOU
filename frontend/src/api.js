@@ -278,7 +278,7 @@ const deleteProgram = (token, data) => {
 
 const getProgram = (data) => {
   return client.get(
-    `/program/${data.property}/${data.value}/`,
+    `/program/${data.property}/${data.value}/${data.agency}`,
   );
 }
 

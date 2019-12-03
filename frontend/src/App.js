@@ -52,7 +52,7 @@ const App = () => {
           <PublicRoute exact path="/program/create/" component={ProgramCreate} layout={PublicLayout} />
           <PublicRoute path="/program/create/:agencySlug" component={ProgramCreate} layout={PublicLayout} />
           <PublicRoute path="/program/edit/:slug" component={ProgramEdit} layout={PublicLayout} />
-          <PublicRoute path="/program/:slug" component={ProgramDetails} layout={PublicLayout} />
+          <PublicRoute path="/program/:agency/:slug" component={ProgramDetails} layout={PublicLayout} />
 
           <PublicRoute path="/search" component={Results} layout={PublicLayout}/>
 

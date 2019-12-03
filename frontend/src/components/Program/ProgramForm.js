@@ -133,17 +133,13 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }
   const handleDeleteSubmit = (event) => {
     if (event) event.preventDefault();
 
-    if (isFormValid()) {
-      if(values && values.program_id) {
-        handleDelete(values)
-      }
+    if(values && values.program_id) {
+      handleDelete(values)
     }
   }
 
   const handleOpenDialog = () => {
-    if (isFormValid()) {
-      setDialogOpen(true);
-    }
+    setDialogOpen(true);
   }
 
   const handleDialogClose = () => {

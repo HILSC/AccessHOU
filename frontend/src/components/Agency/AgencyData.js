@@ -39,7 +39,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
   }
 
   if (selectedProgram && selectedProgram.id){
-    const url = `/program/${selectedProgram.slug}`
+    const url = `/program/${selectedProgram.agency}/${selectedProgram.slug}`
     return <Redirect push to={url} />
   }
 

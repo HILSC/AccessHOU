@@ -144,17 +144,10 @@ class SearchAppView(APIView):
 
             # Service Types
             if service_types and len(service_types):
-                first = True
                 for st in service_types:
-                    if first:
-                        program_filters &= models.Q(
-                            service_types__contains=[st.lower()]
-                        )
-                        first = False
-                    else:
-                        program_filters |= models.Q(
-                            service_types__contains=[st.lower()]
-                        )
+                    program_filters &= models.Q(
+                        service_types__contains=[st.lower()]
+                    )
 
             # Immigration Status
             if immigration_status and immigration_status == "citizen":
@@ -174,18 +167,11 @@ class SearchAppView(APIView):
                 agency_filters &= models.Q(zip_code=zip_code)
                 agency_filters |= models.Q(zip_codes__icontains=zip_code)
                 
-
             # Program languages
             if languages and len(languages):
-                first = True
                 for l in languages:
-                    if first:
-                        program_filters &= models.Q(languages__contains=[l.lower()])
-                        agency_filters &= models.Q(languages__contains=[l.lower()])
-                        first = False
-                    else:
-                        program_filters |= models.Q(languages__contains=[l.lower()])
-                        agency_filters |= models.Q(languages__contains=[l.lower()])
+                    program_filters &= models.Q(languages__contains=[l.lower()])
+                    agency_filters &= models.Q(languages__contains=[l.lower()])
 
             # Walk in hours
             if walk_in_hours:
@@ -262,6 +248,7 @@ class SearchAppView(APIView):
                                 "description": program.description,
                                 "phone": program.phone,
                                 "slug": program.slug,
+                                "agency": program.agency.id,
                             }
                         ],
                     }
@@ -272,6 +259,7 @@ class SearchAppView(APIView):
                             "description": program.description,
                             "phone": program.phone,
                             "slug": program.slug,
+                            "agency": program.agency.id
                         }
                     )
 

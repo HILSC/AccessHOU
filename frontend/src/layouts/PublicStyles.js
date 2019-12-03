@@ -26,4 +26,8 @@ export default (theme) => ({
     color: 'inherit',
     textDecoration: 'none'
   },
+  signInButton: {
+    minWidth: 80,
+    marginRight: 5
+  }
 });

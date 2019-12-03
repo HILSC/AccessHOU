@@ -12,7 +12,13 @@ export default (theme) => ({
   filters: {
     backgroundColor: '#F3F3F3',
     borderRadius: '4px',
-    padding: '15px'
+    padding: '15px',
+  },
+  serviceTypeFilter: {
+    maxWidth: 120,
+  },
+  immigrationFilter: {
+    maxWidth: 120,
   },
   inputContainer: {
     backgroundColor: '#FFFFFF',
@@ -27,13 +33,13 @@ export default (theme) => ({
     padding: 5,
   },
   formControl: {
-    minWidth: '100%'
+    minWidth: '100%',
   },
   hilscButton: {
-    minWidth: '130px',
+    minWidth: '120px',
   },
-  serviceTypeSelect: {
-    maxWidth: '150px',
+  filtersButton: {
+    minWidth: '120px',
   },
   searchButton: {
     backgroundColor:  theme.palette.background.paper,
@@ -84,4 +90,12 @@ export default (theme) => ({
     padding: '5px',
     borderBottom: 0
   },
+  filtersContainer: {
+    // position: 'fixed',
+  },
+  resultsCountContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    color: '#696969',
+  }
 });

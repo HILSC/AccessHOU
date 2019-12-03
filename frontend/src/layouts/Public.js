@@ -22,6 +22,7 @@ import AppBar from '@material-ui/core/AppBar';
 import MenuItem from '@material-ui/core/MenuItem';
 import Menu from '@material-ui/core/Menu';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import MenuIcon from '@material-ui/icons/Menu';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
@@ -44,7 +45,9 @@ export default ({ children }) =>{
 
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [publicAnchorEl, setPublicAnchorEl] = useState(null);
   const [openMenu, setOpenMenu] = useState(false);
+  const [openPublicMenu, setOpenPublicMenu] = useState(false);
   const [emergencyMode, setEmergencyMode] = useState(null);
 
   useEffect(() => {
@@ -72,6 +75,16 @@ export default ({ children }) =>{
     setOpenMenu(false);
   }
 
+  const handlePublicMenu = (event) => {
+    setPublicAnchorEl(event.currentTarget);
+    setOpenPublicMenu(true);
+  }
+
+  const handlePublicClose = () => {
+    setPublicAnchorEl(null);
+    setOpenPublicMenu(false);
+  }
+
   return (
     <div className={classes.root}>
       <AppBar position="static" color="default">
@@ -83,7 +96,7 @@ export default ({ children }) =>{
           </div>
           {
             isAuthenticated ? (
-              <div>
+              <React.Fragment>
                 <IconButton
                   color="primary"
                   onClick={handleMenu}
@@ -105,21 +118,40 @@ export default ({ children }) =>{
                   <Divider />
                   <MenuItem onClick={handleSignout}>Sign out</MenuItem>
                 </Menu>
-              </div>
-            ) : <NavLink to="/login" className={classes.customLink}>
-                  <Button variant="contained" color="primary">Sign in</Button>
+              </React.Fragment>
+            ) : (
+              <React.Fragment>
+                <NavLink to="/login" className={classes.customLink}>
+                  <Button variant="contained" color="primary" classes={{
+                    root: classes.signInButton
+                  }}>Sign in</Button>
                 </NavLink>
+                <IconButton
+                  color="primary"
+                  onClick={handlePublicMenu}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Menu
+                  anchorEl={publicAnchorEl}
+                  open={openPublicMenu}
+                  onClose={handlePublicClose}
+                  elevation={2}
+                >
+                  <MenuItem>
+                    <NavLink to="/editor" className={classes.customLink} onClick={handlePublicClose}>Editor</NavLink>
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem>
+                    <NavLink to="/user-manual" className={classes.customLink} onClick={handlePublicClose}>User manual</NavLink>
+                  </MenuItem>
+                </Menu>
+              </React.Fragment>
+            )
           }
         </Toolbar>
       </AppBar>
       <main>
-        {
-          !isAuthenticated ? (
-            <Alert 
-              variant={"warning"}
-              message={"You are not authenticated. Please sign in!"}/> 
-          ) : null
-        }
         {
           emergencyMode && emergencyMode.isActive ? (
             <Alert 

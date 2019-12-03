@@ -32,7 +32,7 @@ export default ({ match }) => {
   const classes = useStyles();
 
   const {
-    params: { slug }
+    params: { slug, agency }
   } = match;
 
   const [data, setData] = useState({
@@ -43,7 +43,7 @@ export default ({ match }) => {
   const [edit, setEdit] = useState(false);
 
   useEffect(() => {
-    getProgram({property: 'slug', value: slug}).then(result => {
+    getProgram({property: 'slug', value: slug, agency: agency}).then(result => {
       setData(data => ({
         ...data,
         program: result.data.error ? null : result.data,
@@ -52,7 +52,10 @@ export default ({ match }) => {
     }).catch(() => {
       // Show general error message
     })
-  }, [slug]);
+  }, [
+    slug,
+    agency
+  ]);
 
   const handleEdit = () => {
     setEdit(true);

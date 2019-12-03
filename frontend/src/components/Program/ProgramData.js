@@ -358,7 +358,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
             (queueProgramData && queueProgramData.immigrant_statuses) ||
             (queueProgramData && queueProgramData.zip_codes) ||
             (queueProgramData && queueProgramData.incomes_percent_poverty_level) ||
-            showMissingData || (program && program.age_groups.length) ||
+            showMissingData || (program && program.age_groups) ||
             (program && program.immigrant_statuses) || (program && program.zip_codes) ||
             (program && program.incomes_percent_poverty_level) ? (
               <Grid item xs={12} sm={12} md={12}>
@@ -378,7 +378,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                 />
               </Grid>
             ) :
-            showMissingData || (program && program.age_groups.length) ? (
+            showMissingData || (program && program.age_groups) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}

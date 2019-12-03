@@ -321,7 +321,7 @@ export default ({ match, location }) => {
   }
 
   const handleProgramSelect = (program) => {
-    setGoProgram({go: true, slug: program.slug});
+    setGoProgram({go: true, slug: program.slug, agency: program.agency});
   }
 
   const showSelectedOptions = (selectedOptions, optionToRemove) => {
@@ -352,7 +352,7 @@ export default ({ match, location }) => {
   }
 
   if(goProgram.go){
-    const url = `/program/${goProgram.slug}`;
+    const url = `/program/${goProgram.agency}/${goProgram.slug}`;
     return <Redirect push to={url} />
   }
 
@@ -373,14 +373,13 @@ export default ({ match, location }) => {
 
   const serviceTypeFilter = () => {
     return (
-      <FormControl className={classes.formControl}>
+      <FormControl className={clsx(classes.formControl, classes.serviceTypeFilter)}>
         <Select
           multiple
           value={filters.serviceType && filters.serviceType.length ? showSelectedOptions(filters.serviceType, 'Service type') : ['Service type']}
           onChange={handleChange}
           classes={{
             icon: classes.selectIcon,
-            root: classes.serviceTypeSelect,
           }}
           input={<BootstrapInput name="serviceType" id="service-type-customized-select" />}
           renderValue={selected => {
@@ -406,7 +405,7 @@ export default ({ match, location }) => {
 
   const immigrationStatusFilter = () => {
     return (
-      <FormControl className={classes.formControl}>
+      <FormControl className={clsx(classes.formControl, classes.immigrationFilter)}>
         <Select
           value={filters.immigrationStatus ? filters.immigrationStatus : 'immigration'}
           onChange={handleChange}
@@ -429,7 +428,7 @@ export default ({ match, location }) => {
     return (
       <FormControl className={classes.formControl}>
         <Button
-          className={filters.showMore ? classes.searchButtonActive : classes.searchButton}
+          className={filters.showMore ? classes.searchButtonActive : clsx(classes.searchButton, classes.filtersButton)}
           onClick={handleShowMoreFilters}>
           <TuneIcon classes={{
             root: filters.showMore ? classes.iconInButtonActive : classes.iconInButton
@@ -482,7 +481,7 @@ export default ({ match, location }) => {
         <div className={clsx(classes.zipCode, classes.inputContainer)}>
           <InputBase
             className={classes.input}
-            placeholder="Zip Code"
+            placeholder="Zip code"
             inputProps={{
               'aria-label': 'search',
               'name': 'zipCode',
@@ -632,145 +631,153 @@ export default ({ match, location }) => {
 
   return (
     <React.Fragment>
-      <Container>
+      <Container classes={{
+        root: classes.filtersContainer
+      }}>
         <div className={classes.filters}>
-        <BrowserView>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={12} md={3}>
-              {keywordFilter()}
+          <BrowserView>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={12} md={2}>
+                {keywordFilter()}
+              </Grid>
+              <Grid item xs={6} sm={6} md={2}>
+                {hilscVerifiedFilter()}
+              </Grid>
+              <Grid item xs={6} sm={6} md={2}>
+                {serviceTypeFilter()}
+              </Grid>
+              <Grid item xs={6} sm={6} md={2}>
+                {immigrationStatusFilter()}
+              </Grid>
+              <Grid item xs={6} sm={6} md={2}>
+                {showMoreFilters()}
+              </Grid>
+              <Grid item xs={6} sm={6} md={2}>
+                {clearFilters()}
+              </Grid>
             </Grid>
-            <Grid item xs={6} sm={6} md={2}>
-              {hilscVerifiedFilter()}
+          </BrowserView>
+          <MobileView>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={12} md={12}>
+                {keywordFilter()}
+              </Grid>
+              <Grid item xs={12} sm={12} md={12}>
+                <div className={classes.tableContainer}>
+                  <Table aria-label="simple table">
+                    <TableBody>
+                      <TableRow>
+                        <TableCell align="center" classes={{
+                          root: classes.tableCellContainer
+                        }}>{hilscVerifiedFilter()}</TableCell>
+                        <TableCell align="center" classes={{
+                          root: classes.tableCellContainer
+                        }}>{serviceTypeFilter()}</TableCell>
+                        <TableCell align="center" classes={{
+                          root: classes.tableCellContainer
+                        }}>{immigrationStatusFilter()}</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                </div>
+              </Grid>
+              <Grid item xs={6} sm={6} md={6}>
+                {showMoreFilters()}
+              </Grid>
+              <Grid item xs={6} sm={6} md={6}>
+                {clearFilters()}
+              </Grid>
             </Grid>
-            <Grid item xs={6} sm={6} md={2}>
-              {serviceTypeFilter()}
-            </Grid>
-            <Grid item xs={6} sm={6} md={2}>
-              {immigrationStatusFilter()}
-            </Grid>
-            <Grid item xs={6} sm={6} md={2}>
-              {showMoreFilters()}
-            </Grid>
-            <Grid item xs={6} sm={6} md={1}>
-              {clearFilters()}
-            </Grid>
-          </Grid>
-        </BrowserView>
-        <MobileView>
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={12} md={12}>
-              {keywordFilter()}
-            </Grid>
-            <Grid item xs={12} sm={12} md={12}>
-              <div className={classes.tableContainer}>
-                <Table aria-label="simple table">
-                  <TableBody>
-                    <TableRow>
-                      <TableCell align="center" classes={{
-                        root: classes.tableCellContainer
-                      }}>{hilscVerifiedFilter()}</TableCell>
-                      <TableCell align="center" classes={{
-                        root: classes.tableCellContainer
-                      }}>{serviceTypeFilter()}</TableCell>
-                      <TableCell align="center" classes={{
-                        root: classes.tableCellContainer
-                      }}>{immigrationStatusFilter()}</TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              </div>
-            </Grid>
-            <Grid item xs={6} sm={6} md={6}>
-              {showMoreFilters()}
-            </Grid>
-            <Grid item xs={6} sm={6} md={6}>
-              {clearFilters()}
-            </Grid>
-          </Grid>
-        </MobileView>
-        {
-          filters.showMore ? (
-            <React.Fragment>
-              <BrowserView>
-                <Grow in={filters.showMore}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={6} sm={6} md={3}>
-                      {zipCodeFilter()}
+          </MobileView>
+          {
+            filters.showMore ? (
+              <React.Fragment>
+                <BrowserView>
+                  <Grow in={filters.showMore}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={6} sm={6} md={3}>
+                        {zipCodeFilter()}
+                      </Grid>
+                      <Grid item xs={6} sm={6} md={3}>
+                        {radiusFilter()}
+                      </Grid>
+                      <Grid item xs={12} sm={12} md={3}>
+                        {incomeFilter()}
+                      </Grid>
+                      <Grid item xs={12} sm={12} md={3}>
+                        {accessibleProfileFilter()}
+                      </Grid>
+                      <Grid item xs={12} sm={12} md={3}>
+                        {walkInHoursFilter()}
+                      </Grid>
+                      <Grid item xs={12} sm={12} md={3}>
+                        {programLanguageFilter()}
+                      </Grid>
+                      <Grid item xs={12} sm={6} md={3}>
+                        {adaAccessibleFilter()}
+                      </Grid>
                     </Grid>
-                    <Grid item xs={6} sm={6} md={3}>
-                      {radiusFilter()}
+                  </Grow>
+                </BrowserView>
+                <MobileView>
+                  <Grow in={filters.showMore}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={12} md={12}>
+                        <div className={classes.tableContainer}>
+                          <Table aria-label="simple table">
+                            <TableBody>
+                              <TableRow>
+                                <TableCell align="center" classes={{
+                                  root: classes.tableCellContainer
+                                }}>{zipCodeFilter()}</TableCell>
+                                <TableCell align="center" classes={{
+                                  root: classes.tableCellContainer
+                                }}>{radiusFilter()}</TableCell>
+                                <TableCell align="center" classes={{
+                                  root: classes.tableCellContainer
+                                }}>{incomeFilter()}</TableCell>
+                                <TableCell align="center" classes={{
+                                  root: classes.tableCellContainer
+                                }}>{accessibleProfileFilter()}</TableCell>
+                                <TableCell align="center" classes={{
+                                  root: classes.tableCellContainer
+                                }}>{walkInHoursFilter()}</TableCell>
+                                <TableCell align="center" classes={{
+                                  root: classes.tableCellContainer
+                                }}>{programLanguageFilter()}</TableCell>
+                                <TableCell align="center" classes={{
+                                  root: classes.tableCellContainer
+                                }}>{adaAccessibleFilter()}</TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </div>
+                      </Grid>
                     </Grid>
-                    <Grid item xs={12} sm={12} md={3}>
-                      {incomeFilter()}
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={3}>
-                      {accessibleProfileFilter()}
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={3}>
-                      {walkInHoursFilter()}
-                    </Grid>
-                    <Grid item xs={12} sm={12} md={3}>
-                      {programLanguageFilter()}
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
-                      {adaAccessibleFilter()}
-                    </Grid>
-                  </Grid>
-                </Grow>
-              </BrowserView>
-              <MobileView>
-                <Grow in={filters.showMore}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} sm={12} md={12}>
-                      <div className={classes.tableContainer}>
-                        <Table aria-label="simple table">
-                          <TableBody>
-                            <TableRow>
-                              <TableCell align="center" classes={{
-                                root: classes.tableCellContainer
-                              }}>{zipCodeFilter()}</TableCell>
-                              <TableCell align="center" classes={{
-                                root: classes.tableCellContainer
-                              }}>{radiusFilter()}</TableCell>
-                              <TableCell align="center" classes={{
-                                root: classes.tableCellContainer
-                              }}>{incomeFilter()}</TableCell>
-                              <TableCell align="center" classes={{
-                                root: classes.tableCellContainer
-                              }}>{accessibleProfileFilter()}</TableCell>
-                              <TableCell align="center" classes={{
-                                root: classes.tableCellContainer
-                              }}>{walkInHoursFilter()}</TableCell>
-                              <TableCell align="center" classes={{
-                                root: classes.tableCellContainer
-                              }}>{programLanguageFilter()}</TableCell>
-                              <TableCell align="center" classes={{
-                                root: classes.tableCellContainer
-                              }}>{adaAccessibleFilter()}</TableCell>
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </Grid>
-                  </Grid>
-                </Grow>
-              </MobileView>
-            </React.Fragment>
-          ) : null
-        }
-      </div>
+                  </Grow>
+                </MobileView>
+              </React.Fragment>
+            ) : null
+          }
+        </div>
+      </Container>
+      <Container classes={{
+        root: classes.resultsCountContainer
+      }}>
+      {
+        <span>{results && results.totalRecords ? `${results.totalRecords} results` : `0 results`}</span>
+      }
       </Container>
       <Container>
         <div className={classes.resultsContainer}>
           {
             <React.Fragment>
-                
                 {
                   results.isSearching ? (
                     <div className={classes.loading}>
                       <CircularProgress className={classes.progress} color="primary" />
                     </div>
-                  ) : results.agencies.length ? (
+                  ) : results.agencies && results.agencies.length ? (
                     <InfiniteScroll
                       pageStart={0}
                       loadMore={loadMoreData}
