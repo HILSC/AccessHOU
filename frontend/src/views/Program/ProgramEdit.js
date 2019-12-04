@@ -44,7 +44,7 @@ export default ({ match }) => {
   const dispatch = useDispatch();
   
   const {
-    params: { slug }
+    params: { slug, agency }
   } = match;
 
   const [formState, setFormState ] = useState({
@@ -62,7 +62,8 @@ export default ({ match }) => {
   useEffect(() => { 
     getProgram({
       property: 'slug',
-      value: slug
+      value: slug,
+      agency: agency
     }).then(result => {
       setFormState(data => ({
         ...data,
@@ -72,7 +73,10 @@ export default ({ match }) => {
     }).catch(() => {
       // Show general error message
     });
-  }, [slug]);
+  }, [
+    slug,
+    agency
+  ]);
 
   const token = useSelector(state => state.user.accessToken);
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
@@ -86,7 +90,8 @@ export default ({ match }) => {
           messageQueue: result.data.model === "queue" && !result.data.program.emergency_mode ? true: false,
           messageAction: USER_ACTIONS.UPDATE,
           message: `Program "${result.data.program.name}" was updated successfully.`,
-          programSlug: result.data.program.slug
+          programSlug: result.data.program.slug,
+          agencyId: result.data.program.agency,
         }));
       }else if (result.data.error){
         setFormState((stateData) => ({
@@ -153,7 +158,7 @@ export default ({ match }) => {
   }
 
   if(goView) {
-    let url = `/program/${formState.programSlug}`
+    let url = `/program/${formState.agencyId}/${formState.programSlug}`
     return <Redirect push to={url} />
   }
   

@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 
 @transaction.atomic
-def process_emergency_off():
+def process_emergency_off(user):
     # Agencies
     agencies = Agency.objects.filter(emergency_mode=True)
     for agency in agencies:
@@ -26,6 +26,7 @@ def process_emergency_off():
         try:
             agency_emergency = AgencyEmergencyQueue.objects.get(related_agency_id=agency.id)
             Agency.custom_update(
+                user=user,
                 agency=agency_emergency,
                 agency_id=agency_emergency.related_agency_id,
                 hilsc_verified=agency_emergency.hilsc_verified,
@@ -44,6 +45,7 @@ def process_emergency_off():
         try:
             program_emergency = ProgramEmergencyQueue.objects.get(related_program_id=program.id)
             Program.custom_update(
+                user=user,
                 program=program_emergency,
                 program_id=program_emergency.related_program_id,
                 emergency_mode=False
@@ -94,7 +96,7 @@ class AppSettingsView(APIView):
 
                     if not app_settings.emergency_mode:
                         # If it is turned off, we have to check for changes to rollback
-                        process_emergency_off()
+                        process_emergency_off(user=request.user)
                 
                     app_settings.emergency_message = request.data.get("emergency_message", None)
                     app_settings.save()

@@ -166,7 +166,7 @@ class ProgramQueueView(APIView):
                 program.save()
 
                 # Create the program in the final table api_programs with emergency_mode equal to True
-                n_program = Program.custom_create(request=request, program=program)
+                n_program = Program.custom_create(user=None, program=program)
 
             return JsonResponse(
                 {
@@ -324,7 +324,7 @@ class ProgramQueueView(APIView):
                 ProgramEmergencyQueue.custom_create(program=related_program)
 
                 # Update the program in the final table api_programs with emergency_mode equal to True
-                Program.custom_update(request=request, program=program, program_id=related_program.id)
+                Program.custom_update(user=None, program=program, program_id=related_program.id)
 
             return JsonResponse(
                 {
@@ -332,7 +332,8 @@ class ProgramQueueView(APIView):
                         "id": related_program.id,
                         "slug": related_program.slug,
                         "name": related_program.name,
-                        "emergency_mode": program.emergency_mode
+                        "emergency_mode": program.emergency_mode,
+                        "agency": related_program.agency.id,
                     },
                     "model": "queue",
                 }
@@ -661,6 +662,7 @@ class ProgramView(APIView):
                             "id": program.id,
                             "slug": program.slug,
                             "name": program.name,
+                            "agency": program.agency.id,
                         },
                         "model": "program",
                     }

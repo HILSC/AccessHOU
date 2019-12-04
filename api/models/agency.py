@@ -96,9 +96,9 @@ class Agency(AgencyBase):
         verbose_name_plural = "Agencies"
         ordering = ["name"]
 
-    def custom_create(request, agency=None, hilsc_verified=False, emergency_mode=True):
+    def custom_create(user, agency=None, hilsc_verified=False, emergency_mode=True):
         if agency:
-            return Agency.objects.create(
+            new_agency = Agency.objects.create(
                 name=agency.name,
                 slug=agency.slug,
                 website=agency.website,
@@ -152,12 +152,19 @@ class Agency(AgencyBase):
 
                 emergency_mode=emergency_mode,
 
-                created_by=request.user
+                created_by=user
             )
 
-    def custom_update(request, agency=None, agency_id=None, hilsc_verified=False, emergency_mode=True):
+            if user:
+                new_agency.created_by = user
+                new_agency.save()
+
+            return new_agency
+
+
+    def custom_update(user, agency=None, agency_id=None, hilsc_verified=False, emergency_mode=True):
         if agency and agency_id:
-            Agency.objects.update_or_create(
+            updated_agency = Agency.objects.update_or_create(
                 id=agency_id,
                 defaults={
                     "name": agency.name,
@@ -212,10 +219,14 @@ class Agency(AgencyBase):
 
                     "emergency_mode": emergency_mode,
 
-                    "updated_by": request.user,
                     "updated_at": datetime.now(),
                 },
             )
+
+            if user:
+                updated_agency.updated_by = user
+                updated_agency.save()
+
 
 class AgencyQueue(AgencyBase):
     action = models.CharField(max_length=50, null=False)

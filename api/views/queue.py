@@ -126,12 +126,14 @@ class QueueAgencyView(APIView):
           if action == "approve":
             if agency_queue.action == UserActions.ADD.value:
               Agency.custom_create(
+                user=request.user,
                 agency=agency_queue,
                 hilsc_verified=request.user.profile.role.HILSC_verified,
                 emergency_mode=False
               )
             elif agency_queue.action == UserActions.UPDATE.value:
               Agency.custom_update(
+                user=request.user,
                 agency=agency_queue,
                 agency_id=agency_queue.related_agency_id,
                 hilsc_verified=request.user.profile.role.HILSC_verified,
@@ -228,11 +230,13 @@ class QueueProgramView(APIView):
           if action == "approve":
             if program_queue.action == UserActions.ADD.value:
               Program.custom_create(
+                user=request.user,
                 program=program_queue,
                 emergency_mode=False
               )
             elif program_queue.action == UserActions.UPDATE.value:
               Program.custom_update(
+                user=request.user,
                 program=program_queue,
                 program_id=program_queue.related_program_id,
                 emergency_mode=False

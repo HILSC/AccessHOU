@@ -43,7 +43,11 @@ export default ({ match }) => {
   const [edit, setEdit] = useState(false);
 
   useEffect(() => {
-    getProgram({property: 'slug', value: slug, agency: agency}).then(result => {
+    getProgram({
+      property: 'slug',
+      value: slug,
+      agency: agency
+    }).then(result => {
       setData(data => ({
         ...data,
         program: result.data.error ? null : result.data,
@@ -69,7 +73,7 @@ export default ({ match }) => {
   }
 
   if(edit) {
-    const url = `/program/edit/${slug}`
+    const url = `/program/edit/${agency}/${slug}`
     return <Redirect push to={url} />
   }
 

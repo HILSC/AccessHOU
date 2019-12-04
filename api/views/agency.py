@@ -1,9 +1,9 @@
-from django.db import transaction
-from django.http import JsonResponse
 from django.core import serializers
 from django.core.paginator import Paginator
-from django.utils.text import slugify
+from django.db import transaction
 from django.forms.models import model_to_dict
+from django.http import JsonResponse
+from django.utils.text import slugify
 
 from rest_framework.views import APIView
 from rest_framework import permissions
@@ -129,11 +129,13 @@ class AgencyQueueView(APIView):
             # Check if in Emergency Mode
             app_settings = AppSettings.objects.first()
             if agency and app_settings and app_settings.emergency_mode:
-                agency.emergency_mode = app_settings.emergency_mode
-                agency.save()
-
                 # Create the agency in the final table api_agencies with emergency_mode equal to True
-                Agency.custom_create(request=request, agency=agency)
+                new_agency = Agency.custom_create(user=None, agency=agency)
+
+                # Update related agency id in agency in queue
+                agency.emergency_mode = app_settings.emergency_mode
+                agency.related_agency = new_agency
+                agency.save()
 
             return JsonResponse(
                 {
@@ -167,12 +169,12 @@ class AgencyQueueView(APIView):
                 Agency.objects.filter(
                     slug=slug
                 ).exclude(
-                    id=related_agency_id
+                    id=related_agency.id
                 ).exists()
                 or AgencyQueue.objects.filter(
                     slug=slug
                 ).exclude(
-                    related_agency=related_agency
+                    related_agency_id=related_agency.id
                 ).exists()
             ):
                 return JsonResponse(
@@ -198,66 +200,136 @@ class AgencyQueueView(APIView):
                     zip_code=zip_code,
                 )
 
-            agency = AgencyQueue.objects.create(
-                name=agency_name,
-                slug=slug,
-                website=request.data.get("website", None),
-                phone=request.data.get("phone", None),
-                
-                # Address
-                street=street,
-                city=city,
-                state=state,
-                zip_code=zip_code,
-                geocode=geocode,
-
-                next_steps=request.data.get("next_steps", None),
-                payment_options=request.data.get("payment_options", None),
-
-                # Eligibility
-                age_groups=request.data.get("age_groups", None),
-                zip_codes=request.data.get("zip_codes", None),
-                gender=request.data.get("gender", None),
-                immigration_statuses=request.data.get("immigration_statuses", None),
-
-                # Requirements
-                accepted_ids_current=request.data.get("accepted_ids_current", None),
-                accepted_ids_expired=request.data.get("accepted_ids_expired", None),
-                notes=request.data.get("notes", None),
-                proof_of_address=request.data.get("proof_of_address", None),
-
-                # Schedule
-                schedule=request.data.get("schedules", None),
-                schedule_notes=request.data.get("schedule_notes", None),
-                holiday_schedule=request.data.get("holiday_schedule", None),
-
-                # Languages
-                languages=request.data.get("languages", None),
-                documents_languages=request.data.get("documents_languages", None),
-                website_languages=request.data.get("website_languages", None),
-                frontline_staff_languages=request.data.get(
-                    "frontline_staff_languages", None
-                ),
-                interpretations_available=request.data.get(
-                    "interpretations_available", None
-                ),
-
-                # Services
-                assistance_with_forms=request.data.get(
-                    "assistance_with_forms", None
-                ),
-                visual_aids=request.data.get("visual_aids", None),
-                ada_accessible=request.data.get("ada_accessible", None),
-
-                # Policies
-                response_requests=request.data.get("response_requests", None),
-                cultural_training=request.data.get("cultural_training", None),
-
-                requested_by_name=request.data.get("requested_by_name", None),
-                requested_by_email=request.data.get("requested_by_email", None),
+            # If related agency has emergency mode = True we have to check if there is already
+            # a row in queue for that agency, in that case we just need to update the actual queue
+            existing_new_queue = AgencyQueue.objects.get(
                 related_agency=related_agency,
-                action=UserActions.UPDATE.value,
+                action=UserActions.ADD.value,
             )
+
+            if related_agency.emergency_mode and existing_new_queue:
+                agency, created = AgencyQueue.objects.update_or_create(
+                    id=existing_new_queue.id,
+                    defaults={
+                        "name":agency_name,
+                        "slug":slug,
+                        "website":request.data.get("website", None),
+                        "phone":request.data.get("phone", None),
+                        
+                        # Address
+                        "street":street,
+                        "city":city,
+                        "state":state,
+                        "zip_code":zip_code,
+                        "geocode":geocode,
+
+                        "next_steps":request.data.get("next_steps", None),
+                        "payment_options":request.data.get("payment_options", None),
+
+                        # Eligibility
+                        "age_groups":request.data.get("age_groups", None),
+                        "zip_codes":request.data.get("zip_codes", None),
+                        "gender":request.data.get("gender", None),
+                        "immigration_statuses":request.data.get("immigration_statuses", None),
+
+                        # Requirements
+                        "accepted_ids_current":request.data.get("accepted_ids_current", None),
+                        "accepted_ids_expired":request.data.get("accepted_ids_expired", None),
+                        "notes":request.data.get("notes", None),
+                        "proof_of_address":request.data.get("proof_of_address", None),
+
+                        # Schedule
+                        "schedule":request.data.get("schedules", None),
+                        "schedule_notes":request.data.get("schedule_notes", None),
+                        "holiday_schedule":request.data.get("holiday_schedule", None),
+
+                        # Languages
+                        "languages":request.data.get("languages", None),
+                        "documents_languages":request.data.get("documents_languages", None),
+                        "website_languages":request.data.get("website_languages", None),
+                        "frontline_staff_languages":request.data.get(
+                            "frontline_staff_languages", None
+                        ),
+                        "interpretations_available":request.data.get(
+                            "interpretations_available", None
+                        ),
+
+                        # Services
+                        "assistance_with_forms":request.data.get(
+                            "assistance_with_forms", None
+                        ),
+                        "visual_aids":request.data.get("visual_aids", None),
+                        "ada_accessible":request.data.get("ada_accessible", None),
+
+                        # Policies
+                        "response_requests":request.data.get("response_requests", None),
+                        "cultural_training":request.data.get("cultural_training", None),
+
+                        "requested_by_name":request.data.get("requested_by_name", None),
+                        "requested_by_email":request.data.get("requested_by_email", None),
+                    },
+                )
+            else:
+                agency = AgencyQueue.objects.create(
+                    name=agency_name,
+                    slug=slug,
+                    website=request.data.get("website", None),
+                    phone=request.data.get("phone", None),
+                    
+                    # Address
+                    street=street,
+                    city=city,
+                    state=state,
+                    zip_code=zip_code,
+                    geocode=geocode,
+
+                    next_steps=request.data.get("next_steps", None),
+                    payment_options=request.data.get("payment_options", None),
+
+                    # Eligibility
+                    age_groups=request.data.get("age_groups", None),
+                    zip_codes=request.data.get("zip_codes", None),
+                    gender=request.data.get("gender", None),
+                    immigration_statuses=request.data.get("immigration_statuses", None),
+
+                    # Requirements
+                    accepted_ids_current=request.data.get("accepted_ids_current", None),
+                    accepted_ids_expired=request.data.get("accepted_ids_expired", None),
+                    notes=request.data.get("notes", None),
+                    proof_of_address=request.data.get("proof_of_address", None),
+
+                    # Schedule
+                    schedule=request.data.get("schedules", None),
+                    schedule_notes=request.data.get("schedule_notes", None),
+                    holiday_schedule=request.data.get("holiday_schedule", None),
+
+                    # Languages
+                    languages=request.data.get("languages", None),
+                    documents_languages=request.data.get("documents_languages", None),
+                    website_languages=request.data.get("website_languages", None),
+                    frontline_staff_languages=request.data.get(
+                        "frontline_staff_languages", None
+                    ),
+                    interpretations_available=request.data.get(
+                        "interpretations_available", None
+                    ),
+
+                    # Services
+                    assistance_with_forms=request.data.get(
+                        "assistance_with_forms", None
+                    ),
+                    visual_aids=request.data.get("visual_aids", None),
+                    ada_accessible=request.data.get("ada_accessible", None),
+
+                    # Policies
+                    response_requests=request.data.get("response_requests", None),
+                    cultural_training=request.data.get("cultural_training", None),
+
+                    requested_by_name=request.data.get("requested_by_name", None),
+                    requested_by_email=request.data.get("requested_by_email", None),
+                    related_agency=related_agency,
+                    action=UserActions.UPDATE.value,
+                )
 
             # Check if in Emergency Mode
             app_settings = AppSettings.objects.first()
@@ -265,11 +337,15 @@ class AgencyQueueView(APIView):
                 agency.emergency_mode = app_settings.emergency_mode
                 agency.save()
 
-                # Save original agency in temporary emergency backup table
-                AgencyEmergencyQueue.custom_create(agency=related_agency)
+                # Check if the agency updated is just a new agency created in emergency mode
+                # If it is a new agency created during emergency mode, we don't want to 
+                # write the update in the AgencyEmergencyQueue
+                if not related_agency.emergency_mode:
+                    # Save original agency in temporary emergency backup table
+                    AgencyEmergencyQueue.custom_create(agency=related_agency)
 
                 # Update the agency in the final table api_agencies with emergency_mode equal to True
-                Agency.custom_update(request=request, agency=agency, agency_id=related_agency.id)
+                Agency.custom_update(user=None, agency=agency, agency_id=related_agency.id)
 
             return JsonResponse(
                 {

@@ -109,9 +109,9 @@ class Program(ProgramBase):
         verbose_name_plural = "Programs"
         ordering = ["agency", "name"]
 
-    def custom_create(request, program=None, emergency_mode=True):
+    def custom_create(user, program=None, emergency_mode=True):
         if program:
-            return Program.objects.create(
+            new_program = Program.objects.create(
                 # General
                 name=program.name,
                 slug=program.slug,
@@ -169,12 +169,17 @@ class Program(ProgramBase):
 
                 agency=program.agency,
                 emergency_mode=emergency_mode,
-                created_by=request.user,
             )
 
-    def custom_update(request, program=None, program_id=None, emergency_mode=True):
+            if user:
+                new_program.created_by = user
+                new_program.save()
+
+            return new_program
+
+    def custom_update(user, program=None, program_id=None, emergency_mode=True):
         if program and program_id:
-            Program.objects.update_or_create(
+            updated_program = Program.objects.update_or_create(
                 id=program_id,
                 defaults={
                     # General
@@ -233,10 +238,14 @@ class Program(ProgramBase):
                     "immigration_accessibility_profile":program.immigration_accessibility_profile,
 
                     "emergency_mode": emergency_mode,
-                    "updated_by": request.user,
                     "updated_at": datetime.now(),
                 },
             )
+
+            if user:
+                updated_program.updated_by = user
+                updated_program.save()
+
 
 
 class ProgramQueue(ProgramBase):

@@ -80,7 +80,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
           }
           {
             // Service Types
-            queueProgramData && queueProgramData.service_types !== program.service_types ? (
+            queueProgramData && JSON.stringify(queueProgramData.service_types) !== JSON.stringify(program.service_types) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -90,7 +90,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                 />
               </Grid>
             ) :
-            showMissingData || (program && program.service_types) ? (
+            showMissingData || (program && program.service_types && program.service_types.length) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -354,12 +354,12 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
           }
           {
             // Eligibility section
-            (queueProgramData && queueProgramData.age_groups) ||
-            (queueProgramData && queueProgramData.immigrant_statuses) ||
+            (queueProgramData && queueProgramData.age_groups && queueProgramData.age_groups.length) ||
+            (queueProgramData && queueProgramData.immigrant_statuses && queueProgramData.immigrant_statuses.length) ||
             (queueProgramData && queueProgramData.zip_codes) ||
             (queueProgramData && queueProgramData.incomes_percent_poverty_level) ||
-            showMissingData || (program && program.age_groups) ||
-            (program && program.immigrant_statuses) || (program && program.zip_codes) ||
+            showMissingData || (program && program.age_groups && program.age_groups.length) ||
+            (program && program.immigrant_statuses && program.immigrant_statuses.length) || (program && program.zip_codes) ||
             (program && program.incomes_percent_poverty_level) ? (
               <Grid item xs={12} sm={12} md={12}>
                 <Label text="Eligibility" variant="h5" color="primary" />
@@ -368,7 +368,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
           }
           {
             // Age groups
-            queueProgramData && queueProgramData.age_groups !== program.age_groups ? (
+            queueProgramData && JSON.stringify(queueProgramData.age_groups) !== JSON.stringify(program.age_groups) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -378,7 +378,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                 />
               </Grid>
             ) :
-            showMissingData || (program && program.age_groups) ? (
+            showMissingData || (program && program.age_groups && program.age_groups.length) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -390,7 +390,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
           }
           {
             // Immigrant status(es)
-            queueProgramData && queueProgramData.immigrant_statuses !== program.immigrant_statuses ? (
+            queueProgramData && JSON.stringify(queueProgramData.immigrant_statuses) !== JSON.stringify(program.immigrant_statuses) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -400,7 +400,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                 />
               </Grid>
             ) :
-            showMissingData || (program && program.immigrant_statuses) ? (
+            showMissingData || (program && program.immigrant_statuses && program.immigrant_statuses.length) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -663,12 +663,12 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
             // services section
             (queueProgramData && queueProgramData.service_same_day_intake) ||
             (queueProgramData && queueProgramData.intake_notes) ||
-            (queueProgramData && queueProgramData.crisis) ||
+            (queueProgramData && queueProgramData.crisis && queueProgramData.crisis.length) ||
             (queueProgramData && queueProgramData.disaster_recovery) ||
             (queueProgramData && queueProgramData.transportation) ||
             (queueProgramData && queueProgramData.client_consult) ||
             showMissingData || (program && program.service_same_day_intake) ||
-            (program && program.intake_notes) || (program && program.crisis) ||
+            (program && program.intake_notes) || (program && program.crisis && program.crisis.length) ||
             (program && program.disaster_recovery) || (program && program.transportation) ||
             (program && program.client_consult) ? (
               <Grid item xs={12} sm={12} md={12}>
@@ -718,7 +718,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
           }
           {
             // Crisis
-            queueProgramData && queueProgramData.crisis !== program.crisis ? (
+            queueProgramData && JSON.stringify(queueProgramData.crisis) !== JSON.stringify(program.crisis) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}

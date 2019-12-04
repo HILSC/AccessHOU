@@ -259,13 +259,13 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           }
           {
             // Eligibility section
-            (queueAgencyData && queueAgencyData.age_groups) ||
+            (queueAgencyData && queueAgencyData.age_groups && queueAgencyData.age_groups.length) ||
             (queueAgencyData && queueAgencyData.gender) ||
             (queueAgencyData && queueAgencyData.zip_codes) ||
-            (queueAgencyData && queueAgencyData.immigration_statuses) ||
-            showMissingData || (agency && agency.age_groups) ||
+            (queueAgencyData && queueAgencyData.immigration_statuses && queueAgencyData.immigration_statuses.length) ||
+            showMissingData || (agency && agency.age_groups && agency.age_groups.length) ||
             (agency && agency.gender) || (agency && agency.zip_codes) ||
-            (agency && agency.immigration_statuses) ? (
+            (agency && agency.immigration_statuses && agency.immigration_statuses.length) ? (
               <Grid item xs={12} sm={12} md={12}>
                 <Label text="Eligibility" variant="h5" color="primary" />
               </Grid>
@@ -273,7 +273,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           }
           {
             // Age Groups
-            queueAgencyData && queueAgencyData.age_groups !== agency.age_groups ? (
+            queueAgencyData && JSON.stringify(queueAgencyData.age_groups) !== JSON.stringify(agency.age_groups) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -283,7 +283,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                 />
               </Grid>
             ) :
-            showMissingData || (agency && agency.age_groups) ? (
+            showMissingData || (agency && agency.age_groups && agency.age_groups.length) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -335,7 +335,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           }
           {
             // Immigration Statu(es)
-            queueAgencyData && queueAgencyData.immigration_statuses !== agency.immigration_statuses ? (
+            queueAgencyData && JSON.stringify(queueAgencyData.immigration_statuses) !== JSON.stringify(agency.immigration_statuses) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -345,7 +345,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                 />
               </Grid>
             ) :
-            showMissingData || (agency && agency.immigration_statuses) ? (
+            showMissingData || (agency && agency.immigration_statuses && agency.immigration_statuses.length) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -357,12 +357,12 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           }
           {
             // Requirements section
-            (queueAgencyData && queueAgencyData.accepted_ids_current) ||
-            (queueAgencyData && queueAgencyData.accepted_ids_expired) ||
+            (queueAgencyData && queueAgencyData.accepted_ids_current && queueAgencyData.accepted_ids_current.length) ||
+            (queueAgencyData && queueAgencyData.accepted_ids_expired && queueAgencyData.accepted_ids_expired.length) ||
             (queueAgencyData && queueAgencyData.notes) ||
             (queueAgencyData && queueAgencyData.proof_of_address) ||
-            showMissingData || (agency && agency.accepted_ids_current) ||
-            (agency && agency.accepted_ids_expired) || (agency && agency.notes) ||
+            showMissingData || (agency && agency.accepted_ids_current && agency.accepted_ids_current.length) ||
+            (agency && agency.accepted_ids_expired && agency.accepted_ids_expired.length) || (agency && agency.notes) ||
             (agency && agency.proof_of_address) ? (
               <Grid item xs={12} sm={12} md={12}>
                 <Label text="Requirements" variant="h5" color="primary" />
@@ -371,7 +371,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           }
           {
             // Accepted IDS current
-            queueAgencyData && queueAgencyData.accepted_ids_current !== agency.accepted_ids_current ? (
+            queueAgencyData && JSON.stringify(queueAgencyData.accepted_ids_current) !== JSON.stringify(agency.accepted_ids_current) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -381,7 +381,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                 />
               </Grid>
             ) :
-            showMissingData || (agency && agency.accepted_ids_current) ? (
+            showMissingData || (agency && agency.accepted_ids_current && agency.accepted_ids_current.length) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -393,7 +393,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           }
           {
             // Accepted IDS expired
-            queueAgencyData && queueAgencyData.accepted_ids_expired !== agency.accepted_ids_expired ? (
+            queueAgencyData && JSON.stringify(queueAgencyData.accepted_ids_expired) !== JSON.stringify(agency.accepted_ids_expired) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -403,7 +403,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                 />
               </Grid>
             ) :
-            showMissingData || (agency && agency.accepted_ids_expired) ? (
+            showMissingData || (agency && agency.accepted_ids_expired && agency.accepted_ids_expired.length) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -523,14 +523,16 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           }
           {
             // Languages section
-            (queueAgencyData && queueAgencyData.languages) ||
-            (queueAgencyData && queueAgencyData.documents_languages) ||
-            (queueAgencyData && queueAgencyData.website_languages) ||
-            (queueAgencyData && queueAgencyData.frontline_staff_languages) ||
-            (queueAgencyData && queueAgencyData.interpretations_available) ||
-            showMissingData || (agency && agency.languages) ||
-            (agency && agency.documents_languages) || (agency && agency.website_languages) ||
-            (agency && agency.frontline_staff_languages) || (agency && agency.interpretations_available) ? (
+            (queueAgencyData && queueAgencyData.languages && queueAgencyData.languages.length) ||
+            (queueAgencyData && queueAgencyData.documents_languages && queueAgencyData.documents_languages.length) ||
+            (queueAgencyData && queueAgencyData.website_languages && queueAgencyData.website_languages.length) ||
+            (queueAgencyData && queueAgencyData.frontline_staff_languages && queueAgencyData.frontline_staff_languages.length) ||
+            (queueAgencyData && queueAgencyData.interpretations_available && queueAgencyData.interpretations_available.length) ||
+            showMissingData || (agency && agency.languages && agency.languages.length) ||
+            (agency && agency.documents_languages && agency.documents_languages.length) ||
+            (agency && agency.website_languages && agency.website_languages.length) ||
+            (agency && agency.frontline_staff_languages && agency.frontline_staff_languages.length) ||
+            (agency && agency.interpretations_available && agency.interpretations_available.length) ? (
               <Grid item xs={12} sm={12} md={12}>
                 <Label text="Languages" variant="h5" color="primary" />
               </Grid>
@@ -538,7 +540,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           }
           {
             // Agency languages
-            queueAgencyData && queueAgencyData.languages !== agency.languages ? (
+            queueAgencyData && JSON.stringify(queueAgencyData.languages) !== JSON.stringify(agency.languages) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -548,7 +550,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                 />
               </Grid>
             ) :
-            showMissingData || (agency && agency.languages) ? (
+            showMissingData || (agency && agency.languages && agency.languages.length) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -560,7 +562,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           }
           {
             // Documents languages
-            queueAgencyData && queueAgencyData.documents_languages !== agency.documents_languages ? (
+            queueAgencyData && JSON.stringify(queueAgencyData.documents_languages) !== JSON.stringify(agency.documents_languages) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -570,7 +572,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                 />
               </Grid>
             ) :
-            showMissingData || (agency && agency.documents_languages) ? (
+            showMissingData || (agency && agency.documents_languages && agency.documents_languages.length) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -582,7 +584,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           }
           {
             // Website languages
-            queueAgencyData && queueAgencyData.website_languages !== agency.website_languages ? (
+            queueAgencyData && JSON.stringify(queueAgencyData.website_languages) !== JSON.stringify(agency.website_languages) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -592,7 +594,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                 />
               </Grid>
             ) :
-            showMissingData || (agency && agency.website_languages) ? (
+            showMissingData || (agency && agency.website_languages && agency.website_languages.length) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -604,7 +606,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           }
           {
             // Frontline staff languages
-            queueAgencyData && queueAgencyData.frontline_staff_languages !== agency.frontline_staff_languages ? (
+            queueAgencyData && JSON.stringify(queueAgencyData.frontline_staff_languages) !== JSON.stringify(agency.frontline_staff_languages) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -614,7 +616,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                 />
               </Grid>
             ) :
-            showMissingData || (agency && agency.frontline_staff_languages) ? (
+            showMissingData || (agency && agency.frontline_staff_languages && agency.frontline_staff_languages.length) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -626,7 +628,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           }
           {
             // Interprestation available
-            queueAgencyData && queueAgencyData.interpretations_available !== agency.interpretations_available ? (
+            queueAgencyData && JSON.stringify(queueAgencyData.interpretations_available) !== JSON.stringify(agency.interpretations_available) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
@@ -636,7 +638,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                 />
               </Grid>
             ) :
-            showMissingData || (agency && agency.interpretations_available) ? (
+            showMissingData || (agency && agency.interpretations_available && agency.interpretations_available.length) ? (
               <Grid item xs={12} sm={12} md={12}>
                 <DataLabel
                   isAList={true}
