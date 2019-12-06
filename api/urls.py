@@ -9,14 +9,12 @@ from api.views.agency import AgencyView
 from api.views.agency import AgencyListView
 
 from api.views.agency import AgencyQueueView
-from api.views.agency import AgencyQueueListView
 from api.views.agency import AgencyQueueDeleteView
 
 from api.views.program import ProgramView
 from api.views.program import ProgramListView
 
 from api.views.program import ProgramQueueView
-from api.views.program import ProgramQueueListView
 from api.views.program import ProgramQueueDeleteView
 
 from api.views.index import SearchAppView
@@ -42,7 +40,6 @@ urlpatterns = [
     
     path('agency/queue/', AgencyQueueView.as_view()),
     path('agency/queue/delete', AgencyQueueDeleteView.as_view()),
-    path('agencies/queue/', AgencyQueueListView.as_view()),
 
     path('program/', ProgramView.as_view()),
     path('program/<str:property_name>/<str:property_value>/<int:agency_id>', ProgramView.as_view()),
@@ -51,7 +48,6 @@ urlpatterns = [
 
     path('program/queue/', ProgramQueueView.as_view()),
     path('program/queue/delete', ProgramQueueDeleteView.as_view()),
-    path('programs/queue/', ProgramQueueListView.as_view()),
 
     path('search/', SearchAppView.as_view()),
 

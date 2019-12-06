@@ -1,17 +1,19 @@
-from django.http import JsonResponse
+import logging
+
 from django.db import transaction
+from django.http import JsonResponse
 
 from rest_framework.views import APIView
+
+from api.models.action_log import ActionLog
+
+from api.models.app_settings import AppSettings
 
 from api.models.agency import Agency
 from api.models.agency import AgencyEmergencyQueue
 
 from api.models.program import Program
 from api.models.program import ProgramEmergencyQueue
-
-from api.models.app_settings import AppSettings
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -102,6 +104,15 @@ class AppSettingsView(APIView):
                     app_settings.save()
                 else:
                     app_settings = AppSettings.objects.create(emergency_mode=True)
+
+                # Log action
+                ActionLog.objects.create(
+                    info=app_settings.emergency_mode,
+                    additional_info=["{}".format(app_settings.emergency_message)],
+                    action="emergency mode",
+                    model="settings",
+                    created_by=request.user
+                )
 
                 return JsonResponse(
                     {

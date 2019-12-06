@@ -139,7 +139,13 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }
   }
 
   const handleOpenDialog = () => {
-    setDialogOpen(true);
+    if(isAuthenticated) {
+      setDialogOpen(true);
+    }else{
+      if(isFormValid()){
+        setDialogOpen(true);
+      }
+    }
   }
 
   const handleDialogClose = () => {

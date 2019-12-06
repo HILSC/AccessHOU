@@ -1,15 +1,19 @@
-from django.db import transaction
-from django.http import JsonResponse
-from django.db import models
+import logging
+import datetime
+import json
+
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
+from django.db import transaction
+from django.db import models
+from django.http import JsonResponse
 
+from rest_framework import permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
-from rest_framework import permissions
 from rest_framework.views import status
 from rest_framework.response import Response
 
@@ -17,10 +21,6 @@ from api.models.user import Role
 from api.models.user import Profile
 
 from api.utils import randomStringGenerator
-
-import logging
-import datetime
-import json
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,11 @@ class UserAuthView(APIView):
             email = request.data.get("email", None)
             password = request.data.get("password", None)
             if not email or not password:
-                return JsonResponse({"error": "Email and password are required.",})
+                return JsonResponse(
+                    {
+                        "message": "Email and password are required."
+                    }, status=500
+                )
 
             user_obj = User.objects.get(email=email)
             user = authenticate(request, username=user_obj.username, password=password)
@@ -48,30 +52,37 @@ class UserAuthView(APIView):
                 return JsonResponse(
                     {
                         "email": user.email,
-                        "role_id": user.profile.role.id,
-                        "role_name": user.profile.role.name,
                         "access_token": access_token,
                         "refresh_token": refresh_token,
+                        "role": {
+                            "id": user.profile.role.id,
+                            "name": user.profile.role.name,
+                            "approve_queue": user.profile.role.approve_queue,
+                            "skip_queue": user.profile.role.skip_queue,
+                            "advocacy_reports": user.profile.role.add_advocacy_reports,
+                        }
                     }
                 )
             return Response(
-                {"message": "Invalid credentials."}, status=status.HTTP_401_UNAUTHORIZED
+                {
+                    "message": "Invalid credentials."
+                }, status=status.HTTP_401_UNAUTHORIZED
             )
         except ObjectDoesNotExist:
             logger.error("User with {} does not exist.".format(email))
             return JsonResponse(
-                {"error": "Invalid credentials.",},
+                {
+                    "message": "Invalid credentials."
+                },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
 
 class UserView(APIView):
-    permission_classes = [IsAuthenticated]
-
     @transaction.atomic
     def put(self, request):
         try:
-            if request.user:
+            if request.user and request.user.profile.is_admin:
                 action = request.data.get("action", None)
                 user_id = request.data.get("id", None)
                 user = User.objects.get(id=user_id)
@@ -80,7 +91,6 @@ class UserView(APIView):
                     user.is_active = not user.is_active
                     user.save()
                 else:
-                    # if email is different validate is unique
                     email = request.data.get("email", None)
 
                     if email != user.email:
@@ -92,7 +102,7 @@ class UserView(APIView):
                                     "message": "The email {} is already in use.".format(email)
                                 })
                         except User.DoesNotExist:
-                            logger.info("Emil is unique")
+                            logger.info("Email is unique")
 
                     role_id = request.data.get("role_id", None)
                     role = user.profile.role
@@ -124,16 +134,14 @@ class UserView(APIView):
             logger.error("User couldn't be updated.")
             return JsonResponse(
                 {
-                    "error": True,
                     "message": "User cannot be updated."
-                }
+                }, status=500
             )
-
 
     @transaction.atomic
     def post(self, request):
         try:
-            if request.user:
+            if request.user and request.user.profile.is_admin:
                 role = None
                 role_id = request.data.get("role_id", None)
                 if role_id:
@@ -175,19 +183,16 @@ class UserView(APIView):
             logger.error("User couldn't be created.")
             return JsonResponse(
                 {
-                    "error": True,
                     "message": "User cannot be created."
-                }
+                }, status=500
             )
 
 
 class UserListView(APIView):
-    permission_classes = [IsAuthenticated]
-
     def get(self, request):
         users = None
         try:
-            if request.user:
+            if request.user and request.user.profile.is_admin:
                 page = request.GET.get("page", 1)
                 search = request.GET.get("search", None)
                 
@@ -204,7 +209,7 @@ class UserListView(APIView):
                 users = paginator.get_page(page)
 
                 formatted_users = []
-                roles_json = json.dumps([{'id': ob.id, 'name': ob.name, 'description': ob.description } for ob in Role.objects.all()])
+                roles_json = json.dumps([{'id': ob.id, 'name': ob.name} for ob in Role.objects.all()])
                 if users.object_list:
                     for user in users.object_list:
                         last_login = None
@@ -219,9 +224,11 @@ class UserListView(APIView):
                                 "last_name": user.last_name,
                                 "last_login": last_login,
                                 "agency": user.profile.agency,
-                                "role_name": user.profile.role.name,
-                                "role_id": user.profile.role.id,
                                 "is_active": user.is_active,
+                                "role": {
+                                    "id": user.profile.role.id,
+                                    "name": user.profile.role.name
+                                }
                                 
                             }
                         )
@@ -243,7 +250,6 @@ class UserListView(APIView):
             logger.error("User does not exists.")
             return JsonResponse(
                 {
-                    "error": True,
                     "message": "Error while trying to get the list of users.",
                 }, status=500
             )
@@ -269,7 +275,6 @@ class UserProfileView(APIView):
             logger.error("Error while getting user info by id")
             return JsonResponse(
                 {
-                    "error": True,
                     "message": "Error getting user info.",
                 }, status=500
             )
@@ -284,8 +289,7 @@ class UserProfileView(APIView):
                     {
                         "error": True,
                         "message": "Email [{}] is already in use.".format(email),
-                    },
-                    status=200
+                    }
                 )
 
                 user = request.user
@@ -316,9 +320,7 @@ class UserProfileView(APIView):
         except Exception as e:
             return JsonResponse(
                 {
-                    "error": True,
                     "message": "Error while trying to update profile, Try again!",
-                },
-                status=200
+                }, status=500
             )
 

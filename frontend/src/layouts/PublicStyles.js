@@ -29,5 +29,14 @@ export default (theme) => ({
   signInButton: {
     minWidth: 80,
     marginRight: 5
-  }
+  },
+  mobileFooter: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+  },
+  footerMobileP: {
+    textAlign: 'center'
+  },
 });

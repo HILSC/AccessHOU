@@ -118,6 +118,7 @@ export default ({ match }) => {
           agencies: [],
           agency:null,
           programSlug: result.data.program.slug,
+          agencyId: result.data.program.agency,
           messageType: 'success',
           messageQueue: result.data.model === "queue" && !result.data.program.emergency_mode ? true: false,
           message: `Program "${result.data.program.name}" was created successfully under agency "${stateData.agency.name}".`
@@ -152,7 +153,7 @@ export default ({ match }) => {
   }
 
   if(goView) {
-    let url = `/program/${data.programSlug}`
+    let url = `/program/${data.agencyId}/${data.programSlug}`
     return <Redirect push to={url} />
   }
 

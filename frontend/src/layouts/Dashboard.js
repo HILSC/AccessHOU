@@ -118,16 +118,20 @@ export default ({ children }) => {
               <ListItemText primary="Editor" />
             </ListItem>
           </NavLink>
-          <NavLink to="/private/queue" className={classes.customLink}>
-            <ListItem button>
-              <ListItemIcon>
-                <QueueIcon />
-              </ListItemIcon>
-              <ListItemText primary="Queue" />
-            </ListItem>
-          </NavLink>
           {
-            loggedUser.role === 'Admin' ? (
+            loggedUser.approveQueue ? (
+              <NavLink to="/private/queue" className={classes.customLink}>
+                <ListItem button>
+                  <ListItemIcon>
+                    <QueueIcon />
+                  </ListItemIcon>
+                  <ListItemText primary="Queue" />
+                </ListItem>
+              </NavLink>
+            ) : null
+          }
+          {
+            loggedUser.roleId === 1 ? (
               <React.Fragment>
                 <NavLink to="/private/users" className={classes.customLink}>
                   <ListItem button>

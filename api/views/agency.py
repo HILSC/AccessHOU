@@ -1,36 +1,34 @@
+import logging
+import json
+import re
+
 from django.core import serializers
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
 from django.utils.text import slugify
+from django.utils.timezone import now
 
 from rest_framework.views import APIView
-from rest_framework import permissions
 
+from api.models.action_log import ActionLog
 from api.models.agency import Agency
 from api.models.agency import AgencyQueue
 from api.models.agency import AgencyEmergencyQueue
-from api.models.action_log import ActionLog
-from api.models.user import Role
 from api.models.app_settings import AppSettings
-
 from api.models.program import Program
+from api.models.user import Role
+
 from api.utils import getGeocodingByAddress
 from api.utils import getMapURL
 from api.utils import UserActions
-from api.models.user import Role
 
-import logging
-import json
-import re
 
 logger = logging.getLogger(__name__)
 
 
 class AgencyQueueView(APIView):
-    permission_classes = (permissions.AllowAny,)
-
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         try:
@@ -46,8 +44,7 @@ class AgencyQueueView(APIView):
                     {
                         "error": True,
                         "message": "An Agency with that name already exists.",
-                    },
-                    status=200,
+                    }
                 )
 
             # Address
@@ -124,6 +121,8 @@ class AgencyQueueView(APIView):
                 requested_by_name=request.data.get("requested_by_name", None),
                 requested_by_email=request.data.get("requested_by_email", None),
                 action=UserActions.ADD.value,
+
+                created_at=now
             )
 
             # Check if in Emergency Mode
@@ -151,7 +150,9 @@ class AgencyQueueView(APIView):
         except Exception:
             logger.error("Error requesting to create a new agency")
             return JsonResponse(
-                {"message": "Request couldn't be completed. Please try again!",}, status=500
+                {
+                    "message": "Request couldn't be completed. Please try again!"
+                }, status=500
             )
 
     @transaction.atomic
@@ -181,7 +182,7 @@ class AgencyQueueView(APIView):
                     {
                         "error": True,
                         "message": "An Agency with that name already exists."
-                    }, status=200
+                    }
                 )
 
             # Address
@@ -202,10 +203,13 @@ class AgencyQueueView(APIView):
 
             # If related agency has emergency mode = True we have to check if there is already
             # a row in queue for that agency, in that case we just need to update the actual queue
-            existing_new_queue = AgencyQueue.objects.get(
-                related_agency=related_agency,
-                action=UserActions.ADD.value,
-            )
+            try:
+                existing_new_queue = AgencyQueue.objects.get(
+                    related_agency=related_agency,
+                    action=UserActions.ADD.value,
+                )
+            except AgencyQueue.DoesNotExist:
+                existing_new_queue = None
 
             if related_agency.emergency_mode and existing_new_queue:
                 agency, created = AgencyQueue.objects.update_or_create(
@@ -267,6 +271,8 @@ class AgencyQueueView(APIView):
 
                         "requested_by_name":request.data.get("requested_by_name", None),
                         "requested_by_email":request.data.get("requested_by_email", None),
+
+                        "updated_at": now
                     },
                 )
             else:
@@ -329,6 +335,8 @@ class AgencyQueueView(APIView):
                     requested_by_email=request.data.get("requested_by_email", None),
                     related_agency=related_agency,
                     action=UserActions.UPDATE.value,
+
+                    updated_at=now
                 )
 
             # Check if in Emergency Mode
@@ -361,13 +369,13 @@ class AgencyQueueView(APIView):
         except Exception:
             logger.error("Error requesting to update agency {}".format(related_agency.name))
             return JsonResponse(
-                {"message": "Request couldn't be completed. Please try again!",}, status=500
+                {
+                    "message": "Request couldn't be completed. Please try again!"
+                }, status=500
             )
 
 
 class AgencyQueueDeleteView(APIView):
-    permission_classes = (permissions.AllowAny,)
-
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         try:
@@ -396,20 +404,13 @@ class AgencyQueueDeleteView(APIView):
         except Exception:
             logger.error("Error requesting to delete an agency")
             return JsonResponse(
-                {"message": "Request couldn't be completed. Please try again!",}, status=500
+                {
+                    "message": "Request couldn't be completed. Please try again!"
+                }, status=500
             )
 
 
-class AgencyQueueListView(APIView):
-    permission_classes = (permissions.AllowAny,)
-
-    def get(self, request):
-        pass
-
-
 class AgencyView(APIView):
-    permission_classes = (permissions.AllowAny,)
-
     def get(self, request, property_name, property_value):
         try:
             kw = {property_name: property_value}
@@ -431,11 +432,10 @@ class AgencyView(APIView):
         except (Agency.DoesNotExist, Program.DoesNotExist):
             return JsonResponse(
                 {
-                    "error": True,
                     "message": "Agency with {} {} doesn't exists.".format(
                         property_name, property_value
                     ),
-                }
+                }, status=500
             )
 
     @transaction.atomic
@@ -511,6 +511,7 @@ class AgencyView(APIView):
                     cultural_training=request.data.get("cultural_training", None),
                     hilsc_verified=request.user.profile.role.HILSC_verified,
                     created_by=request.user,
+                    created_at=now,
                 )
 
                 return JsonResponse(
@@ -528,7 +529,9 @@ class AgencyView(APIView):
         except Exception as e:
             logger.error("Error creating a new agency: {}".format(str(e)))
             return JsonResponse(
-                {"error": "Agency cannot be created. Please try again!",}, status=500
+                {
+                    "message": "Agency cannot be created. Please try again!"
+                }, status=500
             )
 
     @transaction.atomic
@@ -553,8 +556,7 @@ class AgencyView(APIView):
                         {
                             "error": True,
                             "message": "An Agency with that name already exists.",
-                        },
-                        status=200,
+                        }
                     )
 
                 street = request.data.get("street", None)
@@ -629,6 +631,7 @@ class AgencyView(APIView):
                         ),
                         "hilsc_verified": request.user.profile.role.HILSC_verified,
                         "updated_by": request.user,
+                        "updated_at": now
                     },
                 )
                 return JsonResponse(
@@ -646,7 +649,9 @@ class AgencyView(APIView):
         except Exception as e:
             logger.error("Error updating agency: {}".format(str(e)))
             return JsonResponse(
-                {"message": "Agency cannot be updated. Please try again!",}, status=500
+                {
+                    "message": "Agency cannot be updated. Please try again!"
+                }, status=500
             )
 
     @transaction.atomic
@@ -682,13 +687,13 @@ class AgencyView(APIView):
         except Exception as e:
             logger.error("Error deleting agency {}".format(str(e)))
             return JsonResponse(
-                {"message": "Agency cannot be deleted. Please try again!",}, status=500
+                {
+                    "message": "Agency cannot be deleted. Please try again!"
+                }, status=500
             )
 
 
 class AgencyListView(APIView):
-    permission_classes = (permissions.AllowAny,)
-
     def get(self, request, property_name, property_value, page):
         agency_list = None
         try:
@@ -718,9 +723,8 @@ class AgencyListView(APIView):
             logger.error("Agency does not exists.")
             return JsonResponse(
                 {
-                    "error": True,
                     "message": "Agency with {} {} doesn't exists.".format(
                         property_name, property_value
                     ),
-                }
+                }, status=500
             )

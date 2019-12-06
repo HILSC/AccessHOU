@@ -4,11 +4,11 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 from django.contrib import admin
+from django.utils.timezone import now
 
 from api.models.base import Base
 from api.models.agency import Agency
 
-from datetime import datetime
 
 class ProgramBase(Base):
     # General
@@ -179,7 +179,7 @@ class Program(ProgramBase):
 
     def custom_update(user, program=None, program_id=None, emergency_mode=True):
         if program and program_id:
-            updated_program = Program.objects.update_or_create(
+            updated_program, created = Program.objects.update_or_create(
                 id=program_id,
                 defaults={
                     # General
@@ -238,10 +238,11 @@ class Program(ProgramBase):
                     "immigration_accessibility_profile":program.immigration_accessibility_profile,
 
                     "emergency_mode": emergency_mode,
-                    "updated_at": datetime.now(),
+                    "updated_at": now,
                 },
             )
 
+            import pdb; pdb.set_trace()
             if user:
                 updated_program.updated_by = user
                 updated_program.save()

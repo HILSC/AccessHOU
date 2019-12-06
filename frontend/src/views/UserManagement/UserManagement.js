@@ -187,7 +187,7 @@ export default () => {
   }
 
   const handleEditClick = (user) => {
-    setValues({...user});
+    setValues({...user, role_id: user.role.id});
     setDialogOpen(true);
   }
 
@@ -375,7 +375,7 @@ export default () => {
                   <TableCell align="left">{user.first_name}</TableCell>
                   <TableCell align="left">{user.email}</TableCell>
                   <TableCell align="center">{user.agency}</TableCell>
-                  <TableCell align="center">{user.role_name}</TableCell>
+                  <TableCell align="center">{user.role.name}</TableCell>
                   <TableCell align="center">{user.last_login}</TableCell>
                   <EditTableCell user={user} loggedUser={loggedUser} handleAction={handleEditClick} />
                   <StatusTableCell user={user} loggedUser={loggedUser} handleAction={handleStatusClick} />

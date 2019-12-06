@@ -1,3 +1,8 @@
+import os
+import logging
+import json
+import re
+
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.generic import View
@@ -20,11 +25,6 @@ from api.models.zip_code import ZipCodeData
 from api.models.app_settings import AppSettings
 
 from api.utils import getZipCodeRadiusRawSQL
-
-import os
-import logging
-import json
-import re
 
 logger = logging.getLogger(__name__)
 
@@ -312,9 +312,8 @@ class SearchAppView(APIView):
             logger.error("Search Error", e)
             return JsonResponse(
                 {
-                    "error": True,
                     "message": "Error getting results",
-                }, status=200
+                }, status=500
             )
 
 
@@ -327,7 +326,7 @@ class EmergencyModeView(APIView):
                     {
                         "emergency_mode": app_settings.emergency_mode,
                         "emergency_message": app_settings.emergency_message,
-                    }, status=200
+                    }
                 )
         except Exception as e:
             logger.error("Error getting emergency mode info", e)

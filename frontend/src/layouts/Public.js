@@ -37,6 +37,10 @@ import Alert from 'components/Alert/Alert';
 // Styles
 import { makeStyles } from '@material-ui/core/styles';
 import styles from './PublicStyles';
+import {
+  BrowserView,
+  MobileView
+} from 'react-device-detect';
 const useStyles = makeStyles(styles);
 
 export default ({ children }) =>{
@@ -163,17 +167,34 @@ export default ({ children }) =>{
       </main>
       <footer className={classes.footer}>
         <Container maxWidth="lg">
-          <div id="google_translate_element"></div>
-          <p className={classes.footerP}>
-            <Typography variant="caption">
-              The AccessHOU Houston Social Services Database is a product of <a rel="noopener noreferrer" href="https://www.houstonimmigration.org/" target="_blank"><abbr title="Houston Immigration Legal Services Collaborative">HILSC</abbr></a>. Only HILSC Verified data has been accounted for by HILSC.
-            </Typography>
-          </p>
-          <p className={classes.footerP}>
-            <Typography variant="caption">
-              Want to request adding a new agency or program? <a rel="noopener noreferrer" href="/editor" target="_blank">Request here</a>
-            </Typography>
-          </p>
+          <BrowserView>
+            <div id="google_translate_element"></div>
+            <p className={classes.footerP}>
+              <Typography variant="caption">
+                The AccessHOU Houston Social Services Database is a product of <a rel="noopener noreferrer" href="https://www.houstonimmigration.org/" target="_blank"><abbr title="Houston Immigration Legal Services Collaborative">HILSC</abbr></a>. Only HILSC Verified data has been accounted for by HILSC.
+              </Typography>
+            </p>
+            <p className={classes.footerP}>
+              <Typography variant="caption">
+                Want to request adding a new agency or program? <a rel="noopener noreferrer" href="/editor" target="_blank">Request here</a>
+              </Typography>
+            </p>
+          </BrowserView>
+          <MobileView>
+            <div className={classes.mobileFooter}>
+              <div id="google_translate_element"></div>
+              <p className={classes.footerMobileP}>
+                <Typography variant="caption">
+                  The AccessHOU Houston Social Services Database is a product of <a rel="noopener noreferrer" href="https://www.houstonimmigration.org/" target="_blank"><abbr title="Houston Immigration Legal Services Collaborative">HILSC</abbr></a>. Only HILSC Verified data has been accounted for by HILSC.
+                </Typography>
+              </p>
+              <p className={classes.footerMobileP}>
+                <Typography variant="caption">
+                  Want to request adding a new agency or program? <a rel="noopener noreferrer" href="/editor" target="_blank">Request here</a>
+                </Typography>
+              </p>
+            </div>
+          </MobileView>
         </Container>
       </footer>
     </div>

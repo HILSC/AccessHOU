@@ -1,3 +1,6 @@
+import logging
+import json
+
 from django.db import transaction
 from django.http import JsonResponse
 from django.core.paginator import Paginator
@@ -6,18 +9,13 @@ from django.forms.models import model_to_dict
 from rest_framework.views import APIView
 from rest_framework.views import status
 
+from api.models.action_log import ActionLog
 from api.models.agency import Agency
 from api.models.agency import AgencyQueue
-
 from api.models.program import Program
 from api.models.program import ProgramQueue
 
-from api.models.action_log import ActionLog
-
 from api.utils import UserActions
-
-import logging
-import json
 
 logger = logging.getLogger(__name__)
 
@@ -75,7 +73,6 @@ class QueueListView(APIView):
       logger.error("Error getting Queue", e)
       return JsonResponse(
           {
-              "error": True,
               "message": "Error getting results",
           }, status=500
       )
@@ -107,7 +104,6 @@ class QueueAgencyView(APIView):
       logger.error("Error getting Agency queue", e)
       return JsonResponse(
         {
-          "error": True,
           "message": "Error getting agency queue",
         }, status=500
       )
@@ -172,13 +168,12 @@ class QueueAgencyView(APIView):
           return JsonResponse(
             {
               "message": "Agency queue {} successfully.".format(action),
-            }, status=200
+            }
           )
     except Exception as e:
       logger.error("Error approving/rejecting agency queue", e)
       return JsonResponse(
         {
-          "error": True,
           "message": "Error approving/rejecting agency queue",
         }, status=500
       )
@@ -212,9 +207,8 @@ class QueueProgramView(APIView):
       logger.error("Error getting Program queue", e)
       return JsonResponse(
         {
-          "error": True,
           "message": "Error getting Program queue",
-        }, status=200
+        }, status=500
       )
   
   @transaction.atomic
@@ -274,13 +268,12 @@ class QueueProgramView(APIView):
           return JsonResponse(
             {
               "message": "Program queue {} successfully.".format(action),
-            }, status=200
+            }
           )
     except Exception as e:
       logger.error("Error approving/rejecting program queue", e)
       return JsonResponse(
         {
-          "error": True,
           "message": "Error approving/rejecting program queue",
         }, status=500
       )

@@ -3,10 +3,10 @@ from django.contrib.postgres.fields import ArrayField
 from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User
 from django.contrib import admin
+from django.utils.timezone import now
 
 from api.models.base import Base
 
-from datetime import datetime
 
 class AgencyBase(Base):
     # General
@@ -150,9 +150,7 @@ class Agency(AgencyBase):
                 # Verified
                 hilsc_verified=hilsc_verified,
 
-                emergency_mode=emergency_mode,
-
-                created_by=user
+                emergency_mode=emergency_mode
             )
 
             if user:
@@ -164,7 +162,7 @@ class Agency(AgencyBase):
 
     def custom_update(user, agency=None, agency_id=None, hilsc_verified=False, emergency_mode=True):
         if agency and agency_id:
-            updated_agency = Agency.objects.update_or_create(
+            updated_agency, created = Agency.objects.update_or_create(
                 id=agency_id,
                 defaults={
                     "name": agency.name,
@@ -219,7 +217,7 @@ class Agency(AgencyBase):
 
                     "emergency_mode": emergency_mode,
 
-                    "updated_at": datetime.now(),
+                    "updated_at": now,
                 },
             )
 
