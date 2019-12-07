@@ -28,7 +28,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = [
     "qa-needhou.herokuapp.com",
-    "needhou.brightanchor.com"
+    "needhou.brightanchor.com",
+    "accesshou.org",
+    "dev-accesshou.herokuapp.com"
 ]
 
 # Application definition
@@ -70,8 +72,10 @@ CORS_ORIGIN_ALLOW_ALL = True
 CSRF_COOKIE_NAME = "csrftoken"
 
 CORS_ORIGIN_WHITELIST = [
+    "https://accesshou.org",
     "https://qa-needhou.herokuapp.com",
     "https://needhou.brightanchor.com",
+    "https://dev-accesshou.herokuapp.com",
 ]
 
 CORS_URLS_REGEX = r'^/api/.*$'
