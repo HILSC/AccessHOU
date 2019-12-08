@@ -99,7 +99,7 @@ const PrivateRoute = ({ component: Component, layout: Layout, ...rest }) => {
     <Route
       {...rest}
       render={props => (
-        isAuthenticated ? <Layout><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
+        isAuthenticated ? <Layout><Component {...props} /></Layout> : <Redirect to={{ pathname: "/login" }} />
       )}
     />
   );
@@ -112,7 +112,7 @@ const AdminRoute = ({ component: Component, layout: Layout, ...rest }) =>{
     <Route
       {...rest}
       render={props => (
-        isAuthenticated && roleId === 1 ? <Layout><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
+        isAuthenticated && roleId === 1 ? <Layout><Component {...props} /></Layout> : <Redirect to={{ pathname: "/login" }} />
       )}
     />
   );
@@ -126,7 +126,7 @@ const SecureRoute = ({ component: Component, layout: Layout, ...rest }) =>{
     <Route
       {...rest}
       render={props => (
-        (isAuthenticated && availableRolesId.includes(roleId)) ? <Layout><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
+        (isAuthenticated && availableRolesId.includes(roleId)) ? <Layout><Component {...props} /></Layout> : <Redirect to={{ pathname: "/login" }} />
       )}
     />
   );

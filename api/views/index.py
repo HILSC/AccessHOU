@@ -336,38 +336,3 @@ class EmergencyModeView(APIView):
                 }, status=500
             )
 
-
-class CleanDataView(APIView):
-    def get(self, request):
-        from django.utils.text import slugify
-        import pdb; pdb.set_trace()
-        programs = Program.objects.all()
-
-        for program in programs:
-            slug = slugify(program.name)
-
-            other_program = Program.objects.filter(slug=slug, agency=program.agency).exclude(id=program.id)
-            if other_program:
-                slug = "{}-{}".format(slug, str(program.id))
-
-            program.slug = slug
-            program.save()
-
-        agencies = Agency.objects.all()
-
-        for agency in agencies:
-            slug = slugify(agency.name)
-
-            other_agency = Agency.objects.filter(slug=slug).exclude(id=agency.id)
-
-            if other_agency:
-                slug = "{}-{}".format(slug, str(agency.id))
-
-            agency.slug = slug
-            agency.save()
-
-        return JsonResponse(
-            {
-                "message": "finish"
-            }
-        )

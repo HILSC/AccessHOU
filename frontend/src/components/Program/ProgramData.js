@@ -271,7 +271,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                 className={classes.customLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                href={`http://maps.google.com/?q=${program.street}. ${program.city}, ${program.state} ${program.zipcode}`}
+                href={`http://maps.google.com/?q=${program.street}. ${program.city}, ${program.state} ${program.zip_code}`}
                 >
                   Directions
                 </a>

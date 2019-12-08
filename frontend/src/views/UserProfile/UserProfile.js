@@ -48,8 +48,7 @@ const UserProfile = () => {
         role: result.data.role,
         agency: result.data.agency
       }));
-    }).catch((e) => {
-    })
+    });
   }, [token]);
 
   const handleSubmit = (values) => {

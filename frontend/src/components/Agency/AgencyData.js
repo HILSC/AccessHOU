@@ -196,7 +196,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                 className={classes.customLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                href={`http://maps.google.com/?q=${agency.street}. ${agency.city}, ${agency.state} ${agency.zipcode}`}
+                href={`http://maps.google.com/?q=${agency.street}. ${agency.city}, ${agency.state} ${agency.zip_code}`}
                 >
                   Directions
                 </a>

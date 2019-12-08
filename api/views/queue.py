@@ -28,7 +28,7 @@ class QueueListView(APIView):
       if request.user and request.user.is_active:
         page = request.GET.get("page", 1)
 
-        agency_queue = AgencyQueue.objects.all()
+        agency_queue = AgencyQueue.objects.all().order_by('created_at')
         results = []
 
         for agency_q in agency_queue:
@@ -40,10 +40,10 @@ class QueueListView(APIView):
                 "action": agency_q.action,
                 "requestor_name": agency_q.requested_by_name,
                 "requestor_email": agency_q.requested_by_email,
-                "emergency_mode": agency_q.emergency_mode,
+                "emergency_mode": agency_q.emergency_mode
             })
 
-        program_queue = ProgramQueue.objects.all()
+        program_queue = ProgramQueue.objects.all().order_by('created_at')
         for program_q in program_queue:
             results.append({
                 "id": program_q.id,
@@ -53,7 +53,7 @@ class QueueListView(APIView):
                 "action": program_q.action,
                 "requestor_name": program_q.requested_by_name,
                 "requestor_email": program_q.requested_by_email,
-                "emergency_mode": program_q.emergency_mode,
+                "emergency_mode": program_q.emergency_mode
             })
 
         # Paginate results
