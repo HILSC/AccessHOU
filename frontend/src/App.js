@@ -31,6 +31,7 @@ import Settings from 'views/Settings/Settings';
 
 import Profile from 'views/UserProfile/UserProfile';
 import UserManualPublic from 'views/UserManual/UserManualPublic';
+import UserManualPrivate from 'views/UserManual/UserManualPrivate';
 
 import NotFound from 'views/NotFound/NotFound';
 
@@ -70,6 +71,9 @@ const App = () => {
           {/* ONLY ADMIN */}
           <AdminRoute exact path="/private/users" component={Users} layout={DashboardLayout} />
           <AdminRoute exact path="/private/settings" component={Settings} layout={DashboardLayout} />
+
+          {/* LOGGED USER MANUAL */}
+          <PrivateRoute exact path="/private/user-manual" component={UserManualPrivate} layout={DashboardLayout} />
 
           <PublicRoute path='*' exact={true} component={NotFound} layout={PublicLayout} />
         </Switch>

@@ -138,6 +138,9 @@ export default ({ children }) =>{
                     <NavLink to="/private" className={classes.customLink} onClick={handleClose}>Dashboard</NavLink>
                   </MenuItem>
                   <Divider />
+                  <MenuItem>
+                    <NavLink to="/user-manual" className={classes.customLink} onClick={handleClose}>User manual</NavLink>
+                  </MenuItem>
                   <MenuItem onClick={handleSignout}>Sign out</MenuItem>
                 </Menu>
               </React.Fragment>

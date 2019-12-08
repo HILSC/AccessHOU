@@ -30,6 +30,7 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import QueueIcon from '@material-ui/icons/Queue';
 import EditIcon from '@material-ui/icons/Edit';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
+import NoteIcon from '@material-ui/icons/Note';
 
 import HomeIcon from '@material-ui/icons/Home';
 import DashboardIcon from '@material-ui/icons/Dashboard';
@@ -158,6 +159,14 @@ export default ({ children }) => {
                 <AccountBoxIcon />
               </ListItemIcon>
               <ListItemText primary="Profile" />
+            </ListItem>
+          </NavLink>
+          <NavLink to="/private/user-manual" className={classes.customLink}>
+            <ListItem button>
+              <ListItemIcon>
+                <NoteIcon />
+              </ListItemIcon>
+              <ListItemText primary="User manual" />
             </ListItem>
           </NavLink>
           <ListItem button onClick={handleSignout}>

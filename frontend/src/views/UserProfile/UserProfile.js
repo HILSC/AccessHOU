@@ -4,6 +4,7 @@ import React, {
 } from 'react';
 
 import {
+  useDispatch,
   useSelector,
 } from 'react-redux';
 
@@ -12,6 +13,9 @@ import {
   getUserProfile,
   updateUserProfile,
  } from 'api';
+
+// Actions
+import { LOGOUT } from 'actions/user';
 
 // Material UI components
 import Grid from '@material-ui/core/Grid';
@@ -27,6 +31,7 @@ const useStyles = makeStyles(styles);
 
 const UserProfile = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const token = useSelector(state => state.user.accessToken);
 
@@ -56,20 +61,28 @@ const UserProfile = () => {
             messageType: "error"
           }));
         } else {
-          setUserInfo(data => ({
-            ...data,
-            id: result.data.id,
-            email: result.data.email,
-            first_name: result.data.first_name,
-            last_name: result.data.last_name,
-            role: result.data.role,
-            agency: result.data.agency,
-            password: '',
-            old_password: '',
-            confirm_password: '',
-            message: "Profile updated successfully",
-            messageType: "success"
-          }));
+          if (result.data.password_changed) {
+            // Logout user
+            dispatch({
+              type: LOGOUT,
+              data: null,
+            });
+          } else {
+            setUserInfo(data => ({
+              ...data,
+              id: result.data.id,
+              email: result.data.email,
+              first_name: result.data.first_name,
+              last_name: result.data.last_name,
+              role: result.data.role,
+              agency: result.data.agency,
+              password: '',
+              old_password: '',
+              confirm_password: '',
+              message: "Profile updated successfully",
+              messageType: "success"
+            }));
+          }
         }
       });
   }

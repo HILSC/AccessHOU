@@ -20,7 +20,7 @@ export default ({ items, dataTextClass }) => {
 
   return (
     <div className={classes.root}>
-      {items ? (items.map((item, idx) => (
+      {items && Array.isArray(items) ? (items.map((item, idx) => (
         <Chip
           key={idx}
           variant="default"
@@ -29,7 +29,7 @@ export default ({ items, dataTextClass }) => {
           className={clsx(classes.chip, textClass)}
         />
       ))) :
-      null }
+      items }
     </div>
   )
 }

@@ -443,6 +443,57 @@ class ProgramQueueDeleteView(APIView):
             program = ProgramQueue.objects.create(
                 name=related_program.name,
                 slug=related_program.slug,
+                description=related_program.description,
+                service_types=related_program.service_types,
+                case_management_provided=related_program.case_management_provided,
+                case_management_notes=related_program.case_management_notes,
+                website=related_program.website,
+                phone=related_program.phone,
+
+                # Address
+                street=related_program.street,
+                city=related_program.city,
+                state=related_program.state,
+                zip_code=related_program.zip_code,
+                geocode=related_program.geocode,
+
+                next_steps=related_program.next_steps,
+                payment_service_cost=related_program.payment_service_cost,
+                payment_options=related_program.payment_options,
+
+                # Eligibility
+                age_groups=related_program.age_groups,
+                zip_codes=related_program.zip_codes,
+                incomes_percent_poverty_level=related_program.incomes_percent_poverty_level,
+                immigration_statuses=related_program.immigration_statuses,
+
+                # Requirements
+                requires_enrollment_in=related_program.requires_enrollment_in,
+                other_requirements=related_program.other_requirements,
+                documents_required=related_program.documents_required,
+                appointment_required=related_program.appointment_required,
+                appointment_notes=related_program.appointment_notes,
+
+                # Schedule
+                schedule=related_program.schedule,
+                walk_in_schedule=related_program.walk_in_schedule,
+                schedule_notes=related_program.schedule_notes,
+                holiday_schedule=related_program.holiday_schedule,
+                
+                # Intake
+                service_same_day_intake=related_program.service_same_day_intake,
+                intake_notes=related_program.intake_notes,
+
+                # Language
+                languages=related_program.languages,
+
+                # Services
+                crisis=related_program.crisis,
+                disaster_recovery=related_program.disaster_recovery,
+                transportation=related_program.transportation,
+                client_consult=related_program.client_consult,
+
+                agency=related_program.agency,
                 requested_by_name=request.data.get("requested_by_name", None),
                 requested_by_email=request.data.get("requested_by_email", None),
                 related_program=related_program,

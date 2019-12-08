@@ -26,9 +26,12 @@ from api.views.queue import QueueProgramView
 
 from api.views.app_settings import AppSettingsView
 
+#from api.views.index import CleanDataView
+
 
 urlpatterns = [
     path('auth/', UserAuthView.as_view()),
+    #path('cleandata/', CleanDataView.as_view()),
 
     path('app/settings/', AppSettingsView.as_view()),
     path('app/emergency/', EmergencyModeView.as_view()),

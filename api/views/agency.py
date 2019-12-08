@@ -385,6 +385,53 @@ class AgencyQueueDeleteView(APIView):
             AgencyQueue.objects.create(
                 name=related_agency.name,
                 slug=related_agency.name,
+
+                website=related_agency.website,
+                phone=related_agency.phone,
+                
+                # Address
+                street=related_agency.street,
+                city=related_agency.city,
+                state=related_agency.state,
+                zip_code=related_agency.zip_code,
+                geocode=related_agency.geocode,
+
+                next_steps=related_agency.next_steps,
+                payment_options=related_agency.payment_options,
+
+                # Eligibility
+                age_groups=related_agency.age_groups,
+                zip_codes=related_agency.zip_codes,
+                gender=related_agency.gender,
+                immigration_statuses=related_agency.immigration_statuses,
+
+                # Requirements
+                accepted_ids_current=related_agency.accepted_ids_current,
+                accepted_ids_expired=related_agency.accepted_ids_expired,
+                notes=related_agency.notes,
+                proof_of_address=related_agency.proof_of_address,
+
+                # Schedule
+                schedule=related_agency.schedule,
+                schedule_notes=related_agency.schedule_notes,
+                holiday_schedule=related_agency.holiday_schedule,
+
+                # Languages
+                languages=related_agency.languages,
+                documents_languages=related_agency.documents_languages,
+                website_languages=related_agency.website_languages,
+                frontline_staff_languages=related_agency.frontline_staff_languages,
+                interpretations_available=related_agency.interpretations_available,
+
+                # Services
+                assistance_with_forms=related_agency.assistance_with_forms,
+                visual_aids=related_agency.visual_aids,
+                ada_accessible=related_agency.ada_accessible,
+
+                # Policies
+                response_requests=related_agency.response_requests,
+                cultural_training=related_agency.cultural_training,
+
                 requested_by_name=request.data.get("requested_by_name", None),
                 requested_by_email=request.data.get("requested_by_email", None),
                 related_agency=related_agency,

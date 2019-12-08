@@ -4,6 +4,7 @@ import json
 
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
 from django.db import transaction
@@ -298,7 +299,9 @@ class UserProfileView(APIView):
                 current_password =  request.data.get("old_password", None)
                 new_password = request.data.get("password", None)
                 current_password_valid = request.user.check_password(current_password)
+                logout_user = False
                 if new_password and current_password_valid:
+                    logout_user = True
                     user.set_password(new_password)
                 
                 user.email = email
@@ -306,6 +309,9 @@ class UserProfileView(APIView):
                 user.first_name = request.data.get("first_name", None)
                 user.last_name = request.data.get("last_name", None)
                 user.save()
+
+                if logout_user:
+                    logout(request)
 
                 return JsonResponse(
                     {
@@ -315,6 +321,7 @@ class UserProfileView(APIView):
                         "last_name": user.last_name,
                         "agency": user.profile.agency,
                         "role": user.profile.role.name,
+                        "password_changed": logout_user,
                     },
                     safe=False,
                 )

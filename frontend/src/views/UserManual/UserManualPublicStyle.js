@@ -14,5 +14,8 @@ export default (theme) => ({
     '&:hover': {
       textDecoration: 'underline',
     },
+  },
+  mobileImage: {
+    width: '100%'
   }
 });
