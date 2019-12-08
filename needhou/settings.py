@@ -93,6 +93,10 @@ ROOT_URLCONF = 'needhou.urls'
 # Get static files from React app
 REACT_APP_DIR = os.path.join(BASE_DIR, 'frontend')
 
+# HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
