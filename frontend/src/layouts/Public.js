@@ -203,7 +203,7 @@ export default ({ children }) =>{
             </div>
             <div className={classes.footerMobileP}>
               <Typography variant="body2">
-                Made with <img alt="love" src={Heart}/> by <a className={classes.footerLink} rel="noopener noreferrer" href="https://brightanchor.com">BrightAnchor</a>
+                Made with <img alt="love" src={Heart}/> by <a className={classes.footerLink} rel="noopener noreferrer" href="https://brightanchor.com" target="_blank">BrightAnchor</a>
               </Typography>
             </div>
           </div>
