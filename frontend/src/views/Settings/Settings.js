@@ -67,7 +67,10 @@ export default () => {
 
   const handleChange = (event) => {
     event.persist();
-    setValues(values => ({ ...values, [event.target.name]: event.target.value }));
+    if((event.target.name === "emergency" && event.target.value.length <= 9) ||
+      (event.target.name === "emergency_message" && event.target.value.length <= 250)){
+        setValues(values => ({ ...values, [event.target.name]: event.target.value }));
+    }
   };
 
   const handleDialogClose = () => {
@@ -194,9 +197,12 @@ export default () => {
                 onChange: handleChange,
                 name: "emergency_message",
                 value: values.emergency_message ? values.emergency_message : '',
+                multiline: true,
+                rows: 3,
+                maxLength: 10
               }}
             />
-            
+            <div className={classes.countingBadge}>{`${values.emergency_message ? values.emergency_message.length : 0}/250`}</div>
           </Grid>
           <Grid item xs={12} sm={12} md={12}>
             <div className={classes.buttons}>
@@ -227,7 +233,7 @@ export default () => {
             formControlProps={{
               fullWidth: true
             }}
-            autoFocus={true}
+            autoFocus={showDialog}
             inputProps={{
               inputRef: emergencyRef,
               label: "Validation Text *",

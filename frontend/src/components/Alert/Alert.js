@@ -21,7 +21,7 @@ const variantIcon = {
   info: InfoIcon,
 };
 
-const Alert = ({ message, variant, className, queueMessage}) => {
+const Alert = ({ message, variant, className, iconClassName, queueMessage}) => {
   const classes = useStyles();
   const Icon = variantIcon[variant];
 
@@ -39,12 +39,16 @@ const Alert = ({ message, variant, className, queueMessage}) => {
       className={clsx(classes[variant], className, classes.alertBox)}
       aria-describedby="client-snackbar"
       message={
-        <span id="client-snackbar" className={classes.message}>
-          <Icon className={clsx(classes.icon, classes.iconVariant)} />
-          {
-            queueMessage ? showQueueMessage() : message
-          }
-        </span>
+        <div id="client-snackbar" className={classes.message}>
+          <div>
+            <Icon className={clsx(iconClassName, classes.icon, classes.iconVariant)} />
+          </div>
+          <div>
+            {
+              queueMessage ? showQueueMessage() : message
+            }
+          </div>
+        </div>
       }
     />
   )

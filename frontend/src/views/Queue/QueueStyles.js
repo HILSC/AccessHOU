@@ -6,7 +6,7 @@ export default (theme) => ({
     backgroundColor: '#f2f2f2',
   },
   emergencyMode: {
-    backgroundColor: '#bcdff1',
+    backgroundColor: '#faf2cc',
     border: '2px solid #fff',
   },
   customLink: {

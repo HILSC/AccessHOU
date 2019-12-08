@@ -2,6 +2,11 @@ import React , {
   useState,
   useRef,
 } from 'react';
+
+import {
+  useGoogleReCaptcha
+} from 'react-google-recaptcha-v3';
+
 import { NavLink } from "react-router-dom";
 
 // Material UI Components
@@ -44,6 +49,7 @@ const useStyles = makeStyles(styles);
 
 export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }) => {
   const classes = useStyles();
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
@@ -122,10 +128,16 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }
     return true;
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     if (event) event.preventDefault();
 
-    if (isFormValid()) {
+    if(!executeRecaptcha){
+      return;
+    }
+
+    const reCaptchaResult = await executeRecaptcha("agency_form");
+
+    if (isFormValid() && reCaptchaResult) {
       handleSave(values);
     }
   }

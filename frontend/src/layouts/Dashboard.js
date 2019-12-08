@@ -76,7 +76,7 @@ export default ({ children }) => {
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            AccessHOU Management
+            AccessHOU Dashboard
           </Typography>
         </Toolbar>
       </AppBar>

@@ -56,13 +56,16 @@ const App = () => {
 
           <PublicRoute path="/search" component={Results} layout={PublicLayout}/>
 
+          {/* LOGGED USERS */}
           <PrivateRoute exact path="/private" component={Dashboard} layout={DashboardLayout} />
-          <PrivateRoute exact path="/private/queue" component={Queue} layout={DashboardLayout} />
-          <PrivateRoute exact path="/private/queue/agency/:queueId" component={AgencyQueue} layout={DashboardLayout} />
-          <PrivateRoute exact path="/private/queue/program/:queueId" component={ProgramQueue} layout={DashboardLayout} />
-
           <PrivateRoute exact path="/private/profile" component={Profile} layout={DashboardLayout} />
 
+          {/* ONLY ADMIN AND AccessHOU Quality Team */}
+          <SecureRoute exact path="/private/queue" component={Queue} layout={DashboardLayout} />
+          <SecureRoute exact path="/private/queue/agency/:queueId" component={AgencyQueue} layout={DashboardLayout} />
+          <SecureRoute exact path="/private/queue/program/:queueId" component={ProgramQueue} layout={DashboardLayout} />
+
+          {/* ONLY ADMIN */}
           <AdminRoute exact path="/private/users" component={Users} layout={DashboardLayout} />
           <AdminRoute exact path="/private/settings" component={Settings} layout={DashboardLayout} />
 
@@ -98,12 +101,26 @@ const PrivateRoute = ({ component: Component, layout: Layout, ...rest }) => {
 
 const AdminRoute = ({ component: Component, layout: Layout, ...rest }) =>{
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
-  const role = useSelector(state => state.user.role);
+  const roleId = useSelector(state => state.user.roleId);
   return (
     <Route
       {...rest}
       render={props => (
-        isAuthenticated && role === 'Admin' ? <Layout><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
+        isAuthenticated && roleId === 1 ? <Layout><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
+      )}
+    />
+  );
+}
+
+const SecureRoute = ({ component: Component, layout: Layout, ...rest }) =>{
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+  const roleId = useSelector(state => state.user.roleId);
+  const availableRolesId = [1, 2];
+  return (
+    <Route
+      {...rest}
+      render={props => (
+        (isAuthenticated && availableRolesId.includes(roleId)) ? <Layout><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
       )}
     />
   );

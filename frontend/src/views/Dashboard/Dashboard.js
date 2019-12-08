@@ -52,25 +52,29 @@ export default () => {
       <Grid item xs={12} sm={12} md={12}>
         Howdy! {loggedUser.email}
       </Grid>
-      <Grid item xs={12} sm={6} md={4}>
-        <Card className={classes.card}>
-          <CardContent>
-            <Typography className={classes.title} color="textSecondary" gutterBottom>
-              Queue pending review
-            </Typography>
-            <Typography variant="body2" component="p" classes={{
-              root: classes.contentPrimary
-            }}>
-              {values ? values.totalRecords : 0}
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <NavLink to={`/private/queue`}>
-              See queue
-            </NavLink>
-          </CardActions>
-        </Card>
-      </Grid>
+      {
+        loggedUser.approveQueue ? (
+          <Grid item xs={12} sm={6} md={4}>
+            <Card className={classes.card}>
+              <CardContent>
+                <Typography className={classes.title} color="textSecondary" gutterBottom>
+                  Queue pending review
+                </Typography>
+                <Typography variant="body2" component="p" classes={{
+                  root: classes.contentPrimary
+                }}>
+                  {values ? values.totalRecords : 0}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <NavLink to={`/private/queue`}>
+                  See queue
+                </NavLink>
+              </CardActions>
+            </Card>
+          </Grid>
+        ) : null
+      }
     </Grid>
   );
 }

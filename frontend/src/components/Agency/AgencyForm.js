@@ -3,6 +3,10 @@ import React , {
   useRef,
 } from 'react';
 
+import {
+  useGoogleReCaptcha
+} from 'react-google-recaptcha-v3';
+
 // Material UI Components
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -47,6 +51,7 @@ const useStyles = makeStyles(styles);
 
 export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) => {
   const classes = useStyles();
+  const { executeRecaptcha } = useGoogleReCaptcha();
 
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
@@ -119,10 +124,16 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
     return true;
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit =  async (event) => {
     if (event) event.preventDefault();
 
-    if (isFormValid()) {
+    if(!executeRecaptcha){
+      return;
+    }
+
+    const reCaptchaResult = await executeRecaptcha("agency_form");
+
+    if (isFormValid() && reCaptchaResult) {
       handleSave(values);
     }
   }

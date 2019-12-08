@@ -9,5 +9,8 @@ export default (theme) => ({
     color: '#e8463a',
     fontSize: 30,
     textAlign: 'center'
+  },
+  emergencyModeIcon: {
+    fontSize: 50
   }
 });

@@ -57,6 +57,7 @@ class UserAuthView(APIView):
                         "role": {
                             "id": user.profile.role.id,
                             "name": user.profile.role.name,
+                            "hilsc_verified": user.profile.role.HILSC_verified,
                             "approve_queue": user.profile.role.approve_queue,
                             "skip_queue": user.profile.role.skip_queue,
                             "advocacy_reports": user.profile.role.add_advocacy_reports,

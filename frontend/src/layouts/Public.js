@@ -33,17 +33,18 @@ import Typography from '@material-ui/core/Typography';
 // Components
 import Logo from 'components/Logo/Logo';
 import Alert from 'components/Alert/Alert';
+import Heart from 'images/heart.svg';
 
 // Styles
 import { makeStyles } from '@material-ui/core/styles';
 import styles from './PublicStyles';
 import {
-  BrowserView,
-  MobileView
+  isMobile,
 } from 'react-device-detect';
 const useStyles = makeStyles(styles);
 
 export default ({ children }) =>{
+  
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -55,13 +56,30 @@ export default ({ children }) =>{
   const [emergencyMode, setEmergencyMode] = useState(null);
 
   useEffect(() => {
+    const loadScript = (src) => {
+      var tag = document.createElement('script');
+      tag.async = false;
+      tag.src = src;
+      var body = document.getElementsByTagName('body')[0];
+      body.appendChild(tag);
+    }
+
+    loadScript('//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit');
+
+    window.googleTranslateElementInit = () => {
+      new window.google.translate.TranslateElement({
+        pageLanguage: 'en',
+        layout: isMobile ? 0 : 1,
+      }, 'google_translate_element')
+    };
+
     getAppEmegencyMode().then(result => {
       setEmergencyMode(data => ({
         ...data,
         "isActive": result.data.emergency_mode,
         "message": result.data.emergency_message,
       }));
-    })
+    });
   }, []);
 
   const handleSignout = () => {
@@ -117,7 +135,7 @@ export default ({ children }) =>{
                     <NavLink to="/editor" className={classes.customLink} onClick={handleClose}>Editor</NavLink>
                   </MenuItem>
                   <MenuItem>
-                    <NavLink to="/private" className={classes.customLink} onClick={handleClose}>Admin</NavLink>
+                    <NavLink to="/private" className={classes.customLink} onClick={handleClose}>Dashboard</NavLink>
                   </MenuItem>
                   <Divider />
                   <MenuItem onClick={handleSignout}>Sign out</MenuItem>
@@ -158,43 +176,37 @@ export default ({ children }) =>{
       <main>
         {
           emergencyMode && emergencyMode.isActive ? (
-            <Alert 
-              variant={"info"}
-              message={emergencyMode.message}/> 
+            <Alert
+              className={classes.emergencyMode}
+              iconClassName={classes.emergencyModeIcon}
+              variant={"warning"}
+              message={emergencyMode.message} /> 
           ) : null
         }
         {children}
       </main>
       <footer className={classes.footer}>
         <Container maxWidth="lg">
-          <BrowserView>
-            <div id="google_translate_element"></div>
-            <p className={classes.footerP}>
-              <Typography variant="caption">
+          <div className={isMobile ? classes.mobileFooter : null}>
+            <div className={classes.footerMobileP}>
+              <span id="google_translate_element" />
+            </div>
+            <div className={classes.footerMobileP}>
+              <Typography variant="body1">
+                Want to request adding a new agency or program? <a className={classes.editorLink} rel="noopener noreferrer" href="/editor" target="_blank">Request here</a>
+              </Typography>
+            </div>
+            <div className={classes.footerMobileP}>
+              <Typography variant="body2">
                 The AccessHOU Houston Social Services Database is a product of <a rel="noopener noreferrer" href="https://www.houstonimmigration.org/" target="_blank"><abbr title="Houston Immigration Legal Services Collaborative">HILSC</abbr></a>. Only HILSC Verified data has been accounted for by HILSC.
               </Typography>
-            </p>
-            <p className={classes.footerP}>
-              <Typography variant="caption">
-                Want to request adding a new agency or program? <a rel="noopener noreferrer" href="/editor" target="_blank">Request here</a>
-              </Typography>
-            </p>
-          </BrowserView>
-          <MobileView>
-            <div className={classes.mobileFooter}>
-              <div id="google_translate_element"></div>
-              <p className={classes.footerMobileP}>
-                <Typography variant="caption">
-                  The AccessHOU Houston Social Services Database is a product of <a rel="noopener noreferrer" href="https://www.houstonimmigration.org/" target="_blank"><abbr title="Houston Immigration Legal Services Collaborative">HILSC</abbr></a>. Only HILSC Verified data has been accounted for by HILSC.
-                </Typography>
-              </p>
-              <p className={classes.footerMobileP}>
-                <Typography variant="caption">
-                  Want to request adding a new agency or program? <a rel="noopener noreferrer" href="/editor" target="_blank">Request here</a>
-                </Typography>
-              </p>
             </div>
-          </MobileView>
+            <div className={classes.footerMobileP}>
+              <Typography variant="body2">
+                Made with <img alt="love" src={Heart}/> by <a className={classes.footerLink} rel="noopener noreferrer" href="https://brightanchor.com">BrightAnchor</a>
+              </Typography>
+            </div>
+          </div>
         </Container>
       </footer>
     </div>

@@ -54,7 +54,7 @@ const CustomInput = ({
   errorDetails,
   isRequired,
   showNA=true,
-  autoFocus=false,
+  autoFocus=false
 }) => {
   const classes = useStyles();
 

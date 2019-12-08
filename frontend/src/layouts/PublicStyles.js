@@ -13,9 +13,6 @@ export default (theme) => ({
     marginTop: 'auto',
     backgroundColor: '#F5F5F5',
   },
-  footerP: {
-    margin: 0,
-  },
   title: {
     flexGrow: 1,
   },
@@ -32,11 +29,26 @@ export default (theme) => ({
   },
   mobileFooter: {
     display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    textAlign: 'center',
     flexDirection: 'column',
   },
   footerMobileP: {
-    textAlign: 'center'
+    marginBottom: 16,
   },
+  footerLink: {
+    color:'#e8463a',
+  },
+  editorLink: {
+    color:'#e8463a',
+    fontSize: 18
+  },
+  heart:{
+    textShadow: '0 0 0 red',
+  },
+  emergencyMode: {
+    fontSize: 18
+  },
+  emergencyModeIcon: {
+    fontSize: 50
+  }
 });

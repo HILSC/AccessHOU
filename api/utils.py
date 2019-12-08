@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class UserActions(Enum):
   ADD = 'new'
   DELETE = 'delete'
-  UPDATE = 'update'
+  UPDATE = 'edited'
 
 
 def randomStringGenerator():

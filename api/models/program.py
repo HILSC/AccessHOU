@@ -242,7 +242,6 @@ class Program(ProgramBase):
                 },
             )
 
-            import pdb; pdb.set_trace()
             if user:
                 updated_program.updated_by = user
                 updated_program.save()

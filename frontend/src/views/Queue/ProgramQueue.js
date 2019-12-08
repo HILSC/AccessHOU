@@ -44,6 +44,7 @@ const ProgramQueue = ({ match }) => {
   const [pageData, setPageData] = useState({
     loading: true
   });
+
   const [confirmation, setConfirmation] = useState({ isOpen: false})
 
   useEffect(() => {

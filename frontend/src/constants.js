@@ -1,7 +1,3 @@
-//const API_URL = 'https://qa-needhou.herokuapp.com/api/';
-const API_URL = 'https://dev-accesshou.herokuapp.com/api/';
-//const API_URL = 'http://localhost:8000/api/';
-
 const USER_ACTIONS = {
     ADD: 'ADD',
     UPDATE: 'UPDATE',
@@ -569,7 +565,6 @@ const LANGUAGES = [
 ]
 
 export {
-  API_URL,
   USER_ACTIONS,
   ACTION_CLASS,
   ACTION_MESSAGE,

@@ -1,7 +1,6 @@
 import axios from 'axios';
 
 import { 
-  API_URL,
   IMMIGRATION_STATUSES,
   IDS
 } from './constants';
@@ -10,6 +9,8 @@ import configureStore from './store';
 
 axios.defaults.xsrfCookieName = 'csrftoken';
 axios.defaults.xsrfHeaderName = 'X-CSRFToken';
+
+const API_URL = process.env.REACT_APP_API_URL;
 
 const client = axios.create({
   baseURL: API_URL,

@@ -7,4 +7,8 @@ export default (theme) => ({
     display: 'flex',
     justifyContent: 'flex-end',
   },
+  countingBadge: {
+    display: 'flex',
+    justifyContent: 'flex-end'
+  }
 });

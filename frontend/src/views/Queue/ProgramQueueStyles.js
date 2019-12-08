@@ -13,7 +13,6 @@ export default (theme) => ({
   buttons: {
     display: 'flex',
     justifyContent: 'flex-end',
-    marginTop: theme.spacing(4),
   },
   button: {
     marginTop: theme.spacing(3),

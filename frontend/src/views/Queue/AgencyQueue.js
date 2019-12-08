@@ -24,6 +24,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogActions from '@material-ui/core/DialogActions';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
 
 // Custom components
 import AgencyData from 'components/Agency/AgencyData';
@@ -38,10 +41,14 @@ const AgencyQueue = ({ match }) => {
   const classes = useStyles();
 
   const token = useSelector(state => state.user.accessToken);
+  const loggedUser = useSelector(state => state.user);
 
   const { queueId } = match.params;
 
-  const [pageData, setPageData] = useState({ loading: true });
+  const [pageData, setPageData] = useState({
+    loading: true,
+    hilscVerified: loggedUser.hilscVerified
+  });
 
   const [confirmation, setConfirmation] = useState({ isOpen: false });
   
@@ -69,7 +76,7 @@ const AgencyQueue = ({ match }) => {
     setConfirmation(data => ({
       ...data,
       isOpen: true,
-      action: "approve"
+      action: "approve",
     }));
   }
 
@@ -92,7 +99,8 @@ const AgencyQueue = ({ match }) => {
   const handleConfirmation = () => {
     approveRejectAgencyQueue(token, {
       queue_id: pageData.agencyQueue.id,
-      action: confirmation.action
+      action: confirmation.action,
+      hilscVerified: pageData.hilscVerified
     }).then(result => {
       setConfirmation(data => ({
         ...data,
@@ -108,6 +116,10 @@ const AgencyQueue = ({ match }) => {
         messageType: 'error'
       }));
     });
+  }
+
+  const handleHilscVerifiedChange = ({ target }) => {
+    setPageData({ ...pageData, "hilscVerified": target.checked });
   }
 
   if(confirmation && confirmation.message){
@@ -141,6 +153,16 @@ const AgencyQueue = ({ match }) => {
           ) : (
             <React.Fragment>
               <AgencyData agency={pageData.agency} showMissingData={false} queueAgencyData={pageData.agencyQueue} />
+              <div className={classes.verifiedContainer}>
+                <FormGroup row>
+                  <FormControlLabel
+                    control={
+                      <Checkbox checked={pageData.hilscVerified} onChange={handleHilscVerifiedChange} />
+                    }
+                    label="HILSC Verified"
+                  />
+                </FormGroup>
+              </div>
               <div className={classes.buttons}>
                 <Button
                 variant="contained"
@@ -162,7 +184,6 @@ const AgencyQueue = ({ match }) => {
               </Button>
             </div>
             </React.Fragment>
-            
           )
         }
         <Dialog

@@ -81,13 +81,12 @@ class QueueAgencyView(APIView):
   def get(self, request, id):
     try:
       agency_queue = AgencyQueue.objects.get(id=id)
-      agency_dict = None
 
       try:
         agency = Agency.objects.get(id=agency_queue.related_agency_id)
         agency_dict = model_to_dict(agency)
       except Agency.DoesNotExist:
-        pass
+        agency_dict = None
 
       agency_queue_dict = model_to_dict(agency_queue)
       if not agency_dict:
@@ -115,6 +114,7 @@ class QueueAgencyView(APIView):
       if request.user:
         queue_id = request.data.get("queue_id", None)
         action = request.data.get("action", None)
+        hilsc_verified = request.data.get("hilsc_verified", False)
 
         if queue_id and action:
           agency_queue = AgencyQueue.objects.get(id=queue_id)
@@ -124,7 +124,7 @@ class QueueAgencyView(APIView):
               Agency.custom_create(
                 user=request.user,
                 agency=agency_queue,
-                hilsc_verified=request.user.profile.role.HILSC_verified,
+                hilsc_verified=hilsc_verified,
                 emergency_mode=False
               )
             elif agency_queue.action == UserActions.UPDATE.value:
@@ -132,7 +132,7 @@ class QueueAgencyView(APIView):
                 user=request.user,
                 agency=agency_queue,
                 agency_id=agency_queue.related_agency_id,
-                hilsc_verified=request.user.profile.role.HILSC_verified,
+                hilsc_verified=hilsc_verified,
                 emergency_mode=False
               )
             elif agency_queue.action == UserActions.DELETE.value:

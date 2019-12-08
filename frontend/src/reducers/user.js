@@ -27,6 +27,7 @@ export default (state = initialState, action) => {
         role: action.data.role.name,
         approveQueue: action.data.role.approve_queue,
         skipQueue: action.data.role.skip_queue,
+        hilscVerified: action.data.role.hilsc_verified,
         error: false,
         accessToken: action.data.access_token,
         refreshToken: action.data.refresh_token

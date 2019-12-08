@@ -182,7 +182,6 @@ class ProgramQueueView(APIView):
     @transaction.atomic
     def put(self, request, *args, **kwargs):
         try:
-            import pdb; pdb.set_trace()
             program_name = request.data.get("name", None)
             slug = slugify(program_name)
 
