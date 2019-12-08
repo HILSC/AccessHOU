@@ -21,5 +21,15 @@ export default (theme) => ({
   verifiedContainer: {
     display: 'flex',
     justifyContent: 'flex-end'
+  },
+  actionContainer: {
+    backgroundColor: '#bcdff1',
+    borderRadius: 4,
+    padding: 4
+  },
+  emergencyContainer: {
+    backgroundColor: '#faf2cc',
+    borderRadius: 4,
+    padding: 4
   }
 });

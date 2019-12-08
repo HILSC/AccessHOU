@@ -12,8 +12,11 @@ from rest_framework.views import status
 from api.models.action_log import ActionLog
 from api.models.agency import Agency
 from api.models.agency import AgencyQueue
+from api.models.app_settings import AppSettings
 from api.models.program import Program
 from api.models.program import ProgramQueue
+
+from api.models.user import Role
 
 from api.utils import UserActions
 
@@ -92,10 +95,13 @@ class QueueAgencyView(APIView):
       if not agency_dict:
         agency_dict = agency_queue_dict
 
+      app_settings = AppSettings.objects.first()
+
       return JsonResponse(
           {
               "agency": agency_dict,
-              "agency_queue": agency_queue_dict
+              "agency_queue": agency_queue_dict,
+              "emergency_mode_on": app_settings.emergency_mode
           },
           safe=False,
       )
@@ -112,64 +118,68 @@ class QueueAgencyView(APIView):
     # Approve or Reject
     try:
       if request.user:
-        queue_id = request.data.get("queue_id", None)
-        action = request.data.get("action", None)
-        hilsc_verified = request.data.get("hilsc_verified", False)
 
-        if queue_id and action:
-          agency_queue = AgencyQueue.objects.get(id=queue_id)
+        # Validate logged user role can approve or reject
+        role = Role.objects.filter(id=request.user.profile.role.id, approve_queue=True)
 
-          if action == "approve":
-            if agency_queue.action == UserActions.ADD.value:
-              Agency.custom_create(
-                user=request.user,
-                agency=agency_queue,
-                hilsc_verified=hilsc_verified,
-                emergency_mode=False
+        if role:
+          queue_id = request.data.get("queue_id", None)
+          action = request.data.get("action", None)
+          hilsc_verified = request.data.get("hilsc_verified", False)
+
+          if queue_id and action:
+            agency_queue = AgencyQueue.objects.get(id=queue_id)
+
+            if action == "approve":
+              if agency_queue.action == UserActions.ADD.value:
+                Agency.custom_create(
+                  user=request.user,
+                  agency=agency_queue,
+                  hilsc_verified=hilsc_verified,
+                  emergency_mode=False
+                )
+              elif agency_queue.action == UserActions.UPDATE.value:
+                Agency.custom_update(
+                  user=request.user,
+                  agency=agency_queue,
+                  agency_id=agency_queue.related_agency_id,
+                  hilsc_verified=hilsc_verified,
+                  emergency_mode=False
+                )
+              elif agency_queue.action == UserActions.DELETE.value:
+                agency = Agency.objects.get(id=agency_queue.related_agency_id)
+                agency.delete()
+
+              ActionLog.objects.create(
+                  info=agency_queue.name,
+                  additional_info=[
+                    agency_queue.requested_by_email,
+                    agency_queue.action,
+                    agency_queue.related_agency_id
+                  ],
+                  action="approved",
+                  model="agency queue",
+                  created_by=request.user
               )
-            elif agency_queue.action == UserActions.UPDATE.value:
-              Agency.custom_update(
-                user=request.user,
-                agency=agency_queue,
-                agency_id=agency_queue.related_agency_id,
-                hilsc_verified=hilsc_verified,
-                emergency_mode=False
+            else:
+              ActionLog.objects.create(
+                  info=agency_queue.name,
+                  additional_info=[
+                    agency_queue.requested_by_email,
+                    agency_queue.action
+                  ],
+                  action="rejected",
+                  model="agency queue",
+                  created_by=request.user
               )
-            elif agency_queue.action == UserActions.DELETE.value:
-              agency = Agency.objects.get(id=agency_queue.related_agency_id)
-              agency.delete()
 
-            ActionLog.objects.create(
-                info=agency_queue.name,
-                additional_info=[
-                  agency_queue.requested_by_email,
-                  agency_queue.action,
-                  agency_queue.related_agency_id
-                ],
-                action="approved",
-                model="agency queue",
-                created_by=request.user
+            agency_queue.delete()
+
+            return JsonResponse(
+              {
+                "message": "Agency queue {} successfully.".format(action),
+              }
             )
-
-          else:
-            ActionLog.objects.create(
-                info=agency_queue.name,
-                additional_info=[
-                  agency_queue.requested_by_email,
-                  agency_queue.action
-                ],
-                action="rejected",
-                model="agency queue",
-                created_by=request.user
-            )
-
-          agency_queue.delete()
-
-          return JsonResponse(
-            {
-              "message": "Agency queue {} successfully.".format(action),
-            }
-          )
     except Exception as e:
       logger.error("Error approving/rejecting agency queue", e)
       return JsonResponse(
@@ -195,11 +205,16 @@ class QueueProgramView(APIView):
       program_queue_dict = model_to_dict(program_queue)
       if not program_dict:
         program_dict = program_queue_dict
+        program_dict["agency_name"] = program_queue.agency.name
+        program_dict["agency_slug"] = program_queue.agency.slug
+
+      app_settings = AppSettings.objects.first()
 
       return JsonResponse(
           {
               "program": program_dict,
-              "program_queue": program_queue_dict
+              "program_queue": program_queue_dict,
+              "emergency_mode_on": app_settings.emergency_mode
           },
           safe=False,
       )
@@ -215,61 +230,65 @@ class QueueProgramView(APIView):
   def post(self, request):
     try:
       if request.user:
-        queue_id = request.data.get("queue_id", None)
-        action = request.data.get("action", None)
 
-        if queue_id and action:
-          program_queue = ProgramQueue.objects.get(id=queue_id)
+        # Validate logged user role can approve or reject
+        role = Role.objects.filter(id=request.user.profile.role.id, approve_queue=True)
 
-          if action == "approve":
-            if program_queue.action == UserActions.ADD.value:
-              Program.custom_create(
-                user=request.user,
-                program=program_queue,
-                emergency_mode=False
+        if role:
+          queue_id = request.data.get("queue_id", None)
+          action = request.data.get("action", None)
+
+          if queue_id and action:
+            program_queue = ProgramQueue.objects.get(id=queue_id)
+
+            if action == "approve":
+              if program_queue.action == UserActions.ADD.value:
+                Program.custom_create(
+                  user=request.user,
+                  program=program_queue,
+                  emergency_mode=False
+                )
+              elif program_queue.action == UserActions.UPDATE.value:
+                Program.custom_update(
+                  user=request.user,
+                  program=program_queue,
+                  program_id=program_queue.related_program_id,
+                  emergency_mode=False
+                )
+              elif program_queue.action == UserActions.DELETE.value:
+                program = Program.objects.get(id=program_queue.related_program_id)
+                program.delete()
+
+              ActionLog.objects.create(
+                  info=program_queue.name,
+                  additional_info=[
+                    program_queue.requested_by_email,
+                    program_queue.action,
+                    program_queue.related_program_id
+                  ],
+                  action="approved",
+                  model="program queue",
+                  created_by=request.user
               )
-            elif program_queue.action == UserActions.UPDATE.value:
-              Program.custom_update(
-                user=request.user,
-                program=program_queue,
-                program_id=program_queue.related_program_id,
-                emergency_mode=False
+            else:
+              ActionLog.objects.create(
+                  info=program_queue.name,
+                  additional_info=[
+                    program_queue.requested_by_email,
+                    program_queue.action
+                  ],
+                  action="rejected",
+                  model="program queue",
+                  created_by=request.user
               )
-            elif program_queue.action == UserActions.DELETE.value:
-              program = Program.objects.get(id=program_queue.related_program_id)
-              program.delete()
 
-            ActionLog.objects.create(
-                info=program_queue.name,
-                additional_info=[
-                  program_queue.requested_by_email,
-                  program_queue.action,
-                  program_queue.related_program_id
-                ],
-                action="approved",
-                model="program queue",
-                created_by=request.user
+            program_queue.delete()
+
+            return JsonResponse(
+              {
+                "message": "Program queue {} successfully.".format(action),
+              }
             )
-
-          else:
-            ActionLog.objects.create(
-                info=program_queue.name,
-                additional_info=[
-                  program_queue.requested_by_email,
-                  program_queue.action
-                ],
-                action="rejected",
-                model="program queue",
-                created_by=request.user
-            )
-
-          program_queue.delete()
-
-          return JsonResponse(
-            {
-              "message": "Program queue {} successfully.".format(action),
-            }
-          )
     except Exception as e:
       logger.error("Error approving/rejecting program queue", e)
       return JsonResponse(

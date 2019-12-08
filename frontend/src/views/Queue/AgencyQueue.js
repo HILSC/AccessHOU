@@ -58,6 +58,7 @@ const AgencyQueue = ({ match }) => {
         ...data,
         agency: resulSet.data.agency,
         agencyQueue: resulSet.data.agency_queue,
+        emergencyModeOn: resulSet.data.emergency_mode_on,
         loading: false
       }));
     }).catch(() => {
@@ -100,7 +101,7 @@ const AgencyQueue = ({ match }) => {
     approveRejectAgencyQueue(token, {
       queue_id: pageData.agencyQueue.id,
       action: confirmation.action,
-      hilscVerified: pageData.hilscVerified
+      hilsc_verified: pageData.hilscVerified
     }).then(result => {
       setConfirmation(data => ({
         ...data,
@@ -139,9 +140,17 @@ const AgencyQueue = ({ match }) => {
             <QueueIcon className={classes.icon} />
             Queue
           </Link>
-          <Typography color="textPrimary" className={classes.link}>
-            Agency in queue
+          <Typography color="textPrimary">
+            Agency
           </Typography>
+          {
+            pageData.agencyQueue && pageData.agencyQueue.emergency_mode && pageData.emergencyModeOn ? (
+              <div className={classes.emergencyContainer}>EMERGENCY MODE ON</div>
+            ) : null}
+          {
+            pageData.agencyQueue ? (
+              <div className={classes.actionContainer}>{pageData.agencyQueue.action.toUpperCase()}</div>
+          ) : null}
         </Breadcrumbs>
       </Grid>
       <Grid item xs={12} sm={12} md={12}>
@@ -170,6 +179,7 @@ const AgencyQueue = ({ match }) => {
                 type="button"
                 className={classes.button}
                 onClick={handleRejectClick}
+                disabled={pageData.agencyQueue.emergency_mode && pageData.emergencyModeOn}
               >
                 Reject
               </Button>
@@ -179,6 +189,7 @@ const AgencyQueue = ({ match }) => {
                 type="submit"
                 className={classes.button}
                 onClick={handleApproveClick}
+                disabled={pageData.agencyQueue.emergency_mode && pageData.emergencyModeOn}
               >
                 Approve
               </Button>

@@ -30,6 +30,7 @@ import Users from 'views/UserManagement/UserManagement';
 import Settings from 'views/Settings/Settings';
 
 import Profile from 'views/UserProfile/UserProfile';
+import UserManualPublic from 'views/UserManual/UserManualPublic';
 
 import NotFound from 'views/NotFound/NotFound';
 
@@ -55,6 +56,7 @@ const App = () => {
           <PublicRoute path="/program/:agency/:slug" component={ProgramDetails} layout={PublicLayout} />
 
           <PublicRoute path="/search" component={Results} layout={PublicLayout}/>
+          <PublicRoute path="/user-manual" component={UserManualPublic} layout={PublicLayout}/>
 
           {/* LOGGED USERS */}
           <PrivateRoute exact path="/private" component={Dashboard} layout={DashboardLayout} />

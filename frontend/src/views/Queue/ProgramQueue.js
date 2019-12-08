@@ -53,6 +53,7 @@ const ProgramQueue = ({ match }) => {
         ...data,
         program: resulSet.data.program,
         programQueue: resulSet.data.program_queue,
+        emergencyModeOn: resulSet.data.emergency_mode_on,
         loading: false
       }));
     }).catch(() => {
@@ -129,9 +130,18 @@ const ProgramQueue = ({ match }) => {
             <QueueIcon className={classes.icon} />
             Queue
           </Link>
-          <Typography color="textPrimary" className={classes.link}>
-            Program in queue
+          <Typography color="textPrimary">
+            Program
           </Typography>
+          {
+            pageData.programQueue && pageData.programQueue.emergency_mode && pageData.emergencyModeOn ? (
+              <div className={classes.emergencyContainer}>EMERGENCY MODE ON</div>
+            ) : null
+          }
+          {
+            pageData.programQueue ? (
+              <div className={classes.actionContainer}>{pageData.programQueue.action.toUpperCase()}</div>
+          ) : null}
         </Breadcrumbs>
       </Grid>
       <Grid item xs={12} sm={12} md={12}>
@@ -150,6 +160,7 @@ const ProgramQueue = ({ match }) => {
                   type="button"
                   className={classes.button}
                   onClick={handleRejectClick}
+                  disabled={pageData.programQueue.emergency_mode && pageData.emergencyModeOn}
                 >
                   Reject
                 </Button>
@@ -159,6 +170,7 @@ const ProgramQueue = ({ match }) => {
                   type="submit"
                   className={classes.button}
                   onClick={handleApproveClick}
+                  disabled={pageData.programQueue.emergency_mode && pageData.emergencyModeOn}
                 >
                   Approve
                 </Button>

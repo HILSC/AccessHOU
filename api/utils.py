@@ -1,11 +1,11 @@
-from django.conf import settings
-
-from enum import Enum
-
 import googlemaps
 import random
 import string
 import logging
+
+from django.conf import settings
+
+from enum import Enum
 
 logger = logging.getLogger(__name__)
 

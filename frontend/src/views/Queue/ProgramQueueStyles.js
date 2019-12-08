@@ -18,4 +18,14 @@ export default (theme) => ({
     marginTop: theme.spacing(3),
     marginLeft: theme.spacing(1),
   },
+  actionContainer: {
+    backgroundColor: '#bcdff1',
+    borderRadius: 4,
+    padding: 4
+  },
+  emergencyContainer: {
+    backgroundColor: '#faf2cc',
+    borderRadius: 4,
+    padding: 4
+  }
 });
