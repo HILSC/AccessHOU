@@ -94,9 +94,16 @@ const CustomInput = ({
               input={<Input id={`${id}-input`} />}
               renderValue={selected => (
                 <div className={classes.chips}>
-                  {selected.map(value => (
-                    <Chip key={value} label={value} className={classes.chip} />
-                  ))}
+                  {selected.map(value => {
+                    let item_found = options.filter(item => {
+                      if (typeof item === 'object' && item.value === value) {
+                        return item
+                      }
+                    });
+                    let label = item_found.length ? item_found[0].label : value;
+                    return (<Chip key={value} label={label} className={classes.chip} />)
+                  })
+                  }
                 </div>
               )}
             >

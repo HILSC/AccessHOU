@@ -14,7 +14,11 @@ import ScheduleData from 'components/Schedule/ScheduleData';
 // Constants
 import {
   ACTION_CLASS,
-  ACTION_MESSAGE
+  ACTION_MESSAGE,
+  PROGRAM_SERVICES,
+  AGE_GROUPS,
+  IMMIGRATION_STATUSES,
+  LANGUAGES,
 } from 'constants.js';
 
 // Utils
@@ -84,6 +88,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={PROGRAM_SERVICES}
                   labelText={'Service Types'}
                   dataText={queueProgramData.service_types ? queueProgramData.service_types : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueProgramData.service_types ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
@@ -94,6 +99,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={PROGRAM_SERVICES}
                   labelText={'Service Types'}
                   dataText={program ? program.service_types : ''}
                 />
@@ -372,6 +378,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={AGE_GROUPS}
                   labelText={'Age groups'}
                   dataText={queueProgramData.age_groups ? queueProgramData.age_groups : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueProgramData.age_groups ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
@@ -382,6 +389,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={AGE_GROUPS}
                   labelText={'Age groups'}
                   dataText={program.age_groups}
                 />

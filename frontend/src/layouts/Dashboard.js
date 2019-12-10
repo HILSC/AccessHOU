@@ -166,7 +166,7 @@ export default ({ children }) => {
               <ListItemIcon>
                 <NoteIcon />
               </ListItemIcon>
-              <ListItemText primary="User manual" />
+              <ListItemText primary="Registered User manual" />
             </ListItem>
           </NavLink>
           <ListItem button onClick={handleSignout}>

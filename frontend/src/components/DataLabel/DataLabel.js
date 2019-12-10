@@ -12,7 +12,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import styles from "./DataLabelStyles";
 const useStyles = makeStyles(styles);
 
-export default ({ labelText, dataText, dataTextWithFormat, dataTextClass, isAList=false }) => {
+export default ({ labelText, dataText, dataTextWithFormat, dataTextClass, isAList=false, listOptions=[] }) => {
   const classes = useStyles();
 
   const textClass = dataTextClass && dataTextClass === ACTION_CLASS.CHANGED ? classes.infoChanged :

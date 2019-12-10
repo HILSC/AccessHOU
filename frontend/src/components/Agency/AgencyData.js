@@ -15,7 +15,12 @@ import ProgramItems from 'components/Program/ProgramItems';
 
 import {
   ACTION_CLASS,
-  ACTION_MESSAGE
+  ACTION_MESSAGE,
+  AGE_GROUPS,
+  IMMIGRATION_STATUSES,
+  IDS,
+  LANGUAGES,
+  AVAILABLE_INTERPRETATION
 } from 'constants.js';
 
 import { 
@@ -238,6 +243,9 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
             ) : null
           }
           {
+            // TODO :
+            // ENVIAR LAS OPCIONES AL DATALABEL QUE SON UNA LISTA
+            // Y HACER EL MISMO CHEQUEO QUE HICE EN EL CUSTOMINPUT
             // Payment Options
             queueAgencyData && queueAgencyData.payment_options !== agency.payment_options ? (
               <Grid item xs={12} sm={12} md={6}>
@@ -277,6 +285,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={AGE_GROUPS}
                   labelText={'Age groups'}
                   dataText={queueAgencyData.age_groups !== '' ? queueAgencyData.age_groups : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.age_groups !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
@@ -287,6 +296,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={AGE_GROUPS}
                   labelText={'Age groups'}
                   dataText={agency.age_groups}
                 />
@@ -339,6 +349,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={IMMIGRATION_STATUSES}
                   labelText={'Immigration status(es)'}
                   dataText={queueAgencyData.immigration_statuses !== '' ? queueAgencyData.immigration_statuses : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.immigration_statuses !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
@@ -349,6 +360,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={IMMIGRATION_STATUSES}
                   labelText={'Immigration status(es)'}
                   dataText={agency.immigration_statuses}
                 />
@@ -375,6 +387,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={IDS}
                   labelText={'IDs accepted -- current'}
                   dataText={queueAgencyData.accepted_ids_current !== '' ? queueAgencyData.accepted_ids_current : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.accepted_ids_current !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
@@ -385,6 +398,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={IDS}
                   labelText={'IDs accepted -- current'}
                   dataText={agency.accepted_ids_current}
                 />
@@ -397,6 +411,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={IDS}
                   labelText={'IDs accepted -- expired'}
                   dataText={queueAgencyData.accepted_ids_expired !== '' ? queueAgencyData.accepted_ids_expired : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.accepted_ids_expired !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
@@ -407,6 +422,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={IDS}
                   labelText={'IDs accepted -- expired'}
                   dataText={agency.accepted_ids_expired}
                 />
@@ -544,6 +560,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={LANGUAGES}
                   labelText={'Agency'}
                   dataText={queueAgencyData.languages !== '' ? queueAgencyData.languages : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.languages !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
@@ -554,6 +571,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={LANGUAGES}
                   labelText={'Agency'}
                   dataText={agency.languages}
                 />
@@ -566,6 +584,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={LANGUAGES}
                   labelText={'Documents'}
                   dataText={queueAgencyData.documents_languages !== '' ? queueAgencyData.documents_languages : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.documents_languages !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
@@ -576,6 +595,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={LANGUAGES}
                   labelText={'Documents'}
                   dataText={agency.documents_languages}
                 />
@@ -588,6 +608,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={LANGUAGES}
                   labelText={'Website'}
                   dataText={queueAgencyData.website_languages !== '' ? queueAgencyData.website_languages : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.website_languages !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
@@ -598,6 +619,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={LANGUAGES}
                   labelText={'Website'}
                   dataText={agency.website_languages}
                 />
@@ -610,6 +632,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={LANGUAGES}
                   labelText={'Frontline staff'}
                   dataText={queueAgencyData.frontline_staff_languages !== '' ? queueAgencyData.frontline_staff_languages : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.frontline_staff_languages !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
@@ -620,6 +643,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={LANGUAGES}
                   labelText={'Frontline staff'}
                   dataText={agency.frontline_staff_languages}
                 />
@@ -632,6 +656,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={AVAILABLE_INTERPRETATION}
                   labelText={'Interpretation available?'}
                   dataText={queueAgencyData.interpretations_available !== '' ? queueAgencyData.interpretations_available : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.interpretations_available !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
@@ -642,6 +667,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={12}>
                 <DataLabel
                   isAList={true}
+                  listOptions={AVAILABLE_INTERPRETATION}
                   labelText={'Interpretation available?'}
                   dataText={agency.interpretations_available}
                 />

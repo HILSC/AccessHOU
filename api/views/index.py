@@ -136,11 +136,11 @@ class SearchAppView(APIView):
 
             # Keyword
             if keyword:
-                program_filters &= models.Q(name__icontains=keyword,)
+                program_filters &= models.Q(name__icontains=keyword.strip(),)
 
-                program_filters |= models.Q(description__icontains=keyword,)
+                program_filters |= models.Q(description__icontains=keyword.strip(),)
 
-                agency_filters &= models.Q(name__icontains=keyword,)
+                agency_filters &= models.Q(name__icontains=keyword.strip(),)
 
             # Service Types
             if service_types and len(service_types):
