@@ -18,7 +18,7 @@ import {
   PROGRAM_SERVICES,
   AGE_GROUPS,
   IMMIGRATION_STATUSES,
-  LANGUAGES,
+  CRISIS
 } from 'constants.js';
 
 // Utils
@@ -402,6 +402,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={IMMIGRATION_STATUSES}
                   labelText={'Immigrant status(es)'}
                   dataText={queueProgramData.immigrant_statuses ? queueProgramData.immigrant_statuses : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueProgramData.immigrant_statuses ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
@@ -412,6 +413,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={IMMIGRATION_STATUSES}
                   labelText={'Immigrant status(es)'}
                   dataText={program ? program.immigrant_statuses : ''}
                 />
@@ -730,6 +732,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={CRISIS}
                   labelText={'Crisis?'}
                   dataText={queueProgramData.crisis ? queueProgramData.crisis : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueProgramData.crisis ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
@@ -740,6 +743,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   isAList={true}
+                  listOptions={CRISIS}
                   labelText={'Crisis?'}
                   dataText={program ? program.crisis : ''}
                 />

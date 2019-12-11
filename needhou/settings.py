@@ -21,14 +21,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '2^@of(lnx13-2w*#8*syrctkvcm@npqaa)lw$5braq@&1i8$$$'
-# SECRET_KEY = os.getenv('SECRET_KEY', None)
+SECRET_KEY = os.getenv('SECRET_KEY', None)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    "localhost:8000",
     "dev-accesshou.herokuapp.com",
     "prod-accesshou.herokuapp.com",
     "needhou.brightanchor.com",
@@ -184,17 +182,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 GEOLOCATOR_API_KEY = os.getenv('GEOLOCATOR_API_KEY', None)
 
 # DATABASE
-# import dj_database_url
+import dj_database_url
 
-# DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'd4vkcj9fdmc0bm',
-        'USER': 'wzreaxcdbyokrd',
-        'PASSWORD': 'b847f207dd27fa5b03f4e838d1fe3b7d70f653002b7683ec35e4dbbd34def38a',
-        'HOST': 'ec2-174-129-255-17.compute-1.amazonaws.com',
-        'PORT': '5432',
-    }
-}

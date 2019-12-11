@@ -99,6 +99,8 @@ const CustomInput = ({
                       if (typeof item === 'object' && item.value === value) {
                         return item
                       }
+
+                      return null;
                     });
                     let label = item_found.length ? item_found[0].label : value;
                     return (<Chip key={value} label={label} className={classes.chip} />)

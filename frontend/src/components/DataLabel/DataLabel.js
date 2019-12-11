@@ -25,7 +25,7 @@ export default ({ labelText, dataText, dataTextWithFormat, dataTextClass, isALis
       </Typography>
       {
         isAList ? (
-          <BadgeList items={dataText} dataTextClass={dataTextClass} />
+          <BadgeList items={dataText} options={listOptions} dataTextClass={dataTextClass} />
         ) : labelText === "Website" ? dataTextWithFormat !== '' ? (
               <a href={dataTextWithFormat} target="_blank" rel="noopener noreferrer" className={textClass}>{dataText}</a>
           ): {dataText} :
