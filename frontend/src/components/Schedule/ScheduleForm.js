@@ -1,5 +1,4 @@
 import React from "react";
-import TimePicker from 'rc-time-picker';
 import moment from 'moment';
 
 import {
@@ -8,6 +7,8 @@ import {
 
 // Material UI Components
 import Grid from "@material-ui/core/Grid";
+
+import CustomTimePicker from '../CustomTimePicker/CustomTimePicker';
 
 import { 
   WEEKDAYS,
@@ -20,50 +21,16 @@ import { makeStyles } from "@material-ui/core/styles";
 import styles from "./ScheduleFormStyles";
 const useStyles = makeStyles(styles);
 
-const CustomTimePicker = ({ name, values, defaultValue, day, handleTimePicked }) => {
-  const handleChange = (value) => {
-    if (value) {
-      handleTimePicked({name: name, value: value.format('h:mm A')});
-    } else{
-      handleTimePicked({name: name, value: ''});
-    }
-  }
 
-  const format = 'h:mm A';
-
-  let value = defaultValue;
-  if (values[name]) {
-    value = moment(values[name], format);
-  }
-
-  const weekends = ["Sunday", "Saturday"];
-
-  if (value === defaultValue && weekends.includes(day)){
-    value = null;
-  }
-
-  return (
-    <TimePicker
-      showSecond={false}
-      defaultValue={value}
-      onChange={handleChange}
-      format={format}
-      minuteStep={15}
-      use12Hours
-      inputReadOnly
-    />
-  )
-}
-
-export default ({ handleScheduleChanges, values }) => {
+export default ({ handleScheduleChanges, values, autoPopulate=true }) => {
   const classes = useStyles();
 
   const handleChange = ({name, value}) => {
     handleScheduleChanges({[name]: value});
   }
 
-  const from = moment().hour(9).minute(0);
-  const to = moment().hour(5).minute(0);
+  const from = autoPopulate ? moment().hour(9).minute(0) : null;
+  const to = autoPopulate ? moment().hour(5).minute(0) : null;
 
   return (
     <div>

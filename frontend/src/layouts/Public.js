@@ -200,6 +200,11 @@ export default ({ children }) =>{
               </Typography>
             </div>
             <div className={classes.footerMobileP}>
+              <Typography variant="body1">
+                Questions? Comments? Email <a className={classes.editorLink} rel="noopener noreferrer" href="mailto:accesshou@houstonimmigration.org">accesshou@houstonimmigration.org</a>
+              </Typography>
+            </div>
+            <div className={classes.footerMobileP}>
               <Typography variant="body2">
                 The AccessHOU Houston Social Services Database is a product of <a rel="noopener noreferrer" href="https://www.houstonimmigration.org/" target="_blank"><abbr title="Houston Immigration Legal Services Collaborative">HILSC</abbr></a>. Only HILSC Verified data has been accounted for by HILSC.
               </Typography>

@@ -2,7 +2,9 @@ import logging
 import json
 import re
 
+from django.core.paginator import Paginator
 from django.db import transaction
+from django.db.models import F
 from django.core import serializers
 from django.forms.models import model_to_dict
 from django.http import JsonResponse
@@ -854,23 +856,20 @@ class ProgramListView(APIView):
                     kw = {property_name: int(property_value)}
                 else:
                     kw = {"{}__icontains".format(property_name): property_value}
-                program_list = Program.objects.filter(**kw)
+                program_list = Program.objects.filter(**kw)[:15]
             else:
                 program_list = Program.objects.all().order_by(
                     "-updated_at", "-created_at", "name"
-                )
-
-            paginator = Paginator(program_list, 10)  # Show 10 programs per page
-            programs = paginator.get_page(page)
-            programs_json = serializers.serialize("json", programs.object_list)
+                )[:15]
+            
             return JsonResponse(
                 {
-                    "results": json.loads(programs_json),
-                    "total_records": paginator.count,
-                    "total_pages": paginator.num_pages,
-                    "page": programs.number,
-                    "has_next": programs.has_next(),
-                    "has_prev": programs.has_previous(),
+                    "programs": [{
+                        "id": program.id,
+                        "name": program.name,
+                        "agency_id": program.agency.id,
+                        "agency_name": program.agency.name,
+                    } for program in program_list]
                 },
                 safe=False,
             )

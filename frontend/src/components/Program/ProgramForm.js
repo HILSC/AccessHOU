@@ -59,8 +59,7 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }
     ...data,
     'agency_id': data && data.agency ? data.agency.id : data.id,
     'program_id': data && data.agency ? data.id : null,
-    'schedules': data && data.schedule ? data.schedule : DEFAULT_WEEKDAYS_TIME,
-    'walk_in_schedule': data && data.schedule ? data.schedule : DEFAULT_WEEKDAYS_TIME,
+    'schedules': data ? data.schedule : DEFAULT_WEEKDAYS_TIME,
     'requested_by_email': '',
     'requested_by_name': '',
     'name': data && data.agency ? data.name : '',
@@ -578,6 +577,7 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }
           <ScheduleForm
             handleScheduleChanges={handleWalkInScheduleChanges}
             values={values.walk_in_schedule ? values.walk_in_schedule : {}}
+            autoPopulate={false}
           />
         </Grid>
         <Grid item xs={12} sm={12} md={6}>

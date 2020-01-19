@@ -6,12 +6,13 @@ from django.dispatch import receiver
 from api.models.base import Base
 
 class Role(Base):
-    name = models.CharField(max_length=100, blank=True, null=True)
+    name = models.CharField(max_length=100, blank=True, null=False)
     description = models.CharField(max_length=500, blank=True, null=True)
-    HILSC_verified = models.BooleanField(default=False, null=True)
-    approve_queue = models.BooleanField(default=False, null=True)
-    skip_queue = models.BooleanField(default=False, null=True)
-    add_advocacy_reports = models.BooleanField(default=False, null=True)
+    HILSC_verified = models.BooleanField(default=False, null=False)
+    approve_queue = models.BooleanField(default=False, null=False)
+    skip_queue = models.BooleanField(default=False, null=False)
+    add_advocacy_reports = models.BooleanField(default=False, null=False)
+    #view_advocacy_reports = models.BooleanField(default=False, null=False)
 
     def __str__(self):
         return self.name

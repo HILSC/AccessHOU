@@ -243,9 +243,6 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
             ) : null
           }
           {
-            // TODO :
-            // ENVIAR LAS OPCIONES AL DATALABEL QUE SON UNA LISTA
-            // Y HACER EL MISMO CHEQUEO QUE HICE EN EL CUSTOMINPUT
             // Payment Options
             queueAgencyData && queueAgencyData.payment_options !== agency.payment_options ? (
               <Grid item xs={12} sm={12} md={6}>

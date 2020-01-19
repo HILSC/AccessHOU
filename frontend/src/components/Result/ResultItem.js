@@ -75,7 +75,7 @@ const AgencyItem = ({ classes, agency, programs, handleProgramSelect }) => {
             }} />
             <Typography className={classes.title} color="textSecondary" gutterBottom>
             {agency.street && agency.city && agency.state && agency.zipcode ?
-                (<a className={classes.customLink} target="_blank" rel="noopener noreferrer" href={`http://maps.google.com/?q=${agency.street}. ${agency.city}, ${agency.state} ${agency.zipcode}`}>{`${agency.street} ${agency.city}, ${agency.state} ${agency.zipcode}`}</a>) :
+                (<a className={classes.customLink} target="_blank" rel="noopener noreferrer" href={`http://maps.google.com/?q=${agency.street}. ${agency.city}, ${agency.state} ${agency.zipcode}`}>{`${agency.street}, ${agency.city}, ${agency.state} ${agency.zipcode}`}</a>) :
                 (<a className={classes.customLink} target="_blank" rel="noopener noreferrer" href={`http://maps.google.com/?q=${agency.street}`}>{agency.street}</a>)}
             </Typography>
           </div>

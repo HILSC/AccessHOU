@@ -37,7 +37,7 @@ export default ({ values, dataTextClass }) => {
                 <Label 
                   text={`${day} - ${from ? from : ''} - ${to ? to : ''}`}
                   variant="body2"
-                  color={textClass ? null : "textSecondary"} />
+                  color={textClass ? null : "textPrimary"} />
               </div>
             )
           }

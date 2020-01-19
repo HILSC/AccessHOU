@@ -81,4 +81,7 @@ export default (theme) => ({
     color: 'inherit',
     textDecoration: 'none'
   },
+  longText: {
+    whiteSpace: 'pre-wrap'
+  }
 });

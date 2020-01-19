@@ -29,7 +29,6 @@ DEBUG = False
 ALLOWED_HOSTS = [
     "dev-accesshou.herokuapp.com",
     "prod-accesshou.herokuapp.com",
-    "needhou.brightanchor.com",
     "accesshou.org",
 ]
 
@@ -73,8 +72,7 @@ CSRF_COOKIE_NAME = "csrftoken"
 
 CORS_ORIGIN_WHITELIST = [
     "https://accesshou.org",
-    "https://qa-needhou.herokuapp.com",
-    "https://needhou.brightanchor.com",
+    "https://prod-accesshou.herokuapp.com",
     "https://dev-accesshou.herokuapp.com",
 ]
 
@@ -183,6 +181,9 @@ GEOLOCATOR_API_KEY = os.getenv('GEOLOCATOR_API_KEY', None)
 
 # DATABASE
 import dj_database_url
-
 DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
 
+try:
+    from .local_settings import *
+except ImportError:
+    pass

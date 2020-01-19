@@ -22,7 +22,7 @@ const formatURL = (url) => {
 
 const hasSchedule = (schedules) => {
   if(schedules){
-    return Object.keys(schedules).every((k) => schedules[k] !== '')
+    return Object.keys(schedules).some((k) => schedules[k] !== '')
   }
 
   return false;

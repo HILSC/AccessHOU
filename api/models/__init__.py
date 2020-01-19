@@ -6,6 +6,8 @@ from api.models.program import Program
 from api.models.program import ProgramQueue
 from api.models.program import ProgramEmergencyQueue
 
+from api.models.advocacy_report import AdvocacyReport
+
 from api.models.zip_code import ZipCodeData
 
 from api.models.user import Profile

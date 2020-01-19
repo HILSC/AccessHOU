@@ -50,9 +50,11 @@ class UserAuthView(APIView):
                 jwt_tokens = RefreshToken.for_user(user)
                 refresh_token = str(jwt_tokens)
                 access_token = str(jwt_tokens.access_token)
+
                 return JsonResponse(
                     {
                         "email": user.email,
+                        "name": "{} {}".format(user.first_name, user.last_name),
                         "access_token": access_token,
                         "refresh_token": refresh_token,
                         "role": {
@@ -62,6 +64,7 @@ class UserAuthView(APIView):
                             "approve_queue": user.profile.role.approve_queue,
                             "skip_queue": user.profile.role.skip_queue,
                             "advocacy_reports": user.profile.role.add_advocacy_reports,
+                            #"view_advocacy_reports": user.profile.role.view_advocacy_reports,
                         }
                     }
                 )

@@ -422,6 +422,19 @@ const getAppEmegencyMode = () => {
   )
 }
 
+const createAdvocacyReport = (token, data) => {
+  return client.post(
+    '/advocacy-report/',
+    JSON.stringify(data),
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  )
+}
+
 export {
   signIn,
   refreshToken,
@@ -457,4 +470,6 @@ export {
   approveRejectProgramQueue,
 
   getAppEmegencyMode,
+
+  createAdvocacyReport,
 }

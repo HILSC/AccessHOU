@@ -60,8 +60,8 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
     ...agency,
     'agency_id': agency && agency.id,
     'state': agency && agency.state ? agency.state.toLowerCase() : 'texas',
-    'schedules': agency && agency.schedule ? agency.schedule : DEFAULT_WEEKDAYS_TIME,
-    'walk_in_schedule': agency && agency.schedule ? agency.schedule : DEFAULT_WEEKDAYS_TIME,
+    'schedules': agency ? agency.schedule : DEFAULT_WEEKDAYS_TIME,
+    'walk_in_schedule': agency ? agency.schedule : DEFAULT_WEEKDAYS_TIME,
     'requested_by_email': '',
     'requested_by_name': '',
   });

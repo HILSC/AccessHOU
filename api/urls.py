@@ -24,6 +24,9 @@ from api.views.queue import QueueListView
 from api.views.queue import QueueAgencyView
 from api.views.queue import QueueProgramView
 
+from api.views.advocacy_report import AdvocacyReportEntityListView
+from api.views.advocacy_report import AdvocacyReportView
+
 from api.views.app_settings import AppSettingsView
 
 
@@ -61,6 +64,9 @@ urlpatterns = [
 
     path('queue/agency/', QueueAgencyView.as_view()),
     path('queue/program/', QueueProgramView.as_view()),
+
+    path('advocacy-reports/', AdvocacyReportEntityListView.as_view()),
+    path('advocacy-report/', AdvocacyReportView.as_view()),
 
     path('user/profile/', UserProfileView.as_view()),
 

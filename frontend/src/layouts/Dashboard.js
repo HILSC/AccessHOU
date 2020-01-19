@@ -31,6 +31,8 @@ import QueueIcon from '@material-ui/icons/Queue';
 import EditIcon from '@material-ui/icons/Edit';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import NoteIcon from '@material-ui/icons/Note';
+import ReportIcon from '@material-ui/icons/Report';
+import SubjectIcon from '@material-ui/icons/Subject';
 
 import HomeIcon from '@material-ui/icons/Home';
 import DashboardIcon from '@material-ui/icons/Dashboard';
@@ -43,10 +45,33 @@ import styles from 'layouts/DashboardStyles';
 
 const useStyles = makeStyles(styles);
 
-export default ({ children }) => {
+const CustomNavLink = ({ to, selectedIndex, itemPosition, text, icon: CustomIcon, handleClick}) => {
+  const classes = useStyles();
+
+  const handleCustomClick = () => {
+    handleClick(itemPosition);
+  }
+
+  return (
+    <NavLink to={to} className={classes.customLink} onClick={handleCustomClick}>
+      <ListItem button
+        selected={selectedIndex === itemPosition}>
+        <ListItemIcon>
+          <CustomIcon />
+        </ListItemIcon>
+        <ListItemText classes={{
+              root: classes.longText
+            }} primary={text} />
+      </ListItem>
+    </NavLink>
+  )
+}
+
+export default ({ children, menu }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const [open, setOpen] = React.useState(true);
+  const [selectedIndex, setSelectedIndex] = React.useState(menu);
 
   const loggedUser = useSelector(state => state.user);
 
@@ -61,6 +86,10 @@ export default ({ children }) => {
   const handleSignout = () => {
     dispatch(signOutAction());
   }
+
+  const handleListItemClick = (selectedIndex) => {
+    setSelectedIndex(selectedIndex);
+  };
 
   return (
     <div className={classes.root}>
@@ -95,14 +124,14 @@ export default ({ children }) => {
         </div>
         <Divider />
         <List>
-          <NavLink to="/private" className={classes.customLink}>
-            <ListItem button>
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary="Dashboard" />
-            </ListItem>
-          </NavLink>
+          <CustomNavLink
+            to="/private?menu=1"
+            selectedIndex={selectedIndex}
+            itemPosition={1}
+            text="Dashboard"
+            icon={DashboardIcon}
+            handleClick={handleListItemClick}
+          />
           <NavLink to="/" className={classes.customLink}>
             <ListItem button>
               <ListItemIcon>
@@ -119,56 +148,76 @@ export default ({ children }) => {
               <ListItemText primary="Editor" />
             </ListItem>
           </NavLink>
+          {/* <CustomNavLink
+            to="/private/create/advocacy-report?menu=2"
+            selectedIndex={selectedIndex}
+            itemPosition={2}
+            text="Create Advocacy Report"
+            icon={ReportIcon}
+            handleClick={handleListItemClick}
+          /> */}
           {
             loggedUser.approveQueue ? (
-              <NavLink to="/private/queue" className={classes.customLink}>
-                <ListItem button>
-                  <ListItemIcon>
-                    <QueueIcon />
-                  </ListItemIcon>
-                  <ListItemText primary="Queue" />
-                </ListItem>
-              </NavLink>
+              <CustomNavLink
+                to="/private/queue?menu=3"
+                selectedIndex={selectedIndex}
+                itemPosition={3}
+                text="Queue"
+                icon={QueueIcon}
+                handleClick={handleListItemClick}
+              />
             ) : null
           }
           {
             loggedUser.roleId === 1 ? (
               <React.Fragment>
-                <NavLink to="/private/users" className={classes.customLink}>
-                  <ListItem button>
-                    <ListItemIcon>
-                      <PeopleIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Users" />
-                  </ListItem>
-                </NavLink>
-                <NavLink to="/private/settings" className={classes.customLink}>
-                  <ListItem button>
-                    <ListItemIcon>
-                      <SettingsIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="Settings" />
-                  </ListItem>
-                </NavLink>
+                <CustomNavLink
+                  to="/private/users?menu=4"
+                  selectedIndex={selectedIndex}
+                  itemPosition={4}
+                  text="Users"
+                  icon={PeopleIcon}
+                  handleClick={handleListItemClick}
+                />
+                <CustomNavLink
+                  to="/private/settings?menu=5"
+                  selectedIndex={selectedIndex}
+                  itemPosition={5}
+                  text="Settings"
+                  icon={SettingsIcon}
+                  handleClick={handleListItemClick}
+                />
               </React.Fragment>
             ) : null
           }
-          <NavLink to="/private/profile" className={classes.customLink}>
-            <ListItem button>
-              <ListItemIcon>
-                <AccountBoxIcon />
-              </ListItemIcon>
-              <ListItemText primary="Profile" />
-            </ListItem>
-          </NavLink>
-          <NavLink to="/private/user-manual" className={classes.customLink}>
-            <ListItem button>
-              <ListItemIcon>
-                <NoteIcon />
-              </ListItemIcon>
-              <ListItemText primary="Registered User manual" />
-            </ListItem>
-          </NavLink>
+          {/* {
+            loggedUser.viewAdvocacyReport ? (
+              <CustomNavLink
+                to="/private/advocacy-reports?menu=6"
+                selectedIndex={selectedIndex}
+                itemPosition={6}
+                text="Advocacy Reports"
+                icon={SubjectIcon}
+                handleClick={handleListItemClick}
+              />
+            ) : null
+          } */}
+          <CustomNavLink
+            to="/private/profile?menu=7"
+            selectedIndex={selectedIndex}
+            itemPosition={7}
+            text="Profile"
+            icon={AccountBoxIcon}
+            handleClick={handleListItemClick}
+          />
+          <CustomNavLink
+            to="/private/user-manual?menu=8"
+            selectedIndex={selectedIndex}
+            itemPosition={8}
+            text="Registered User Manual"
+            icon={NoteIcon}
+            handleClick={handleListItemClick}
+          />
           <ListItem button onClick={handleSignout}>
             <ListItemIcon>
               <ExitToAppIcon />

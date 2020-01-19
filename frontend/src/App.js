@@ -33,6 +33,8 @@ import Profile from 'views/UserProfile/UserProfile';
 import UserManualPublic from 'views/UserManual/UserManualPublic';
 import UserManualPrivate from 'views/UserManual/UserManualPrivate';
 
+import CreateAdvocacyReport from 'views/AdvocacyReport/AdvocacyReportCreate';
+
 import NotFound from 'views/NotFound/NotFound';
 
 
@@ -59,21 +61,25 @@ const App = () => {
           <PublicRoute path="/search" component={Results} layout={PublicLayout}/>
           <PublicRoute path="/user-manual" component={UserManualPublic} layout={PublicLayout}/>
 
-          {/* LOGGED USERS */}
-          <PrivateRoute exact path="/private" component={Dashboard} layout={DashboardLayout} />
-          <PrivateRoute exact path="/private/profile" component={Profile} layout={DashboardLayout} />
+          {/* Logged Users */}
+          <PrivateRoute exact path="/private" component={Dashboard} layout={DashboardLayout} menu={1} />
+          <PrivateRoute exact path="/private/profile" component={Profile} layout={DashboardLayout} menu={7} />
 
-          {/* ONLY ADMIN AND AccessHOU Quality Team */}
-          <SecureRoute exact path="/private/queue" component={Queue} layout={DashboardLayout} />
-          <SecureRoute exact path="/private/queue/agency/:queueId" component={AgencyQueue} layout={DashboardLayout} />
-          <SecureRoute exact path="/private/queue/program/:queueId" component={ProgramQueue} layout={DashboardLayout} />
+          {/* Only admin and AccessHOU Quality Team */}
+          <SecureRoute exact path="/private/queue" component={Queue} layout={DashboardLayout} menu={3} />
+          <SecureRoute exact path="/private/queue/agency/:queueId" component={AgencyQueue} layout={DashboardLayout} menu={3} />
+          <SecureRoute exact path="/private/queue/program/:queueId" component={ProgramQueue} layout={DashboardLayout} menu={3} />
 
-          {/* ONLY ADMIN */}
-          <AdminRoute exact path="/private/users" component={Users} layout={DashboardLayout} />
-          <AdminRoute exact path="/private/settings" component={Settings} layout={DashboardLayout} />
+          {/* Only Admin, AccessHOU Quality Team and Access to services committe members */}
+          <AdvocacyCreateRoute exact path="/private/create/advocacy-report" component={CreateAdvocacyReport} layout={DashboardLayout} menu={2} />
 
-          {/* LOGGED USER MANUAL */}
-          <PrivateRoute exact path="/private/user-manual" component={UserManualPrivate} layout={DashboardLayout} />
+          {/* Only Admin */}
+          <AdminRoute exact path="/private/users" component={Users} layout={DashboardLayout} menu={4} />
+          <AdminRoute exact path="/private/settings" component={Settings} layout={DashboardLayout} menu={5} />
+          {/* <AdminRoute exact path="/private/advocacy-reports" component={} layout={DashboardLayout} menu={6} /> */}
+
+          {/* Logged user manual */}
+          <PrivateRoute exact path="/private/user-manual" component={UserManualPrivate} layout={DashboardLayout} menu={8} />
 
           <PublicRoute path='*' exact={true} component={NotFound} layout={PublicLayout} />
         </Switch>
@@ -82,7 +88,7 @@ const App = () => {
   );
 }
 
-const PublicRoute = ({ component: Component, layout: Layout, ...rest }) => {
+const PublicRoute = ({ component: Component, layout: Layout, menu, ...rest }) => {
   return (
     <Route
       {...rest}
@@ -93,32 +99,32 @@ const PublicRoute = ({ component: Component, layout: Layout, ...rest }) => {
   );
 }
 
-const PrivateRoute = ({ component: Component, layout: Layout, ...rest }) => {
+const PrivateRoute = ({ component: Component, layout: Layout, menu, ...rest }) => {
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
   return (
     <Route
       {...rest}
       render={props => (
-        isAuthenticated ? <Layout><Component {...props} /></Layout> : <Redirect to={{ pathname: "/login" }} />
+        isAuthenticated ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/login" }} />
       )}
     />
   );
 }
 
-const AdminRoute = ({ component: Component, layout: Layout, ...rest }) =>{
+const AdminRoute = ({ component: Component, layout: Layout, menu, ...rest }) =>{
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
   const roleId = useSelector(state => state.user.roleId);
   return (
     <Route
       {...rest}
       render={props => (
-        isAuthenticated && roleId === 1 ? <Layout><Component {...props} /></Layout> : <Redirect to={{ pathname: "/login" }} />
+        isAuthenticated && roleId === 1 ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/login" }} />
       )}
     />
   );
 }
 
-const SecureRoute = ({ component: Component, layout: Layout, ...rest }) =>{
+const SecureRoute = ({ component: Component, layout: Layout, menu, ...rest }) =>{
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
   const roleId = useSelector(state => state.user.roleId);
   const availableRolesId = [1, 2];
@@ -126,7 +132,21 @@ const SecureRoute = ({ component: Component, layout: Layout, ...rest }) =>{
     <Route
       {...rest}
       render={props => (
-        (isAuthenticated && availableRolesId.includes(roleId)) ? <Layout><Component {...props} /></Layout> : <Redirect to={{ pathname: "/login" }} />
+        (isAuthenticated && availableRolesId.includes(roleId)) ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/login" }} />
+      )}
+    />
+  );
+}
+
+const AdvocacyCreateRoute = ({ component: Component, layout: Layout, menu, ...rest }) =>{
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+  const roleId = useSelector(state => state.user.roleId);
+  const availableRolesId = [1, 2];
+  return (
+    <Route
+      {...rest}
+      render={props => (
+        (isAuthenticated && availableRolesId.includes(roleId)) ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/login" }} />
       )}
     />
   );
