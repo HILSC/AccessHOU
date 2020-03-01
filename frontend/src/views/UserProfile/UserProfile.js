@@ -90,7 +90,7 @@ const UserProfile = () => {
     <React.Fragment>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={12} md={12}>
-          <h2 className={classes.title}>User Profile</h2>
+          <h2 className={classes.title}>User Profile <span className={classes.roleContainer}>{userInfo && userInfo.role}</span></h2>
           {
             userInfo && userInfo.message ? (
               <Alert

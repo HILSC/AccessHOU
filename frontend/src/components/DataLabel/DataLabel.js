@@ -33,8 +33,10 @@ export default ({ labelText, dataText, dataTextWithFormat, dataTextClass, isALis
             <Typography variant="body1" align="left" color="textPrimary" classes={{
               root: textClass
             }}>
-              {labelText === 'Phone' ? (
+              {labelText.toLowerCase().includes('phone') ? (
                 <a href={`tel:${dataText}`}>{dataText}</a>
+              ) : labelText.toLowerCase().includes('email') ? (
+                <a href={`mailto:${dataText}`}>{dataText}</a>
               ) : dataText}
             </Typography>
           )

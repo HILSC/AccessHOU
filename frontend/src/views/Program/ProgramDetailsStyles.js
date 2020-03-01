@@ -19,5 +19,8 @@ export default (theme) => ({
     color: '#777879',
     fontStyle: 'italic',
     fontSize: '16px'
+  },
+  button: {
+    marginLeft: 5
   }
 });

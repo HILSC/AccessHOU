@@ -10,6 +10,7 @@ from django.core.paginator import Paginator
 from django.db import transaction
 from django.db import models
 from django.http import JsonResponse
+from django.utils import timezone
 
 from rest_framework import permissions
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -44,7 +45,7 @@ class UserAuthView(APIView):
             user = authenticate(request, username=user_obj.username, password=password)
             
             if user:
-                user.last_login = datetime.datetime.now()
+                user.last_login = timezone.now()
                 user.save()
 
                 jwt_tokens = RefreshToken.for_user(user)
@@ -64,7 +65,7 @@ class UserAuthView(APIView):
                             "approve_queue": user.profile.role.approve_queue,
                             "skip_queue": user.profile.role.skip_queue,
                             "advocacy_reports": user.profile.role.add_advocacy_reports,
-                            #"view_advocacy_reports": user.profile.role.view_advocacy_reports,
+                            "view_advocacy_reports": user.profile.role.view_advocacy_reports,
                         }
                     }
                 )

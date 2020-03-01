@@ -12,15 +12,15 @@ export default (theme) => ({
   messages: {
     marginTop: theme.spacing(4),
   },
-  options: {
-    justifyContent: 'flex-end',
-  },
-  lastUpdated: {
-    color: '#777879',
-    fontStyle: 'italic',
-    fontSize: '16px'
+  buttons: {
+    display: 'flex',
+    justifyContent: 'center',
+    marginTop: theme.spacing(4),
   },
   button: {
-    marginLeft: 5
-  }
+    marginRight: '5px'
+  },
+  dialogContent: {
+    overflow: 'hidden',
+  },
 });

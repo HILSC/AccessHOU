@@ -5,6 +5,10 @@ import React, {
 import { Redirect } from 'react-router-dom';
 import clsx from 'clsx';
 
+import {
+  useSelector,
+} from 'react-redux';
+
 // API
 import { 
   getAgency
@@ -35,6 +39,8 @@ export default ({ match }) => {
     params: { slug }
   } = match;
 
+  const user = useSelector(state => state.user);
+
   const [data, setData] = useState({
     agency: null,
     showMissingData: false,
@@ -42,6 +48,7 @@ export default ({ match }) => {
   });
 
   const [edit, setEdit] = useState(false);
+  const [addAdvocacyReport, setAddAdvocacyReport] = useState(false);
   const [addProgram, setAddProgram] = useState(false);
 
   useEffect(() => {
@@ -51,13 +58,15 @@ export default ({ match }) => {
         agency: result.data.error ? null : result.data,
         error: result.data.error ? true : false
       }));
-    }).catch(() => {
-      // Show general error message
     })
   }, [slug]);
 
   const handleEdit = () => {
     setEdit(true);
+  }
+
+  const handleAdvocacyReport = () => {
+    setAddAdvocacyReport(true)
   }
 
   const handleShowMissingData = () => {
@@ -78,6 +87,11 @@ export default ({ match }) => {
 
   if(addProgram) {
     const url = `/program/create/${slug}`;
+    return <Redirect push to={url} />
+  }
+
+  if(addAdvocacyReport) {
+    const url = `/private/create/advocacy-report?menu=2&entity=agency&id=${data.agency.id}`;
     return <Redirect push to={url} />
   }
 
@@ -105,13 +119,28 @@ export default ({ match }) => {
               root: classes.options
             }}
               control={
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={handleEdit}
-                >
-                  Help complete this profile
-                </Button>
+                <React.Fragment>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={handleEdit}
+                    className={classes.button}
+                  >
+                    Help complete this profile
+                  </Button>
+                  {
+                    user.isAuthenticated && user.advocacyReport ? (
+                      <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={handleAdvocacyReport}
+                        className={classes.button}
+                      >
+                        Add advocacy report
+                      </Button>
+                    ) : null
+                  }
+                </React.Fragment>
               }
               label=""
             />

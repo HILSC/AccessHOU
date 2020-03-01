@@ -12,7 +12,7 @@ class Role(Base):
     approve_queue = models.BooleanField(default=False, null=False)
     skip_queue = models.BooleanField(default=False, null=False)
     add_advocacy_reports = models.BooleanField(default=False, null=False)
-    #view_advocacy_reports = models.BooleanField(default=False, null=False)
+    view_advocacy_reports = models.BooleanField(default=False, null=False)
 
     def __str__(self):
         return self.name

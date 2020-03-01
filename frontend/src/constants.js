@@ -564,6 +564,21 @@ const LANGUAGES = [
     }
 ]
 
+const ADVOCACY_REPORT_STATUSES = [
+    {
+        value: 'Open',
+        label: 'Open'
+    },
+    {
+        value: 'In Review',
+        label: 'In Review'
+    },
+    {
+        value: 'Close',
+        label: 'Close'
+    }
+]
+
 export {
   USER_ACTIONS,
   ACTION_CLASS,
@@ -583,4 +598,5 @@ export {
   INCOME_POVERTY_LEVEL_PERCENTS,
   CRISIS,
   PROGRAM_SERVICES,
+  ADVOCACY_REPORT_STATUSES,
 }

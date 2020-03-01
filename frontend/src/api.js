@@ -424,7 +424,45 @@ const getAppEmegencyMode = () => {
 
 const createAdvocacyReport = (token, data) => {
   return client.post(
-    '/advocacy-report/',
+    '/advocacy-reports/',
+    JSON.stringify(data),
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  )
+}
+
+const getAdvocacyReports = (token, params) => {
+  return client.get(
+    '/advocacy-reports/',
+    {
+      params,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  )
+}
+
+const getAdvocacyReport = (token, id) => {
+  return client.get(
+    `/advocacy-report/${id}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  )
+}
+
+const updateAdvocacyReport = (token, data) => {
+  return client.put(
+    `/advocacy-report/${data.id}`,
     JSON.stringify(data),
     {
       headers: {
@@ -472,4 +510,7 @@ export {
   getAppEmegencyMode,
 
   createAdvocacyReport,
+  getAdvocacyReports,
+  getAdvocacyReport,
+  updateAdvocacyReport,
 }
