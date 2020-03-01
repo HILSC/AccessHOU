@@ -72,6 +72,16 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
 
   const debouncedSearchTerm = useDebounce(searchTerm, 1000);
 
+  useEffect(() => {
+    setValues({
+      entity_reported: "agency",
+      incident_time: moment.moment().format('LLL'),
+      incident_date: moment.moment().format('L'),
+      query_string: false,
+      entity_reported_id: null,
+    });
+  }, [entity, entityId, agencyId])
+
   // Get agency/program based on props
   useEffect(()=> {
     if(entity && entityId) {
@@ -100,7 +110,7 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
   // Get agencies/programs based on search
   useEffect(() => {
     if (debouncedSearchTerm) {
-      if (values.entity_reported === 'agency') {
+      if (values.entity_reported === 'agency' && searchTerm) {
         getAgencies({
           property: 'name',
           value: searchTerm,
@@ -114,7 +124,7 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
             setResultSuggestions(suggestions);
           }
         });
-      } else if (values.entity_reported === 'program') {
+      } else if (values.entity_reported === 'program' && searchTerm) {
         getPrograms({
           property: 'name',
           value: searchTerm,

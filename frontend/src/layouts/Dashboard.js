@@ -148,14 +148,18 @@ export default ({ children, menu }) => {
               <ListItemText primary="Editor" />
             </ListItem>
           </NavLink>
-          <CustomNavLink
-            to="/private/create/advocacy-report?menu=2"
-            selectedIndex={selectedIndex}
-            itemPosition={2}
-            text="Create Advocacy Report"
-            icon={ReportIcon}
-            handleClick={handleListItemClick}
-          />
+          {
+            loggedUser.advocacyReport ? (
+              <CustomNavLink
+                to="/private/create/advocacy-report?menu=2"
+                selectedIndex={selectedIndex}
+                itemPosition={2}
+                text="Create Advocacy Report"
+                icon={ReportIcon}
+                handleClick={handleListItemClick}
+              />
+            ) : null
+          }
           {
             loggedUser.approveQueue ? (
               <CustomNavLink

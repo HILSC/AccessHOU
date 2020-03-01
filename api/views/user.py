@@ -52,12 +52,17 @@ class UserAuthView(APIView):
                 refresh_token = str(jwt_tokens)
                 access_token = str(jwt_tokens.access_token)
 
+                is_admin = False
+                if(user.profile.role.name == 'Admin'):
+                    is_admin = True
+
                 return JsonResponse(
                     {
                         "email": user.email,
                         "name": "{} {}".format(user.first_name, user.last_name),
                         "access_token": access_token,
                         "refresh_token": refresh_token,
+                        "is_admin": is_admin,
                         "role": {
                             "id": user.profile.role.id,
                             "name": user.profile.role.name,

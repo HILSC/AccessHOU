@@ -12,5 +12,11 @@ export default (theme) => ({
   },
   emergencyModeIcon: {
     fontSize: 50
-  }
+  },
+  roleContainer: {
+    backgroundColor: '#bcdff1',
+    borderRadius: 4,
+    padding: 4,
+    fontSize: 12
+  },
 });

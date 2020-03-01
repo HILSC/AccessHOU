@@ -114,12 +114,12 @@ const PrivateRoute = ({ component: Component, layout: Layout, menu, ...rest }) =
 
 const AdminRoute = ({ component: Component, layout: Layout, menu, ...rest }) =>{
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
-  const roleId = useSelector(state => state.user.roleId);
+  const user = useSelector(state => state.user);
   return (
     <Route
       {...rest}
       render={props => (
-        isAuthenticated && roleId === 1 ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
+        isAuthenticated && user.role === 'Admin' ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
       )}
     />
   );
@@ -141,13 +141,12 @@ const SecureRoute = ({ component: Component, layout: Layout, menu, ...rest }) =>
 
 const AdvocacyCreateRoute = ({ component: Component, layout: Layout, menu, ...rest }) =>{
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
-  const roleId = useSelector(state => state.user.roleId);
-  const availableRolesId = [1, 2];
+  const user = useSelector(state => state.user);
   return (
     <Route
       {...rest}
       render={props => (
-        (isAuthenticated && availableRolesId.includes(roleId)) ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
+        (isAuthenticated && user.advocacyReport) ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
       )}
     />
   );
