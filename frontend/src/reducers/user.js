@@ -24,6 +24,7 @@ export default (state = initialState, action) => {
         isAuthenticated: action.data.access_token ? true : false,
         email: action.data.email,
         name: action.data.name,
+        isAdmin: action.data.is_admin,
         roleId: action.data.role.id,
         role: action.data.role.name,
         approveQueue: action.data.role.approve_queue,

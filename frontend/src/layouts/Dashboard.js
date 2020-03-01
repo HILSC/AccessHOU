@@ -148,14 +148,18 @@ export default ({ children, menu }) => {
               <ListItemText primary="Editor" />
             </ListItem>
           </NavLink>
-          {/* <CustomNavLink
-            to="/private/create/advocacy-report?menu=2"
-            selectedIndex={selectedIndex}
-            itemPosition={2}
-            text="Create Advocacy Report"
-            icon={ReportIcon}
-            handleClick={handleListItemClick}
-          /> */}
+          {
+            loggedUser.advocacyReport ? (
+              <CustomNavLink
+                to="/private/create/advocacy-report?menu=2"
+                selectedIndex={selectedIndex}
+                itemPosition={2}
+                text="Create Advocacy Report"
+                icon={ReportIcon}
+                handleClick={handleListItemClick}
+              />
+            ) : null
+          }
           {
             loggedUser.approveQueue ? (
               <CustomNavLink
@@ -190,7 +194,7 @@ export default ({ children, menu }) => {
               </React.Fragment>
             ) : null
           }
-          {/* {
+          {
             loggedUser.viewAdvocacyReport ? (
               <CustomNavLink
                 to="/private/advocacy-reports?menu=6"
@@ -201,7 +205,7 @@ export default ({ children, menu }) => {
                 handleClick={handleListItemClick}
               />
             ) : null
-          } */}
+          }
           <CustomNavLink
             to="/private/profile?menu=7"
             selectedIndex={selectedIndex}

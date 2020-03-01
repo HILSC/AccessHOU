@@ -34,6 +34,7 @@ import UserManualPublic from 'views/UserManual/UserManualPublic';
 import UserManualPrivate from 'views/UserManual/UserManualPrivate';
 
 import CreateAdvocacyReport from 'views/AdvocacyReport/AdvocacyReportCreate';
+import AdvocacyReports from 'views/AdvocacyReport/AdvocacyReports';
 
 import NotFound from 'views/NotFound/NotFound';
 
@@ -76,7 +77,7 @@ const App = () => {
           {/* Only Admin */}
           <AdminRoute exact path="/private/users" component={Users} layout={DashboardLayout} menu={4} />
           <AdminRoute exact path="/private/settings" component={Settings} layout={DashboardLayout} menu={5} />
-          {/* <AdminRoute exact path="/private/advocacy-reports" component={} layout={DashboardLayout} menu={6} /> */}
+          <AdminRoute exact path="/private/advocacy-reports" component={AdvocacyReports} layout={DashboardLayout} menu={6} />
 
           {/* Logged user manual */}
           <PrivateRoute exact path="/private/user-manual" component={UserManualPrivate} layout={DashboardLayout} menu={8} />
@@ -113,12 +114,12 @@ const PrivateRoute = ({ component: Component, layout: Layout, menu, ...rest }) =
 
 const AdminRoute = ({ component: Component, layout: Layout, menu, ...rest }) =>{
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
-  const roleId = useSelector(state => state.user.roleId);
+  const user = useSelector(state => state.user);
   return (
     <Route
       {...rest}
       render={props => (
-        isAuthenticated && roleId === 1 ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/login" }} />
+        isAuthenticated && user.role === 'Admin' ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
       )}
     />
   );
@@ -132,7 +133,7 @@ const SecureRoute = ({ component: Component, layout: Layout, menu, ...rest }) =>
     <Route
       {...rest}
       render={props => (
-        (isAuthenticated && availableRolesId.includes(roleId)) ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/login" }} />
+        (isAuthenticated && availableRolesId.includes(roleId)) ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
       )}
     />
   );
@@ -140,13 +141,12 @@ const SecureRoute = ({ component: Component, layout: Layout, menu, ...rest }) =>
 
 const AdvocacyCreateRoute = ({ component: Component, layout: Layout, menu, ...rest }) =>{
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
-  const roleId = useSelector(state => state.user.roleId);
-  const availableRolesId = [1, 2];
+  const user = useSelector(state => state.user);
   return (
     <Route
       {...rest}
       render={props => (
-        (isAuthenticated && availableRolesId.includes(roleId)) ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/login" }} />
+        (isAuthenticated && user.advocacyReport) ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
       )}
     />
   );

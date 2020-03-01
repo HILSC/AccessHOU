@@ -10,6 +10,7 @@ from django.core.paginator import Paginator
 from django.db import transaction
 from django.db import models
 from django.http import JsonResponse
+from django.utils import timezone
 
 from rest_framework import permissions
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -44,12 +45,16 @@ class UserAuthView(APIView):
             user = authenticate(request, username=user_obj.username, password=password)
             
             if user:
-                user.last_login = datetime.datetime.now()
+                user.last_login = timezone.now()
                 user.save()
 
                 jwt_tokens = RefreshToken.for_user(user)
                 refresh_token = str(jwt_tokens)
                 access_token = str(jwt_tokens.access_token)
+
+                is_admin = False
+                if(user.profile.role.name == 'Admin'):
+                    is_admin = True
 
                 return JsonResponse(
                     {
@@ -57,6 +62,7 @@ class UserAuthView(APIView):
                         "name": "{} {}".format(user.first_name, user.last_name),
                         "access_token": access_token,
                         "refresh_token": refresh_token,
+                        "is_admin": is_admin,
                         "role": {
                             "id": user.profile.role.id,
                             "name": user.profile.role.name,
@@ -64,7 +70,7 @@ class UserAuthView(APIView):
                             "approve_queue": user.profile.role.approve_queue,
                             "skip_queue": user.profile.role.skip_queue,
                             "advocacy_reports": user.profile.role.add_advocacy_reports,
-                            #"view_advocacy_reports": user.profile.role.view_advocacy_reports,
+                            "view_advocacy_reports": user.profile.role.view_advocacy_reports,
                         }
                     }
                 )

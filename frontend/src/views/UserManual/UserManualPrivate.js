@@ -128,6 +128,9 @@ export default () => {
                     Records approved by this role will be flagged as ‘HILSC
                     verified’.
                   </li>
+                  <li>
+                    Can add and view advocacy reports
+                  </li>
                 </ul>
               </td>
             </tr>
@@ -145,6 +148,7 @@ export default () => {
                     Records approved by this role will be flagged as ‘HILSC
                     verified’.
                   </li>
+                  <li>Can add advocacy reports.</li>
                 </ul>
               </td>
             </tr>
@@ -161,7 +165,7 @@ export default () => {
               </td>
             </tr>
             <tr>
-              <td>Access to Services Workgroup Membe</td>
+              <td>Access to Services Committee Member</td>
               <td>
                 <ul className={classes.circlesUL}>
                   <li>Available to A2S Workgroup members.</li>
