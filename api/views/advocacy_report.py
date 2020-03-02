@@ -46,8 +46,9 @@ class AdvocacyReportListView(APIView):
         open_reports = AdvocacyReport.objects.filter(status="Open").order_by('-created_at', '-id')
         in_review_reports = AdvocacyReport.objects.filter(status="In Review").order_by('-created_at', '-id')
         closed_reports = AdvocacyReport.objects.filter(status="Close").order_by('-created_at', '-id')
+        na_reports = AdvocacyReport.objects.filter(status="n/a").order_by('-created_at', '-id')
 
-        reports = list(chain(open_reports, in_review_reports, closed_reports))
+        reports = list(chain(open_reports, in_review_reports, closed_reports, na_reports))
         results = []
 
         for report in reports:
@@ -136,11 +137,13 @@ class AdvocacyReportView(APIView):
       if request.user and request.user.is_active and request.user.profile.role.add_advocacy_reports:
         report = AdvocacyReport.objects.get(id=id)
         
+        parent_agency = None
         entity_selected = AdvocacyReportEntity(report.entity_reported)
         if entity_selected == AdvocacyReportEntity.agency:
           entity = Agency.objects.get(id=report.entity_reported_id)
         else:
           entity = Program.objects.get(id=report.entity_reported_id)
+          parent_agency = entity.agency.id
 
         return JsonResponse(
           {
@@ -161,6 +164,7 @@ class AdvocacyReportView(APIView):
             "entity": {
               "name": entity.name,
               "slug": entity.slug,
+              "agency": parent_agency,
             },
           }
         )

@@ -30,10 +30,10 @@ const useStyles = makeStyles(styles);
 export default ({ location }) => {
   const classes = useStyles();
 
-  const queryValues = queryString.parse(location.search)
+  const queryValues = queryString.parse(location.search);
   const entity = queryValues.entity;
-  const entityId = queryValues.id
-  const agencyId = queryValues.agencyId
+  const entityId = queryValues.id;
+  const agencyId = queryValues.agencyId;
 
   const token = useSelector(state => state.user.accessToken);
   const userName = useSelector(state => state.user.name);
@@ -88,7 +88,7 @@ export default ({ location }) => {
             <AdvocacyReportForm
               handleSave={handleSave}
               userName={userName}
-              entity={entity}
+              entity={entity ? entity : 'agency'}
               entityId={entityId}
               agencyId={agencyId}
             />

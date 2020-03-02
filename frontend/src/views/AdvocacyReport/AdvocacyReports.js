@@ -235,12 +235,15 @@ export default () => {
                 <Grid item xs={12} sm={12} md={12}>
                   <DataLabel
                     labelText={values.entity_selected}
-                    dataText={values.entity && values.entity ? (
+                    dataText={values.entity && !values.entity.agency ? (
                       <NavLink to={`/${values.entity_selected.toLowerCase()}/${values.entity.slug}`} target="_blank">
                         {values.entity ? values.entity.name : ''}
                       </NavLink>
-                    ) : null
-                    }
+                    ) : values.entity ? (
+                      <NavLink to={`/${values.entity_selected.toLowerCase()}/${values.entity.agency}/${values.entity.slug}`} target="_blank">
+                        {values.entity ? values.entity.name : ''}
+                      </NavLink>
+                    ) : null }
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={6}>

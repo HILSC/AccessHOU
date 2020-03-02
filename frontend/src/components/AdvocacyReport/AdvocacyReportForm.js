@@ -73,13 +73,17 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
   const debouncedSearchTerm = useDebounce(searchTerm, 1000);
 
   useEffect(() => {
-    setValues({
-      entity_reported: "agency",
-      incident_time: moment.moment().format('LLL'),
-      incident_date: moment.moment().format('L'),
-      query_string: false,
-      entity_reported_id: null,
-    });
+    const setValuesManually = () => {
+      setValues({
+        entity_reported: entity,
+        incident_time: moment.moment().format('LLL'),
+        incident_date: moment.moment().format('L'),
+        query_string: false,
+        entity_reported_id: null,
+      });
+    }
+    
+    setValuesManually();
   }, [entity, entityId, agencyId])
 
   // Get agency/program based on props
