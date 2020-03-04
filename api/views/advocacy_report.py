@@ -61,6 +61,7 @@ class AdvocacyReportListView(APIView):
           results.append({
               "id": report.id,
               "status": report.status,
+              "created_at": report.created_at.strftime("%m-%d-%Y"),
               "entity_selected": entity_selected.name.capitalize(),
               "user": "{} {}".format(report.user.first_name, report.user.last_name),
               "entity": {

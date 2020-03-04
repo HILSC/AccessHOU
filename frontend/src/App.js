@@ -71,13 +71,12 @@ const App = () => {
           <SecureRoute exact path="/private/queue/agency/:queueId" component={AgencyQueue} layout={DashboardLayout} menu={3} />
           <SecureRoute exact path="/private/queue/program/:queueId" component={ProgramQueue} layout={DashboardLayout} menu={3} />
 
-          {/* Only Admin, AccessHOU Quality Team and Access to services committe members */}
           <AdvocacyCreateRoute exact path="/private/create/advocacy-report" component={CreateAdvocacyReport} layout={DashboardLayout} menu={2} />
+          <AdvocacyReportViewRoute exact path="/private/advocacy-reports" component={AdvocacyReports} layout={DashboardLayout} menu={6} />
 
           {/* Only Admin */}
           <AdminRoute exact path="/private/users" component={Users} layout={DashboardLayout} menu={4} />
           <AdminRoute exact path="/private/settings" component={Settings} layout={DashboardLayout} menu={5} />
-          <AdminRoute exact path="/private/advocacy-reports" component={AdvocacyReports} layout={DashboardLayout} menu={6} />
 
           {/* Logged user manual */}
           <PrivateRoute exact path="/private/user-manual" component={UserManualPrivate} layout={DashboardLayout} menu={8} />
@@ -127,13 +126,12 @@ const AdminRoute = ({ component: Component, layout: Layout, menu, ...rest }) =>{
 
 const SecureRoute = ({ component: Component, layout: Layout, menu, ...rest }) =>{
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
-  const roleId = useSelector(state => state.user.roleId);
-  const availableRolesId = [1, 2];
+  const user = useSelector(state => state.user);
   return (
     <Route
       {...rest}
       render={props => (
-        (isAuthenticated && availableRolesId.includes(roleId)) ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
+        (isAuthenticated && user.approveQueue) ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
       )}
     />
   );
@@ -151,5 +149,19 @@ const AdvocacyCreateRoute = ({ component: Component, layout: Layout, menu, ...re
     />
   );
 }
+
+const AdvocacyReportViewRoute = ({ component: Component, layout: Layout, menu, ...rest }) =>{
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+  const user = useSelector(state => state.user);
+  return (
+    <Route
+      {...rest}
+      render={props => (
+        (isAuthenticated && user.viewAdvocacyReport) ? <Layout menu={menu}><Component {...props} /></Layout> : <Redirect to={{ pathname: "/" }} />
+      )}
+    />
+  );
+}
+
 
 export default App;

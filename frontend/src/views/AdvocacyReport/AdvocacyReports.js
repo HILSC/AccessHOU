@@ -159,7 +159,7 @@ export default () => {
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell align="center">Submitter</TableCell>
+              <TableCell align="center">Date Submitted</TableCell>
               <TableCell align="center">Entity</TableCell>
               <TableCell align="center">Name</TableCell>
               <TableCell align="center">Status</TableCell>
@@ -169,7 +169,7 @@ export default () => {
           <TableBody>
             {data.reports.map(report => (
               <TableRow key={`${report.id}`}>
-                <TableCell align="left">{report.user}</TableCell>
+                <TableCell align="center">{report.created_at}</TableCell>
                 <TableCell align="center">{report.entity_selected}</TableCell>
                 <TableCell align="center">{report.entity.name}</TableCell>
                 <TableCell align="center">{report.status}</TableCell>

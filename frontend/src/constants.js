@@ -570,6 +570,10 @@ const ADVOCACY_REPORT_STATUSES = [
         label: 'Open'
     },
     {
+        value: 'In Process',
+        label: 'In Process'
+    },
+    {
         value: 'In Review',
         label: 'In Review'
     },

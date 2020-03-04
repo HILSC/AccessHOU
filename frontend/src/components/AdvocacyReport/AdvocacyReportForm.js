@@ -49,6 +49,7 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
   const classes = useStyles();
 
   const descriptionRef = useRef(null);
+  const phoneRef = useRef(null);
 
   const moment = new MomentUtils({ locale: "en" });
 
@@ -64,7 +65,8 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
 
   const [entityError, setEntityError] = useState({error: false, message: ''}); 
   const [descriptionError, setDescriptionError] = useState({error: false, message: ''});
-  
+  const [phoneError, setPhoneError] = useState({error: false, message: ''});
+
   const [searchTerm, setSearchTerm] = useState('');
   const [resultSuggestions, setResultSuggestions] = useState([])
   const [selectedDate, setSelectedDate] = useState(values.incident_date);
@@ -160,6 +162,15 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
         return false;
     }else{
       setEntityError(() => ({error: false, message: ''}));
+    }
+
+    if(!values['phone'] ||
+      values['phone'].trim().length < 14) {
+        phoneRef.current.focus();
+        setPhoneError(() => ({error: true, message: "Please enter a valid phone."}));
+        return false;
+    }else{
+      setPhoneError(() => ({error: false, message: ''}));
     }
 
     if (!values['description'] ||
@@ -280,12 +291,17 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
                   <Grid item xs={12} sm={6} md={6}>
                     <CustomInput
                       type="phone"
-                      labelText="Phone"
+                      labelText="Phone *"
                       id="phone"
+                      errorDetails={{
+                        error: phoneError && phoneError.error ? true : false,
+                        message: phoneError ? phoneError.message : '',
+                      }}
                       formControlProps={{
                         fullWidth: true
                       }}
                       inputProps={{
+                        inputRef: phoneRef,
                         onChange: handleChange,
                         name: "phone",
                         value: values.phone ? values.phone : '',
