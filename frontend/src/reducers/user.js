@@ -8,6 +8,16 @@ const initialState = {
   isAuthenticated: false,
   accessToken: null,
   refreshToken: null,
+  email: null,
+  name: null,
+  isAdmin: null,
+  roleId: null,
+  role: null,
+  approveQueue: null,
+  skipQueue: null,
+  hilscVerified: null,
+  advocacyReport: null,
+  viewAdvocacyReport: null,
   error: false,
 };
 
@@ -22,6 +32,8 @@ export default (state = initialState, action) => {
       return {
         ...state,
         isAuthenticated: action.data.access_token ? true : false,
+        accessToken: action.data.access_token,
+        refreshToken: action.data.refresh_token,
         email: action.data.email,
         name: action.data.name,
         isAdmin: action.data.is_admin,
@@ -33,8 +45,6 @@ export default (state = initialState, action) => {
         advocacyReport: action.data.role.advocacy_reports,
         viewAdvocacyReport: action.data.role.view_advocacy_reports,
         error: false,
-        accessToken: action.data.access_token,
-        refreshToken: action.data.refresh_token
       };
     case LOGOUT:
       return {

@@ -23,6 +23,7 @@ import CardContent from '@material-ui/core/CardContent';
 
 // Custom components
 import ArrowTooltip from 'components/ArrowTooltip/ArrowTooltip';
+import EntityOptions from 'components/EntityOptions/EntityOptions';
 
 import { PROGRAM_SERVICES } from 'constants.js';
 
@@ -42,6 +43,7 @@ const useStyles = makeStyles(styles);
 
 export default () => {
   const classes = useStyles();
+  const [entity, setEntity] = useState('agency')
   const [keyword, setkeyword] = useState();
   const [search, setSearch] = useState();
 
@@ -82,8 +84,12 @@ export default () => {
     }
   }
 
+  const handleEntityChange = (entity) => {
+    setEntity(entity);
+  }
+
   if(search) {
-    const url = `/search/?keyword=${encodeURI(keyword)}`;
+    const url = `/search/?keyword=${encodeURI(keyword)}&entity=${entity}`;
     return <Redirect push to={url} />
   }
 
@@ -98,6 +104,9 @@ export default () => {
             <Typography variant="h5" align="center" color="textSecondary" paragraph>
               Search through hundreds of agencies and programs that are ready to help you.
             </Typography>
+            <div className={classes.entityOptions}>
+              <EntityOptions handleChange={handleEntityChange} entity={entity} />
+            </div>
           </BrowserView>
           <MobileView>
             <Typography component="h1" variant="h4" align="center" color="textPrimary" gutterBottom>
@@ -106,11 +115,14 @@ export default () => {
             <Typography variant="body1" align="center" color="textSecondary" paragraph>
               Search through hundreds of agencies and programs that are ready to help you.
             </Typography>
+            <div>
+              <EntityOptions handleChange={handleEntityChange} entity={entity} />
+            </div>
           </MobileView>
           <div className={isMobile ? classes.heroButtons : clsx(classes.heroButtons, classes.heroButtonsSize)}>
             <InputBase
               className={classes.input}
-              placeholder="Search agencies, programs"
+              placeholder={`Search ${entity}`}
               inputProps={{
                 'aria-label': 'search',
                 'onKeyPress': handleKeyPress,
@@ -131,7 +143,7 @@ export default () => {
         <Grid container spacing={4}>
           {PROGRAM_SERVICES.map(service => (
             <Grid item key={service.value} xs={6} sm={6} md={3}>
-                <NavLink to={`/search/?service=${service.value}`} className={classes.customLink}>
+                <NavLink to={`/search/?service=${service.value}&entity=program`} className={classes.customLink}>
                   <ArrowTooltip title={service.description}>
                     <Card className={classes.card}>
                       <CardContent>

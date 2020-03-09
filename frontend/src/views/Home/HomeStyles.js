@@ -10,6 +10,10 @@ export default (theme) => ({
     backgroundColor: '#FFFFFF',
     margin: '0 auto'
   },
+  entityOptions: {
+    maxWidth: '50%',
+    margin: '0 auto'
+  },
   heroButtonsSize: {
     maxWidth: '50%'
   },

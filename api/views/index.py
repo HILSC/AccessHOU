@@ -28,6 +28,8 @@ from api.utils import getZipCodeRadiusRawSQL
 
 logger = logging.getLogger(__name__)
 
+ENTITY_PROGRAM = "program"
+ENTITY_AGENCY = "agency"
 
 class FrontendAppView(View):
     """
@@ -57,6 +59,7 @@ class SearchAppView(APIView):
         try:
             page = request.GET.get("page", 1)
             keyword = request.GET.get("search", None)
+            entity = request.GET.get("entity", None)
 
             # Emergency Mode
             emergency_mode = False
@@ -85,62 +88,33 @@ class SearchAppView(APIView):
 
             languages = request.GET.getlist("programLanguages[]", None)
 
+
+            #import pdb ; pdb.set_trace()
             ada_accessible_get_value = request.GET.get("adaAccessible", None)
             ada_accessible = False
             if ada_accessible_get_value and ada_accessible_get_value == "1":
                 ada_accessible = True
 
+            #******* end params ********
+
             # Agency filters
             agency_filters = models.Q()
-            agency_filters &= models.Q(hilsc_verified=HILSC_verified,)
+            if entity == ENTITY_AGENCY:
+                agency_filters &= models.Q(hilsc_verified=HILSC_verified,)
 
             # Program filters
             program_filters = models.Q()
-            program_filters &= models.Q(agency__hilsc_verified=HILSC_verified,)
-
-            programs_queryset = Program.objects.select_related("agency").all()
-            agencies_queryset = Agency.objects.all()
-
-            # ZipCodes and radius
-            if zip_code and radius:
-                # Get zip code geolocation
-                zip_code_data = ZipCodeData.objects.get(zip_code=zip_code)
-
-                raw_sql = getZipCodeRadiusRawSQL(Program.objects.model._meta.db_table, latitude=zip_code_data.latitude, longitude=zip_code_data.longitude)
-
-                # Programs with zipcode and radius
-                programs_queryset = (
-                    Program.objects.annotate(
-                        distance=RawSQL(
-                            raw_sql,
-                            (),
-                        )
-                    )
-                    .filter(distance__lte=radius)
-                    .exclude(geocode__isnull=True)
-                )
-
-                # Agencies with zipcode and radius
-                raw_sql = getZipCodeRadiusRawSQL(Agency.objects.model._meta.db_table, latitude=zip_code_data.latitude, longitude=zip_code_data.longitude)
-
-                agencies_queryset = (
-                    Agency.objects.annotate(
-                        distance=RawSQL(
-                            raw_sql,
-                            (),
-                        )
-                    )
-                    .filter(distance__lte=radius)
-                    .exclude(geocode__isnull=True)
-                )
+            if entity == ENTITY_PROGRAM:
+                program_filters &= models.Q(agency__hilsc_verified=HILSC_verified,)
 
             # Keyword
             if keyword:
-                program_filters &= models.Q(name__icontains=keyword.strip(),)
+                if entity == ENTITY_PROGRAM:
+                    program_filters &= models.Q(name__icontains=keyword.strip(),)
+                    program_filters |= models.Q(description__icontains=keyword.strip(),)
 
-                program_filters |= models.Q(description__icontains=keyword.strip(),)
-
-                agency_filters &= models.Q(name__icontains=keyword.strip(),)
+                if entity == ENTITY_AGENCY:
+                    agency_filters &= models.Q(name__icontains=keyword.strip(),)
 
             # Service Types
             if service_types and len(service_types):
@@ -192,20 +166,55 @@ class SearchAppView(APIView):
                 program_filters &= models.Q(immigration_accessibily_profile=True)
 
             # Apply filters to programs queryset
-            programs_queryset = programs_queryset.filter(program_filters).distinct()
+            programs_queryset = Program.objects.select_related("agency").filter(program_filters).distinct()
 
             # Agencies to exclude from the agency search to avoid repeating them
-            agency_ids = [
-                d["agency_id"]
-                for d in list(programs_queryset.values("agency_id").distinct())
-            ]
+            agency_ids = []
+            if entity == ENTITY_PROGRAM:
+                agency_ids = [
+                    d["agency_id"]
+                    for d in list(programs_queryset.values("agency_id").distinct())
+                ]
 
             # Apply filters to agencies queryset
-            agencies_queryset = (
-                agencies_queryset.filter(agency_filters)
-                .exclude(id__in=agency_ids)
-                .distinct()
-            )
+            agencies_queryset = Agency.objects.filter(
+                agency_filters
+            ).exclude(
+                id__in=agency_ids
+            ).distinct()
+
+            # ZipCodes and radius
+            if zip_code and radius:
+                # Get zip code geolocation
+                zip_code_data = ZipCodeData.objects.get(zip_code=zip_code)
+
+                raw_sql = getZipCodeRadiusRawSQL(Program.objects.model._meta.db_table, latitude=zip_code_data.latitude, longitude=zip_code_data.longitude)
+
+                # Programs with zipcode and radius
+                programs_queryset = (
+                    Program.objects.annotate(
+                        distance=RawSQL(
+                            raw_sql,
+                            (),
+                        )
+                    )
+                    .filter(distance__lte=radius)
+                    .exclude(geocode__isnull=True)
+                )
+
+                # Agencies with zipcode and radius
+                raw_sql = getZipCodeRadiusRawSQL(Agency.objects.model._meta.db_table, latitude=zip_code_data.latitude, longitude=zip_code_data.longitude)
+
+                agencies_queryset = (
+                    agencies_queryset.annotate(
+                        distance=RawSQL(
+                            raw_sql,
+                            (),
+                        )
+                    )
+                    .filter(distance__lte=radius)
+                    .exclude(geocode__isnull=True)
+                )
 
             # order by distance with zipcode and radius
             if zip_code and radius is not None:
@@ -220,76 +229,90 @@ class SearchAppView(APIView):
             agencies_dict = {}
 
             # Programs and agencies
-            for program in programs_queryset:
-                key = program.agency.id
-                state = program.agency.state
-                city = program.agency.city
-                if program and program.agency and program.agency.state:
-                    state = program.agency.state.capitalize()
+            if entity == ENTITY_PROGRAM:
+                for program in programs_queryset:
+                    key = program.agency.id
+                    state = program.agency.state
+                    city = program.agency.city
+                    if program and program.agency and program.agency.state:
+                        state = program.agency.state.capitalize()
 
-                if program and program.agency and program.agency.city:
-                    city = program.agency.city.capitalize()
+                    if program and program.agency and program.agency.city:
+                        city = program.agency.city.capitalize()
 
-                if key not in agencies_dict:
-                    agencies_dict[key] = {
-                        "agency": {
-                            "name": program.agency.name,
-                            "slug": program.agency.slug,
-                            "phone": program.agency.phone,
-                            "street": program.agency.street,
-                            "city": city,
-                            "state": state,
-                            "zipcode": program.agency.zip_code,
-                            "website": program.agency.website,
-                        },
-                        "programs": [
+                    if key not in agencies_dict:
+                        agencies_dict[key] = {
+                            "agency": {
+                                "name": program.agency.name,
+                                "slug": program.agency.slug,
+                                "phone": program.agency.phone,
+                                "street": program.agency.street,
+                                "city": city,
+                                "state": state,
+                                "zipcode": program.agency.zip_code,
+                                "website": program.agency.website,
+                            },
+                            "programs": [
+                                {
+                                    "name": program.name,
+                                    "description": program.description,
+                                    "phone": program.phone,
+                                    "slug": program.slug,
+                                    "agency": program.agency.id,
+                                }
+                            ],
+                        }
+                    else:
+                        agencies_dict[key]["programs"].append(
                             {
                                 "name": program.name,
                                 "description": program.description,
                                 "phone": program.phone,
                                 "slug": program.slug,
-                                "agency": program.agency.id,
+                                "agency": program.agency.id
                             }
-                        ],
-                    }
-                else:
-                    agencies_dict[key]["programs"].append(
-                        {
-                            "name": program.name,
-                            "description": program.description,
-                            "phone": program.phone,
-                            "slug": program.slug,
-                            "agency": program.agency.id
-                        }
-                    )
+                        )
 
             results = list(agencies_dict.values())
 
             # Agencies
-            for agency in agencies_queryset:
-                state = agency.state
-                city = agency.city
-                if agency and agency.state:
-                    state = agency.state.capitalize()
+            if entity == ENTITY_AGENCY:
+                for agency in agencies_queryset:
+                    state = agency.state
+                    city = agency.city
+                    if agency and agency.state:
+                        state = agency.state.capitalize()
 
-                if agency and agency.city:
-                    city = agency.city.capitalize()
+                    if agency and agency.city:
+                        city = agency.city.capitalize()
 
-                results.append(
-                    {
-                        "agency": {
-                            "name": agency.name,
-                            "slug": agency.slug,
-                            "phone": agency.phone,
-                            "street": agency.street,
-                            "city": city,
-                            "state": state,
-                            "zipcode": agency.zip_code,
-                            "website": agency.website,
-                        },
-                        "programs": [],
-                    }
-                )
+                    agency_programs = Program.objects.filter(
+                        program_filters
+                    ).exclude(
+                        ~models.Q(agency_id=agency.id)
+                    )
+
+                    results.append(
+                        {
+                            "agency": {
+                                "name": agency.name,
+                                "slug": agency.slug,
+                                "phone": agency.phone,
+                                "street": agency.street,
+                                "city": city,
+                                "state": state,
+                                "zipcode": agency.zip_code,
+                                "website": agency.website,
+                            },
+                            "programs": [{
+                                    "name": program.name,
+                                    "description": program.description,
+                                    "phone": program.phone,
+                                    "slug": program.slug,
+                                    "agency": program.agency.id,
+                                } for program in agency_programs],
+                        }
+                    )
 
             # Paginate results
             paginator = Paginator(results, 10)  # Show 10 results per page

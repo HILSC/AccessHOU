@@ -43,6 +43,7 @@ import TableRow from '@material-ui/core/TableRow';
 // Custom components
 import ResultItem from 'components/Result/ResultItem';
 import Alert from 'components/Alert/Alert';
+import EntityOptions from 'components/EntityOptions/EntityOptions';
 
 import {
   PROGRAM_SERVICES,
@@ -80,6 +81,7 @@ const BootstrapInput = withStyles(theme => ({
 const getResults = (filters) => {
   const searchFilters = {
     search: filters.search,
+    entity: filters.entity,
     serviceType: filters.serviceType,
     immigrationStatus: filters.immigrationStatus,
     zipCode: filters.zipCode,
@@ -117,12 +119,15 @@ export default ({ match, location }) => {
 
   const params = queryString.parse(location.search);
   const keyword = params.keyword;
+  const entity = params.entity;
   const serviceType = params.service ? [params.service] : [];
   const [newSearch, setNewSearch] = useState(keyword);
+  const [entitySearch, setEntitySearch] = useState(entity);
 
   // Filters
   const [filters, setFilters] = useState({
     search: newSearch,
+    entity: entitySearch,
     serviceType: serviceType,
     immigrationStatus: null,
     showMore: false,
@@ -168,6 +173,7 @@ export default ({ match, location }) => {
   }, [
     filters,
     filters.search,
+    filters.entitySearch,
     filters.HILSCVerified,
     filters.serviceType,
     filters.immigrationStatus,
@@ -306,6 +312,10 @@ export default ({ match, location }) => {
       ...data,
       adaAccessible: !data.adaAccessible
     }));
+  }
+
+  const handleChangeEntity = (entity) => {
+    setEntitySearch(entity);
   }
 
   const handleFilterHILSC = () => {
@@ -637,6 +647,9 @@ export default ({ match, location }) => {
         <div className={classes.filters}>
           <BrowserView>
             <Grid container spacing={2}>
+              {/* <Grid item xs={12} sm={12} md={4}>
+                <EntityOptions handleChange={handleChangeEntity} entity={entitySearch} />
+              </Grid> */}
               <Grid item xs={12} sm={12} md={2}>
                 {keywordFilter()}
               </Grid>
