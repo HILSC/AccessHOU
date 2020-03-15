@@ -50,7 +50,7 @@ export default () => {
   return (
     <Grid container spacing={3} >
       <Grid item xs={12} sm={12} md={12}>
-        Howdy! {loggedUser.email} <span className={classes.roleContainer}>{loggedUser && loggedUser.role}</span>
+        Howdy! {loggedUser.name} <span className={classes.roleContainer}>{loggedUser && loggedUser.role}</span>
       </Grid>
       {
         loggedUser.approveQueue ? (
