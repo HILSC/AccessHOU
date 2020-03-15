@@ -3,6 +3,8 @@ import logging
 from django.db import transaction
 from django.http import JsonResponse
 
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 
 from api.models.action_log import ActionLog
@@ -60,6 +62,8 @@ def process_emergency_off(user):
 
 
 class AppSettingsView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         try:
             if request.user and request.user.is_active and request.user.profile.is_admin:

@@ -12,12 +12,14 @@ from django.db import models
 from django.http import JsonResponse
 from django.utils import timezone
 
-from rest_framework import permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.views import status
 from rest_framework.response import Response
+
+from api.decorators import is_registered_api_consumer
 
 from api.models.user import Role
 from api.models.user import Profile
@@ -28,8 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 class UserAuthView(APIView):
-    permission_classes = (permissions.AllowAny,)
-
+    @is_registered_api_consumer
     def post(self, request, *args, **kwargs):
         try:
             email = request.data.get("email", None)
@@ -90,6 +91,8 @@ class UserAuthView(APIView):
 
 
 class UserView(APIView):
+    permission_classes = [IsAuthenticated]
+
     @transaction.atomic
     def put(self, request):
         try:
@@ -200,6 +203,8 @@ class UserView(APIView):
 
 
 class UserListView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         users = None
         try:
@@ -267,6 +272,8 @@ class UserListView(APIView):
 
 
 class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         try:
             if request.user:

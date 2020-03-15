@@ -8,6 +8,7 @@ from django.forms.models import model_to_dict
 
 from rest_framework.views import APIView
 from rest_framework.views import status
+from rest_framework.permissions import IsAuthenticated
 
 from api.models.action_log import ActionLog
 from api.models.agency import Agency
@@ -23,6 +24,8 @@ from api.utils import UserActions
 logger = logging.getLogger(__name__)
 
 class QueueListView(APIView):
+  permission_classes = [IsAuthenticated]
+
   def get(self, request):
     try:
       if request.user and request.user.is_active:
@@ -81,6 +84,8 @@ class QueueListView(APIView):
       )
 
 class QueueAgencyView(APIView):
+  permission_classes = [IsAuthenticated]
+
   def get(self, request, id):
     try:
       agency_queue = AgencyQueue.objects.get(id=id)
@@ -189,6 +194,8 @@ class QueueAgencyView(APIView):
       )
 
 class QueueProgramView(APIView):
+  permission_classes = [IsAuthenticated]
+  
   def get(self, request, id):
     try:
       program_queue = ProgramQueue.objects.get(id=id)

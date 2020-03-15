@@ -27,6 +27,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', None)
 DEBUG = False
 
 ALLOWED_HOSTS = [
+    "accesshou.brightanchor.com",
     "dev-accesshou.herokuapp.com",
     "prod-accesshou.herokuapp.com",
     "accesshou.org",
@@ -121,7 +122,7 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=3),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),
@@ -178,6 +179,15 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # GEOLOCATION
 GEOLOCATOR_API_KEY = os.getenv('GEOLOCATOR_API_KEY', None)
+
+# ALLOWED CLIENTS
+ALLOWED_CLIENTS = (
+    'http://accesshou.brightanchor.com',
+    'https://accesshou.brightanchor.com',
+    'https://dev-accesshou.herokuapp.com',
+    'https://prod-accesshou.herokuapp.com',
+    'https://accesshou.org'
+)
 
 # DATABASE
 import dj_database_url

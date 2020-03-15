@@ -43,7 +43,7 @@ import TableRow from '@material-ui/core/TableRow';
 // Custom components
 import ResultItem from 'components/Result/ResultItem';
 import Alert from 'components/Alert/Alert';
-import EntityOptions from 'components/EntityOptions/EntityOptions';
+//import EntityOptions from 'components/EntityOptions/EntityOptions';
 
 import {
   PROGRAM_SERVICES,
@@ -123,6 +123,7 @@ export default ({ match, location }) => {
   const serviceType = params.service ? [params.service] : [];
   const [newSearch, setNewSearch] = useState(keyword);
   const [entitySearch, setEntitySearch] = useState(entity);
+  const [showMoreFilters, setShowMorefilters] = useState(false);
 
   // Filters
   const [filters, setFilters] = useState({
@@ -130,7 +131,6 @@ export default ({ match, location }) => {
     entity: entitySearch,
     serviceType: serviceType,
     immigrationStatus: null,
-    showMore: false,
     zipCode: null,
     radius: null,
     incomeEligibility: null,
@@ -141,7 +141,7 @@ export default ({ match, location }) => {
   });
 
   const loadMoreData = () => {
-    getResults({...filters, page: results.page + 1, emergency_mode: results.emergency_mode}).then(resultSet => {
+    getResults({...filters, zipCode: zipCode, page: results.page + 1, emergency_mode: results.emergency_mode}).then(resultSet => {
       setResults(data => ({
         ...data,
         agencies: [...results.agencies, ...resultSet.data.results],
@@ -284,10 +284,7 @@ export default ({ match, location }) => {
   };
 
   const handleShowMoreFilters = () => {
-    setFilters(data => ({
-      ...data,
-      showMore: !data.showMore
-    }));
+    setShowMorefilters(!showMoreFilters);
   }
 
   const handleWalkInHours = () => {
@@ -314,9 +311,9 @@ export default ({ match, location }) => {
     }));
   }
 
-  const handleChangeEntity = (entity) => {
-    setEntitySearch(entity);
-  }
+  // const handleChangeEntity = (entity) => {
+  //   setEntitySearch(entity);
+  // }
 
   const handleFilterHILSC = () => {
     setResults(data => ({
@@ -345,12 +342,13 @@ export default ({ match, location }) => {
 
   const handleClearFilters = () => {
     setNewSearch('');
+    setZipCode('');
+    setShowMorefilters(false);
     setFilters(data => ({
       ...data,
       search: '',
       serviceType: [],
       immigrationStatus: null,
-      showMore: false,
       zipCode: null,
       radius: null,
       incomeEligibility: null,
@@ -358,6 +356,10 @@ export default ({ match, location }) => {
       walkInHours: false,
       programLanguages: [],
       adaAccessible: false,
+    }));
+    setResults(data => ({
+      ...data,
+      isSearching: true
     }));
   }
 
@@ -434,14 +436,14 @@ export default ({ match, location }) => {
     );
   }
 
-  const showMoreFilters = () => {
+  const showHideMoreFilters = () => {
     return (
       <FormControl className={classes.formControl}>
         <Button
-          className={filters.showMore ? classes.searchButtonActive : clsx(classes.searchButton, classes.filtersButton)}
+          className={showMoreFilters ? classes.searchButtonActive : clsx(classes.searchButton, classes.filtersButton)}
           onClick={handleShowMoreFilters}>
           <TuneIcon classes={{
-            root: filters.showMore ? classes.iconInButtonActive : classes.iconInButton
+            root: showMoreFilters ? classes.iconInButtonActive : classes.iconInButton
           }} /> Filters
         </Button>
       </FormControl>
@@ -512,14 +514,14 @@ export default ({ match, location }) => {
     return (
       <FormControl className={classes.formControl}>
         <Select
-          value={filters.radius ? filters.radius : 'radius'}
+          value={filters.radius ? filters.radius : 0}
           onChange={handleChange}
           classes={{
             icon: classes.selectIcon,
           }}
           input={<BootstrapInput name="radius" id="service-type-customized-select" />}
         >
-          <MenuItem value="radius">
+          <MenuItem value={0}>
             Radius
           </MenuItem>
           <MenuItem value={5}>5 Miles</MenuItem>
@@ -663,7 +665,7 @@ export default ({ match, location }) => {
                 {immigrationStatusFilter()}
               </Grid>
               <Grid item xs={6} sm={6} md={2}>
-                {showMoreFilters()}
+                {showHideMoreFilters()}
               </Grid>
               <Grid item xs={6} sm={6} md={2}>
                 {clearFilters()}
@@ -695,7 +697,7 @@ export default ({ match, location }) => {
                 </div>
               </Grid>
               <Grid item xs={6} sm={6} md={6}>
-                {showMoreFilters()}
+                {showHideMoreFilters()}
               </Grid>
               <Grid item xs={6} sm={6} md={6}>
                 {clearFilters()}
@@ -703,10 +705,10 @@ export default ({ match, location }) => {
             </Grid>
           </MobileView>
           {
-            filters.showMore ? (
+            showMoreFilters ? (
               <React.Fragment>
                 <BrowserView>
-                  <Grow in={filters.showMore}>
+                  <Grow in={showMoreFilters}>
                     <Grid container spacing={2}>
                       <Grid item xs={6} sm={6} md={3}>
                         {zipCodeFilter()}
@@ -733,7 +735,7 @@ export default ({ match, location }) => {
                   </Grow>
                 </BrowserView>
                 <MobileView>
-                  <Grow in={filters.showMore}>
+                  <Grow in={showMoreFilters}>
                     <Grid container spacing={2}>
                       <Grid item xs={12} sm={12} md={12}>
                         <div className={classes.tableContainer}>

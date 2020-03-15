@@ -118,19 +118,10 @@ export default () => {
               <td>Admin</td>
               <td>
                 <ul className={classes.circlesUL}>
-                  <li>Available to HILSC staff.</li>
-                  <li>
-                    Edits to agencies/programs skip the queue and go live
-                    immediately.
-                  </li>
                   <li>Access to entire dashboard.</li>
-                  <li>
-                    Records approved by this role will be flagged as ‘HILSC
-                    verified’.
-                  </li>
-                  <li>
-                    Can add and view advocacy reports
-                  </li>
+                  <li>Edits to agencies/programs skip the queue and go live immediately and marked HILSC verify</li>
+                  <li>Records approved by this role will have access to the HILSC verified’ checkbox.</li>
+                  <li>Can add advocacy reports.</li>
                 </ul>
               </td>
             </tr>
@@ -138,16 +129,9 @@ export default () => {
               <td>AccessHOU Quality Team</td>
               <td>
                 <ul className={classes.circlesUL}>
-                  <li>Available to AccessHOU Quality Team.</li>
-                  <li>
-                    Edits to agencies/programs skip the queue and go live
-                    immediately.
-                  </li>
                   <li>Access to queue -- can approve database edits.</li>
-                  <li>
-                    Records approved by this role will be flagged as ‘HILSC
-                    verified’.
-                  </li>
+                  <li>Edits to agencies/programs skip the queue and go live immediately and marked HILSC verify</li>
+                  <li>Records approved by this role will have access to the HILSC verified checkbox.</li>
                   <li>Can add advocacy reports.</li>
                 </ul>
               </td>
@@ -156,23 +140,14 @@ export default () => {
               <td>AccessHOU Partner</td>
               <td>
                 <ul className={classes.circlesUL}>
-                  <li>Available to AccessHOU partners.</li>
-                  <li>
-                    Edits to agencies/programs skip the queue and go live
-                    immediately.
-                  </li>
+                  <li>Edits to agencies/programs skip the queue and go live immediately and are NOT marked HILSC verify.</li>
                 </ul>
               </td>
             </tr>
             <tr>
-              <td>Access to Services Committee Member</td>
+              <td>Access to Services Workgroup Member</td>
               <td>
                 <ul className={classes.circlesUL}>
-                  <li>Available to A2S Workgroup members.</li>
-                  <li>
-                    Edits to agencies/programs skip the queue and go live
-                    immediately.
-                  </li>
                   <li>Can add advocacy reports.</li>
                 </ul>
               </td>
@@ -374,7 +349,7 @@ export default () => {
           <p>Registered users can update their information, including:</p>
           <ul className={classes.circlesUL}>
             <li>
-              <strong>Email:</strong>This will serve as the user login name.
+              <strong>Email:</strong> This will serve as the user login name.
             </li>
             <li>
               <strong>First Name</strong>

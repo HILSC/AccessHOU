@@ -1,7 +1,8 @@
-import os
-import logging
 import json
+import logging
+import os
 import re
+import requests
 
 from django.http import HttpResponse
 from django.http import JsonResponse
@@ -13,6 +14,8 @@ from django.core.paginator import Paginator
 
 from rest_framework.views import APIView
 from rest_framework.views import status
+
+from api.decorators import is_registered_api_consumer
 
 from api.models.agency import Agency
 from api.models.agency import AgencyQueue
@@ -55,6 +58,7 @@ class FrontendAppView(View):
 
 
 class SearchAppView(APIView):
+    @is_registered_api_consumer
     def get(self, request):
         try:
             page = request.GET.get("page", 1)
@@ -77,7 +81,7 @@ class SearchAppView(APIView):
             service_types = request.GET.getlist("serviceType[]", None)
             immigration_status = request.GET.get("immigrationStatus", None)
             zip_code = request.GET.get("zipCode", None)
-            radius = request.GET.get("radius", None)
+            radius = request.GET.get("radius", 0)
             annual_media_income = request.GET.get("incomeEligibility", None)
             immigrant_acc_profile = request.GET.get("immigrantAccProfile", None)
 
@@ -88,8 +92,6 @@ class SearchAppView(APIView):
 
             languages = request.GET.getlist("programLanguages[]", None)
 
-
-            #import pdb ; pdb.set_trace()
             ada_accessible_get_value = request.GET.get("adaAccessible", None)
             ada_accessible = False
             if ada_accessible_get_value and ada_accessible_get_value == "1":
@@ -134,7 +136,7 @@ class SearchAppView(APIView):
                 )
 
             # ZipCodes
-            if zip_code and radius is None:
+            if zip_code and int(radius) == 0:
                 program_filters &= models.Q(zip_code=zip_code)
                 program_filters |= models.Q(zip_codes__icontains=zip_code)
 
@@ -184,9 +186,28 @@ class SearchAppView(APIView):
             ).distinct()
 
             # ZipCodes and radius
-            if zip_code and radius:
+            if zip_code and int(radius) > 0:
                 # Get zip code geolocation
-                zip_code_data = ZipCodeData.objects.get(zip_code=zip_code)
+                try:
+                    zip_code_data = ZipCodeData.objects.get(zip_code=zip_code)
+                except ZipCodeData.DoesNotExist:
+                    response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?address={}&key={}'.format(zip_code, settings.GEOLOCATOR_API_KEY))
+                    response_json = response.json()
+
+                    resp_zip_code = response_json.get('results')[0].get('address_components')[0].get('short_name')
+                    resp_city = response_json.get('results')[0].get('address_components')[1].get('long_name')
+                    resp_state_short = response_json.get('results')[0].get('address_components')[3].get('short_name')
+                    resp_state_long = response_json.get('results')[0].get('address_components')[3].get('long_name')
+                    resp_location_lat = response_json.get('results')[0].get('geometry').get('location').get('lat')
+                    resp_location_lng = response_json.get('results')[0].get('geometry').get('location').get('lng')
+                    zip_code_data = ZipCodeData.objects.create(
+                        zip_code=resp_zip_code,
+                        state=resp_state_short,
+                        latitude=str(resp_location_lat)[:10],
+                        longitude=str(resp_location_lng)[:10],
+                        city=resp_city,
+                        full_state=resp_state_long
+                    )
 
                 raw_sql = getZipCodeRadiusRawSQL(Program.objects.model._meta.db_table, latitude=zip_code_data.latitude, longitude=zip_code_data.longitude)
 
@@ -198,8 +219,7 @@ class SearchAppView(APIView):
                             (),
                         )
                     )
-                    .filter(distance__lte=radius)
-                    .exclude(geocode__isnull=True)
+                    .filter(models.Q(distance__lte=radius) | models.Q(zip_code=zip_code) | models.Q(zip_codes__icontains=zip_code))
                 )
 
                 # Agencies with zipcode and radius
@@ -212,19 +232,17 @@ class SearchAppView(APIView):
                             (),
                         )
                     )
-                    .filter(distance__lte=radius)
-                    .exclude(geocode__isnull=True)
+                    .filter(models.Q(distance__lte=radius) | models.Q(zip_code=zip_code) | models.Q(zip_codes__icontains=zip_code))
                 )
 
-            # order by distance with zipcode and radius
-            if zip_code and radius is not None:
-              programs_queryset = (
-                programs_queryset.order_by('distance')
-              )
+                # order by distance with zipcode and radius
+                programs_queryset = (
+                    programs_queryset.order_by('zip_code', 'distance')
+                )
 
-              agencies_queryset = (
-                agencies_queryset.order_by('distance')
-              )
+                agencies_queryset = (
+                    agencies_queryset.order_by('zip_code', 'distance')
+                )
 
             agencies_dict = {}
 
@@ -278,41 +296,42 @@ class SearchAppView(APIView):
             # Agencies
             if entity == ENTITY_AGENCY:
                 for agency in agencies_queryset:
-                    state = agency.state
-                    city = agency.city
-                    if agency and agency.state:
-                        state = agency.state.capitalize()
-
-                    if agency and agency.city:
-                        city = agency.city.capitalize()
-
                     agency_programs = Program.objects.filter(
                         program_filters
-                    ).exclude(
-                        ~models.Q(agency_id=agency.id)
+                    ).filter(
+                        agency_id=agency.id
                     )
 
-                    results.append(
-                        {
-                            "agency": {
-                                "name": agency.name,
-                                "slug": agency.slug,
-                                "phone": agency.phone,
-                                "street": agency.street,
-                                "city": city,
-                                "state": state,
-                                "zipcode": agency.zip_code,
-                                "website": agency.website,
-                            },
-                            "programs": [{
-                                    "name": program.name,
-                                    "description": program.description,
-                                    "phone": program.phone,
-                                    "slug": program.slug,
-                                    "agency": program.agency.id,
-                                } for program in agency_programs],
-                        }
-                    )
+                    if len(agency_programs) > 0 or len(service_types) == 0:
+                        state = agency.state
+                        city = agency.city
+                        if agency and agency.state:
+                            state = agency.state.capitalize()
+
+                        if agency and agency.city:
+                            city = agency.city.capitalize()
+
+                        results.append(
+                            {
+                                "agency": {
+                                    "name": agency.name,
+                                    "slug": agency.slug,
+                                    "phone": agency.phone,
+                                    "street": agency.street,
+                                    "city": city,
+                                    "state": state,
+                                    "zipcode": agency.zip_code,
+                                    "website": agency.website,
+                                },
+                                "programs": [{
+                                        "name": program.name,
+                                        "description": program.description,
+                                        "phone": program.phone,
+                                        "slug": program.slug,
+                                        "agency": program.agency.id,
+                                    } for program in agency_programs],
+                            }
+                        )
 
             # Paginate results
             paginator = Paginator(results, 10)  # Show 10 results per page
@@ -341,6 +360,7 @@ class SearchAppView(APIView):
 
 
 class EmergencyModeView(APIView):
+    @is_registered_api_consumer
     def get(self, request):
         try:
             app_settings = AppSettings.objects.first()

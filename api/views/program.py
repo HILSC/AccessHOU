@@ -12,15 +12,20 @@ from django.utils.text import slugify
 from django.utils.timezone import now
 
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 
-from api.models.program import Program
-from api.models.program import ProgramEmergencyQueue
-from api.models.program import ProgramQueue
+from api.decorators import is_registered_api_consumer
 
 from api.models.action_log import ActionLog
 from api.models.agency import Agency
 from api.models.app_settings import AppSettings
+
+from api.models.program import Program
+from api.models.program import ProgramEmergencyQueue
+from api.models.program import ProgramQueue
 
 from api.utils import getGeocodingByAddress
 from api.utils import isProgramAccessibilityCompleted
@@ -31,6 +36,9 @@ logger = logging.getLogger(__name__)
 
 
 class ProgramQueueView(APIView):
+    permission_classes = [AllowAny]
+
+    @is_registered_api_consumer
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         try:
@@ -181,6 +189,7 @@ class ProgramQueueView(APIView):
                 }, status=500
             )
 
+    @is_registered_api_consumer
     @transaction.atomic
     def put(self, request, *args, **kwargs):
         try:
@@ -436,6 +445,9 @@ class ProgramQueueView(APIView):
 
 
 class ProgramQueueDeleteView(APIView):
+    permission_classes = [AllowAny]
+
+    @is_registered_api_consumer
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         try:
@@ -522,6 +534,7 @@ class ProgramQueueDeleteView(APIView):
 
 
 class ProgramView(APIView):
+    @is_registered_api_consumer
     def get(self, request, property_name, property_value, agency_id):
         try:
             kw = {property_name: property_value}
@@ -546,6 +559,7 @@ class ProgramView(APIView):
                 }, status=500
             )
 
+    @permission_classes([IsAuthenticated])
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         try:
@@ -666,6 +680,7 @@ class ProgramView(APIView):
                 }, status=500
             )
 
+    @permission_classes([IsAuthenticated])
     @transaction.atomic
     def put(self, request, *args, **kwargs):
         try:
@@ -809,6 +824,7 @@ class ProgramView(APIView):
                 }, status=500
             )
 
+    @permission_classes([IsAuthenticated])
     @transaction.atomic
     def delete(self, request, id, *args, **kwargs):
         try:
@@ -847,6 +863,9 @@ class ProgramView(APIView):
 
 
 class ProgramListView(APIView):
+    permission_classes = [AllowAny]
+
+    @is_registered_api_consumer
     def get(self, request, property_name, property_value, page):
         program_list = None
         try:

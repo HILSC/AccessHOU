@@ -10,7 +10,12 @@ from django.http import JsonResponse
 from django.utils.text import slugify
 from django.utils.timezone import now
 
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
+
+from api.decorators import is_registered_api_consumer
 
 from api.models.action_log import ActionLog
 from api.models.agency import Agency
@@ -29,6 +34,9 @@ logger = logging.getLogger(__name__)
 
 
 class AgencyQueueView(APIView):
+    permission_classes = [AllowAny]
+    
+    @is_registered_api_consumer
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         try:
@@ -155,6 +163,7 @@ class AgencyQueueView(APIView):
                 }, status=500
             )
 
+    @is_registered_api_consumer
     @transaction.atomic
     def put(self, request, *args, **kwargs):
         try:
@@ -376,6 +385,9 @@ class AgencyQueueView(APIView):
 
 
 class AgencyQueueDeleteView(APIView):
+    permission_classes = [AllowAny]
+
+    @is_registered_api_consumer
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         try:
@@ -458,6 +470,7 @@ class AgencyQueueDeleteView(APIView):
 
 
 class AgencyView(APIView):
+    @is_registered_api_consumer
     def get(self, request, property_name, property_value):
         try:
             kw = {property_name: property_value}
@@ -485,6 +498,7 @@ class AgencyView(APIView):
                 }, status=500
             )
 
+    @permission_classes([IsAuthenticated])
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         try:
@@ -581,6 +595,7 @@ class AgencyView(APIView):
                 }, status=500
             )
 
+    @permission_classes([IsAuthenticated])
     @transaction.atomic
     def put(self, request, *args, **kwargs):
         try:
@@ -701,6 +716,7 @@ class AgencyView(APIView):
                 }, status=500
             )
 
+    @permission_classes([IsAuthenticated])
     @transaction.atomic
     def delete(self, request, id, *args, **kwargs):
         agency = None
@@ -741,6 +757,9 @@ class AgencyView(APIView):
 
 
 class AgencyListView(APIView):
+    permission_classes = [AllowAny]
+
+    @is_registered_api_consumer
     def get(self, request, property_name, property_value, page):
         agency_list = None
         try:

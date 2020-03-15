@@ -11,6 +11,8 @@ from django.http import JsonResponse
 from django.core.paginator import Paginator
 from django.forms.models import model_to_dict
 
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.views import status
 
@@ -22,6 +24,8 @@ from api.models.advocacy_report import AdvocacyReportEntity
 logger = logging.getLogger(__name__)
 
 class AdvocacyReportEntityListView(APIView):
+  permission_classes = [IsAuthenticated]
+
   def get(self, request):
     return JsonResponse(
       {
@@ -38,6 +42,8 @@ class AdvocacyReportEntityListView(APIView):
     )
 
 class AdvocacyReportListView(APIView):
+  permission_classes = [IsAuthenticated]
+
   def get(self, request):
     try:
       if request.user and request.user.is_active and request.user.profile.role.add_advocacy_reports:
@@ -133,6 +139,8 @@ class AdvocacyReportListView(APIView):
       )
 
 class AdvocacyReportView(APIView):
+  permission_classes = [IsAuthenticated]
+  
   def get(self, request, id):
     try:
       if request.user and request.user.is_active and request.user.profile.role.add_advocacy_reports:
