@@ -186,7 +186,7 @@ ALLOWED_CLIENTS = (
     'https://accesshou.brightanchor.com',
     'https://dev-accesshou.herokuapp.com',
     'https://prod-accesshou.herokuapp.com',
-    'https://accesshou.org'
+    'https://accesshou.org',
 )
 
 # DATABASE

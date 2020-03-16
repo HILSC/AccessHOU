@@ -165,7 +165,7 @@ class SearchAppView(APIView):
 
             # Immigration accessibility profile
             if immigrant_acc_profile and immigrant_acc_profile == '1':
-                program_filters &= models.Q(immigration_accessibily_profile=True)
+                program_filters &= models.Q(immigration_accessibility_profile=True)
 
             # Apply filters to programs queryset
             programs_queryset = Program.objects.select_related("agency").filter(program_filters).distinct()
@@ -302,7 +302,7 @@ class SearchAppView(APIView):
                         agency_id=agency.id
                     )
 
-                    if len(agency_programs) > 0 or len(service_types) == 0:
+                    if len(agency_programs) > 0:
                         state = agency.state
                         city = agency.city
                         if agency and agency.state:

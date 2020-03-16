@@ -1,6 +1,6 @@
 *__pycache__
 *.pyc
 
-api/__pycache__
-api/views/__pycache__
-api/models/__pycache__
+views/__pycache__
+models/__pycache__
+migrations/__pycache__
