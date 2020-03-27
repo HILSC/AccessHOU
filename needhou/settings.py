@@ -187,6 +187,9 @@ ALLOWED_CLIENTS = (
     'https://dev-accesshou.herokuapp.com',
     'https://prod-accesshou.herokuapp.com',
     'https://accesshou.org',
+    'http://accesshou.org',
+    'https://www.accesshou.org',
+    'http://www.accesshou.org'
 )
 
 # DATABASE
