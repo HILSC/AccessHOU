@@ -213,7 +213,7 @@ class SearchAppView(APIView):
 
                 # Programs with zipcode and radius
                 programs_queryset = (
-                    Program.objects.annotate(
+                    programs_queryset.annotate(
                         distance=RawSQL(
                             raw_sql,
                             (),
