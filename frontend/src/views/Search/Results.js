@@ -311,10 +311,6 @@ export default ({ match, location }) => {
     }));
   }
 
-  // const handleChangeEntity = (entity) => {
-  //   setEntitySearch(entity);
-  // }
-
   const handleFilterHILSC = () => {
     setResults(data => ({
       ...data,
@@ -649,9 +645,6 @@ export default ({ match, location }) => {
         <div className={classes.filters}>
           <BrowserView>
             <Grid container spacing={2}>
-              {/* <Grid item xs={12} sm={12} md={4}>
-                <EntityOptions handleChange={handleChangeEntity} entity={entitySearch} />
-              </Grid> */}
               <Grid item xs={12} sm={12} md={2}>
                 {keywordFilter()}
               </Grid>

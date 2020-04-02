@@ -292,6 +292,7 @@ class SearchAppView(APIView):
                         )
 
             results = list(agencies_dict.values())
+            more_results = list()
 
             # Agencies
             if entity == ENTITY_AGENCY:
@@ -302,15 +303,15 @@ class SearchAppView(APIView):
                         agency_id=agency.id
                     )
 
+                    state = agency.state
+                    city = agency.city
+                    if agency and agency.state:
+                        state = agency.state.capitalize()
+
+                    if agency and agency.city:
+                        city = agency.city.capitalize()
+
                     if len(agency_programs) > 0:
-                        state = agency.state
-                        city = agency.city
-                        if agency and agency.state:
-                            state = agency.state.capitalize()
-
-                        if agency and agency.city:
-                            city = agency.city.capitalize()
-
                         results.append(
                             {
                                 "agency": {
@@ -332,6 +333,26 @@ class SearchAppView(APIView):
                                     } for program in agency_programs],
                             }
                         )
+                    else:
+                        # We want this results to be appended a the end of list, agencies
+                        # without programs should be shown at the end.
+                        more_results.append(
+                            {
+                                "agency": {
+                                    "name": agency.name,
+                                    "slug": agency.slug,
+                                    "phone": agency.phone,
+                                    "street": agency.street,
+                                    "city": city,
+                                    "state": state,
+                                    "zipcode": agency.zip_code,
+                                    "website": agency.website,
+                                },
+                                "programs": [],
+                            }
+                        )
+
+            results = results + more_results
 
             # Paginate results
             paginator = Paginator(results, 10)  # Show 10 results per page
