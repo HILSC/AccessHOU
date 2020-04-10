@@ -13,6 +13,7 @@ export default (theme) => ({
     marginTop: theme.spacing(4),
   },
   options: {
+    display: 'flex',
     justifyContent: 'flex-end',
   },
   lastUpdated: {

@@ -1,3 +1,4 @@
+import csv
 import json
 import logging
 import os
@@ -12,6 +13,8 @@ from django.db import models
 from django.db.models.expressions import RawSQL
 from django.core.paginator import Paginator
 
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.views import status
 
@@ -101,13 +104,9 @@ class SearchAppView(APIView):
 
             # Agency filters
             agency_filters = models.Q()
-            if entity == ENTITY_AGENCY:
-                agency_filters &= models.Q(hilsc_verified=HILSC_verified,)
 
             # Program filters
             program_filters = models.Q()
-            if entity == ENTITY_PROGRAM:
-                program_filters &= models.Q(agency__hilsc_verified=HILSC_verified,)
 
             # Keyword
             if keyword:
@@ -149,10 +148,6 @@ class SearchAppView(APIView):
                     program_filters &= models.Q(languages__contains=[l.lower()])
                     agency_filters &= models.Q(languages__contains=[l.lower()])
 
-            # Walk in hours
-            if walk_in_hours:
-                program_filters &= models.Q(walk_in_schedule__isnull=False)
-
             # Annual medium income
             if annual_media_income:
                 program_filters &= models.Q(
@@ -167,6 +162,14 @@ class SearchAppView(APIView):
             if immigrant_acc_profile and immigrant_acc_profile == '1':
                 program_filters &= models.Q(immigration_accessibility_profile=True)
 
+            # HILSC Verified Program's agency
+            if entity == ENTITY_PROGRAM:
+                program_filters &= models.Q(agency__hilsc_verified=HILSC_verified,)
+
+            # Walk in hours
+            if walk_in_hours:
+                program_filters &= models.Q(walk_in_schedule__isnull=False)
+
             # Apply filters to programs queryset
             programs_queryset = Program.objects.select_related("agency").filter(program_filters).distinct()
 
@@ -177,6 +180,10 @@ class SearchAppView(APIView):
                     d["agency_id"]
                     for d in list(programs_queryset.values("agency_id").distinct())
                 ]
+
+            # HILSC Verified
+            if entity == ENTITY_AGENCY:
+                agency_filters &= models.Q(hilsc_verified=HILSC_verified,)
 
             # Apply filters to agencies queryset
             agencies_queryset = Agency.objects.filter(
@@ -400,3 +407,24 @@ class EmergencyModeView(APIView):
                 }, status=500
             )
 
+
+class ExportPublicActionLogs(APIView):
+    @is_registered_api_consumer
+    @permission_classes([IsAuthenticated])
+    def get(self, request):
+        try:
+            response = HttpResponse(content_type='text/csv')
+            response['Content-Disposition'] = 'attachment; filename="public_request.logs.csv"'
+            writer = csv.DictWriter(response, fieldnames=['emp_name', 'dept', 'birth_month'])
+            writer.writeheader()
+            # writer.writerow({'emp_name': 'John Smith', 'dept': 'Accounting', 'birth_month': 'November'})
+            # writer.writerow({'emp_name': 'Erica Meyers', 'dept': 'IT', 'birth_month': 'March'})
+            return response
+        except Exception as ex:
+            logger.error("Error getting CSV from {} to {}: {}".format(start_date, str(e)))
+            return JsonResponse(
+                {
+                    "message": "Program cannot be updated. Please try again!"
+                }, status=500
+            )
+        

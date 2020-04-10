@@ -48,6 +48,7 @@ export default ({ match }) => {
   });
 
   const [edit, setEdit] = useState(false);
+  const [goSearch, setGoSearch] = useState(false);
   const [addAdvocacyReport, setAddAdvocacyReport] = useState(false);
   const [addProgram, setAddProgram] = useState(false);
 
@@ -63,6 +64,10 @@ export default ({ match }) => {
 
   const handleEdit = () => {
     setEdit(true);
+  }
+
+  const handleGoSearch = () => {
+    setGoSearch(true);
   }
 
   const handleAdvocacyReport = () => {
@@ -82,6 +87,18 @@ export default ({ match }) => {
 
   if(edit) {
     const url = `/agency/edit/${slug}`;
+    return <Redirect push to={url} />
+  }
+
+  if(goSearch) {
+    let url = `/search/?`;
+
+    if (localStorage.getItem('search')){
+      url += `keyword=${localStorage.getItem('search')}&`;
+    }
+
+    url += `entity=${localStorage.getItem('entity')}&storage=1`;
+
     return <Redirect push to={url} />
   }
 
@@ -115,35 +132,36 @@ export default ({ match }) => {
              label={''}
             >
             </FormControlLabel>
-            <FormControlLabel classes={{
-              root: classes.options
-            }}
-              control={
-                <React.Fragment>
+            <div className={classes.options}>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={handleEdit}
+                className={classes.button}
+              >
+                Help complete this profile
+              </Button>
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={handleGoSearch}
+                className={classes.button}
+              >
+                Go back to search results
+              </Button>
+              {
+                user.isAuthenticated && user.advocacyReport ? (
                   <Button
                     variant="outlined"
-                    color="secondary"
-                    onClick={handleEdit}
+                    color="primary"
+                    onClick={handleAdvocacyReport}
                     className={classes.button}
                   >
-                    Help complete this profile
+                    Add advocacy report
                   </Button>
-                  {
-                    user.isAuthenticated && user.advocacyReport ? (
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        onClick={handleAdvocacyReport}
-                        className={classes.button}
-                      >
-                        Add advocacy report
-                      </Button>
-                    ) : null
-                  }
-                </React.Fragment>
+                ) : null
               }
-              label=""
-            />
+            </div>
           </FormGroup>
           <AgencyData agency={data.agency} showMissingData={data.showMissingData} />
           <Container maxWidth="lg">

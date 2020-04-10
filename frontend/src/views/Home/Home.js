@@ -1,5 +1,6 @@
 import React, {
   useState,
+  useEffect
 } from 'react';
 import { Redirect } from 'react-router-dom';
 import { NavLink } from "react-router-dom";
@@ -47,6 +48,10 @@ export default () => {
   const [keyword, setkeyword] = useState();
   const [search, setSearch] = useState();
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  });
+
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       setSearch(true);
@@ -89,6 +94,8 @@ export default () => {
   }
 
   if(search) {
+    localStorage.setItem('search', encodeURI(keyword));
+    localStorage.setItem('entity', entity);
     const url = `/search/?keyword=${encodeURI(keyword)}&entity=${entity}`;
     return <Redirect push to={url} />
   }

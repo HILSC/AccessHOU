@@ -11,6 +11,7 @@ export default (theme) => ({
   },
   messages: {
     marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(60),
   },  
   buttons: {
     display: 'flex',

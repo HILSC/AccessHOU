@@ -32,7 +32,7 @@ class AgencyBase(Base):
     accepted_ids_current = ArrayField(models.CharField(max_length=250), null=True)
     accepted_ids_expired = ArrayField(models.CharField(max_length=250), null=True)
     notes = models.TextField(null=True)
-    proof_of_address = models.CharField(max_length=250, null=True)
+    proof_of_address = ArrayField(models.CharField(max_length=250, null=True), default=list)
 
     # Schedule
     schedule = JSONField(null=True)

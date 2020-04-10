@@ -31,6 +31,7 @@ from api.utils import getGeocodingByAddress
 from api.utils import isProgramAccessibilityCompleted
 from api.utils import getMapURL
 from api.utils import UserActions
+from api.utils import addPublicActionLog
 
 logger = logging.getLogger(__name__)
 
@@ -170,6 +171,16 @@ class ProgramQueueView(APIView):
                 program.related_program = new_program
                 program.save()
 
+            # Save public action log
+            addPublicActionLog(
+                entity_name=program.name,
+                entity_slug=program.slug,
+                action=program.action,
+                model='Program',
+                requested_by_name=program.requested_by_name,
+                requested_by_email=program.requested_by_email
+            )
+
             return JsonResponse(
                 {
                     "program": {
@@ -254,7 +265,7 @@ class ProgramQueueView(APIView):
                 existing_new_program = None
 
             if related_program.emergency_mode and existing_new_program:
-                program, crated = ProgramQueue.objects.update_or_create(
+                program, created = ProgramQueue.objects.update_or_create(
                     id=existing_new_program.id,
                     defaults={
                         # General
@@ -423,6 +434,16 @@ class ProgramQueueView(APIView):
                 # Update the program in the final table api_programs with emergency_mode equal to True
                 Program.custom_update(user=None, program=program, program_id=related_program.id)
 
+            # Save public action log
+            addPublicActionLog(
+                entity_name=program.name,
+                entity_slug=program.slug,
+                action=program.action,
+                model='Program',
+                requested_by_name=program.requested_by_name,
+                requested_by_email=program.requested_by_email
+            )
+
             return JsonResponse(
                 {
                     "program": {
@@ -431,6 +452,7 @@ class ProgramQueueView(APIView):
                         "name": related_program.name,
                         "emergency_mode": program.emergency_mode,
                         "agency": related_program.agency.id,
+                        "agency_slug": related_program.agency.slug
                     },
                     "model": "queue",
                 }
@@ -514,12 +536,24 @@ class ProgramQueueDeleteView(APIView):
                 action=UserActions.DELETE.value,
             )
 
+            # Save public action log
+            addPublicActionLog(
+                entity_name=program.name,
+                entity_slug=program.slug,
+                action=program.action,
+                model='Program',
+                requested_by_name=program.requested_by_name,
+                requested_by_email=program.requested_by_email
+            )
+
             return JsonResponse(
                 {
                     "program": {
                         "id": related_program.id,
                         "slug": related_program.slug,
                         "name": related_program.name,
+                        "agency": related_program.agency.id,
+                        "agency_slug": related_program.agency.slug
                     },
                     "model": "queue",
                 }
@@ -732,7 +766,7 @@ class ProgramView(APIView):
                     )
 
                 # If user is logged in, this program doesn't have to go to the queue.
-                program, crated = Program.objects.update_or_create(
+                program, created = Program.objects.update_or_create(
                     id=program.id,
                     defaults={
                         "name": program_name,
@@ -811,6 +845,7 @@ class ProgramView(APIView):
                             "slug": program.slug,
                             "name": program.name,
                             "agency": program.agency.id,
+                            "agency_slug": program.agency.slug
                         },
                         "model": "program",
                     }
@@ -833,6 +868,8 @@ class ProgramView(APIView):
             if request.user and request.user.is_active:
                 program = Program.objects.get(id=id)
                 program_name = program.name
+                program_agency_id = program.agency.id
+                program_agency_slug = program.agency.slug
 
                 ActionLog.objects.create(
                     info=program.name,
@@ -847,7 +884,10 @@ class ProgramView(APIView):
                 return JsonResponse(
                     {
                         "program": {
-                            "name": program_name
+                            "name": program_name,
+                            "agency": program_agency_id,
+                            "agency_slug": program_agency_slug
+                            
                         },
                         "model": "program",
                     }
