@@ -28,6 +28,7 @@ from api.models.user import Role
 from api.utils import getGeocodingByAddress
 from api.utils import getMapURL
 from api.utils import UserActions
+from api.utils import addPublicActionLog
 
 
 logger = logging.getLogger(__name__)
@@ -143,6 +144,17 @@ class AgencyQueueView(APIView):
                 agency.emergency_mode = app_settings.emergency_mode
                 agency.related_agency = new_agency
                 agency.save()
+
+            
+            # Save public action log
+            addPublicActionLog(
+                entity_name=agency.name,
+                entity_slug=agency.slug,
+                action=agency.action,
+                model='Agency',
+                requested_by_name=agency.requested_by_name,
+                requested_by_email=agency.requested_by_email
+            )
 
             return JsonResponse(
                 {
@@ -364,6 +376,16 @@ class AgencyQueueView(APIView):
                 # Update the agency in the final table api_agencies with emergency_mode equal to True
                 Agency.custom_update(user=None, agency=agency, agency_id=related_agency.id)
 
+            # Save public action log
+            addPublicActionLog(
+                entity_name=agency.name,
+                entity_slug=agency.slug,
+                action=agency.action,
+                model='Agency',
+                requested_by_name=agency.requested_by_name,
+                requested_by_email=agency.requested_by_email
+            )
+
             return JsonResponse(
                 {
                     "agency": {
@@ -394,7 +416,7 @@ class AgencyQueueDeleteView(APIView):
             related_agency_id = int(request.data.get("id", 0))
             related_agency = Agency.objects.get(id=related_agency_id)
 
-            AgencyQueue.objects.create(
+            agency = AgencyQueue.objects.create(
                 name=related_agency.name,
                 slug=related_agency.name,
 
@@ -448,6 +470,16 @@ class AgencyQueueDeleteView(APIView):
                 requested_by_email=request.data.get("requested_by_email", None),
                 related_agency=related_agency,
                 action=UserActions.DELETE.value
+            )
+
+            # Save public action log
+            addPublicActionLog(
+                entity_name=agency.name,
+                entity_slug=agency.slug,
+                action=agency.action,
+                model='Agency',
+                requested_by_name=agency.requested_by_name,
+                requested_by_email=agency.requested_by_email
             )
 
             return JsonResponse(

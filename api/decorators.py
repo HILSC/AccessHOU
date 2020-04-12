@@ -9,6 +9,7 @@ def is_registered_api_consumer(function):
   def wrap(self, request, *args, **kwargs):
     # TODO: If we try to open the API, we need to create API keys to limit the access
     referer = request.META.get('HTTP_REFERER')
+    # return function(self, request, *args, **kwargs)
     if referer.startswith(settings.ALLOWED_CLIENTS):
       return function(self, request, *args, **kwargs)
     else:

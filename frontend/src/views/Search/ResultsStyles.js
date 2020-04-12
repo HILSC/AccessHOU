@@ -1,13 +1,53 @@
 export default (theme) => ({
+  appBarContainer: {
+    paddingLeft: 24,
+    paddingRight: 24,
+    boxShadow: 'none',
+    backgroundColor: '#FFF',
+  },
+  appBarContainerMobile: {
+    paddingLeft: 10,
+    paddingRight: 10,
+    boxShadow: 'none',
+    backgroundColor: '#FFF',
+  },
+  publicHeader: {
+    width: '100%',
+    display: 'flex',
+    paddingLeft:24,
+    paddingRight: 24,
+    alignItems: 'center',
+    boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)',
+  },
+  toolbarContainer: {
+    flexShrink: 0,
+    flexDirection: 'column',
+    paddingLeft: 0,
+    paddingRight: 0,
+  },
   resultsContainer: {
-    marginTop: theme.spacing(1),
+    marginTop: theme.spacing(25),
+    marginBottom: theme.spacing(3),
+  },
+  resultsContainerMobile: {
+    marginTop: theme.spacing(42),
+    marginBottom: theme.spacing(3),
+  },
+  resultsContainersOpenFilters: {
+    marginTop: theme.spacing(38),
+    marginBottom: theme.spacing(3),
+  },
+  resultsContainersOpenFiltersMobile: {
+    marginTop: 385,
     marginBottom: theme.spacing(3),
   },
   loading: {
-    textAlign: 'center'
+    textAlign: 'center',
+    marginBottom: theme.spacing(70),
   },
   messages: {
     marginTop: theme.spacing(4),
+    marginBottom: theme.spacing(70),
   },
   filters: {
     backgroundColor: '#F3F3F3',
@@ -34,6 +74,7 @@ export default (theme) => ({
   },
   formControl: {
     minWidth: '100%',
+    maxWidth: 150,
   },
   hilscButton: {
     minWidth: '120px',
@@ -91,7 +132,11 @@ export default (theme) => ({
     borderBottom: 0
   },
   filtersContainer: {
-    // position: 'fixed',
+    marginTop: theme.spacing(1),
+  },
+  filtersContainerMobile: {
+    marginTop: theme.spacing(1),
+    padding: 0
   },
   resultsCountContainer: {
     display: 'flex',

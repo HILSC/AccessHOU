@@ -58,6 +58,7 @@ export default ({ match }) => {
   const [goHome, setGoHome] = useState(false);
   const [goView, setGoView] = useState(false);
   const [goEditor, setGoEditor] = useState(false);
+  const [goSearch, setGoSearch] = useState(false);
 
   useEffect(() => {
     getAgency({property: 'slug', value: slug}).then(result => {
@@ -144,6 +145,10 @@ export default ({ match }) => {
     setGoView(true);
   }
 
+  const handleGoSearch = () => {
+    setGoSearch(true)
+  }
+
   if(goHome){
     return <Redirect push to="/" />
   }
@@ -154,6 +159,18 @@ export default ({ match }) => {
 
   if(goView) {
     let url = `/agency/${formState.agencySlug}`
+    return <Redirect push to={url} />
+  }
+
+  if(goSearch) {
+    let url = `/search/?`;
+
+    if (localStorage.getItem('search')){
+      url += `keyword=${localStorage.getItem('search')}&`;
+    }
+
+    url += `entity=${localStorage.getItem('entity')}&storage=1`;
+
     return <Redirect push to={url} />
   }
   
@@ -172,14 +189,24 @@ export default ({ match }) => {
               <div className={classes.buttons}>
                 {
                   formState.messageAction === USER_ACTIONS.UPDATE ? (
-                    <Button
-                      variant="outlined"
-                      color="secondary"
-                      onClick={handleView}
-                      className={classes.button}
-                    >
-                      View Agency
-                    </Button>
+                    <React.Fragment>
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={handleView}
+                        className={classes.button}
+                      >
+                        View agency
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={handleGoSearch}
+                        className={classes.button}
+                      >
+                        Go back to search results
+                      </Button>
+                    </React.Fragment>
                   ) : (
                     <Button
                       variant="outlined"
@@ -187,7 +214,7 @@ export default ({ match }) => {
                       onClick={handleGoEditor}
                       className={classes.button}
                     >
-                      Go to Editor
+                      Go back to editor
                     </Button>
                   )
                 }
@@ -197,7 +224,7 @@ export default ({ match }) => {
                   onClick={handleGoHome}
                   className={classes.button}
                 >
-                  Go to Homepage
+                  Go back to homepage
                 </Button>
               </div>
             </div>

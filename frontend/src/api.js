@@ -170,6 +170,7 @@ const deleteAgency = (token, data) => {
     );
   }
 
+  // Delete is sent as a post because we need post data more than the id
   return client.post(
     `/agency/queue/delete`,
     JSON.stringify(data),
@@ -263,6 +264,7 @@ const deleteProgram = (token, data) => {
     );
   }
 
+  // Delete is sent as a post because we need post data more than the id
   return client.post(
     `/program/queue/delete`,
     JSON.stringify(data),

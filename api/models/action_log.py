@@ -20,3 +20,17 @@ class ActionLog(Base):
 
     class Meta:
         db_table = "api_actions_logs"
+
+
+class PublicActionLog(Base):
+    entity_slug = models.CharField(max_length=350, null=False, blank=False)
+    action = models.CharField(max_length=45, null=False, blank=False)
+    model = models.CharField(max_length=45, null=False, blank=False)
+    requested_by_name = models.CharField(max_length=100, null=True, default=None)
+    requested_by_email = models.CharField(max_length=150, null=False)
+
+    def __str__(self):
+        return "{}, {}, {}".format(self.requested_by_name, self.requested_by_email, self.action)
+
+    class Meta:
+        db_table = "api_public_actions_logs"

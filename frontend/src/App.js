@@ -59,9 +59,8 @@ const App = () => {
           <PublicRoute path="/program/edit/:agency/:slug" component={ProgramEdit} layout={PublicLayout} />
           <PublicRoute path="/program/:agency/:slug" component={ProgramDetails} layout={PublicLayout} />
 
-          <PublicRoute path="/search" component={Results} layout={PublicLayout}/>
           <PublicRoute path="/user-manual" component={UserManualPublic} layout={PublicLayout}/>
-
+          
           {/* Logged Users */}
           <PrivateRoute exact path="/private" component={Dashboard} layout={DashboardLayout} menu={1} />
           <PrivateRoute exact path="/private/profile" component={Profile} layout={DashboardLayout} menu={7} />
@@ -80,6 +79,9 @@ const App = () => {
 
           {/* Logged user manual */}
           <PrivateRoute exact path="/private/user-manual" component={UserManualPrivate} layout={DashboardLayout} menu={8} />
+
+          {/* Search */}
+          <Route render={props => ( <Results {...props} />)} />
 
           <PublicRoute path='*' exact={true} component={NotFound} layout={PublicLayout} />
         </Switch>

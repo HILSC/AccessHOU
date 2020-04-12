@@ -54,8 +54,9 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
   const websiteRef = useRef(null);
+  const requestorNameRef = useRef(null);
   const requestorEmailRef = useRef(null);
-
+  
   const [values, setValues] = useState({
     ...agency,
     'agency_id': agency && agency.id,
@@ -69,7 +70,8 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
   const [nameError, setNameError] = useState({error: false, message: ''});
   const [websiteError, setWebsiteError] = useState({error: false, message: ''});
   const [phoneError, setPhoneError] = useState({error: false, message: ''});
-  const [emailError, setEmailError] = useState({error: false, message: ''});
+  const [requestorNameError, setRequestorNameError] = useState({error: false, message: ''});
+  const [requestorEmailError, setRequestorEmailError] = useState({error: false, message: ''});
 
   const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -114,12 +116,22 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
     }
 
     if(!isAuthenticated) {
-      if(!values['requested_by_email'] || !isEmailValid(values['requested_by_email'])) {
-        requestorEmailRef.current.focus();
-        setEmailError(() => ({error: true, message: "Please enter a valid email."}));
+      if(!values['requested_by_name']) {
+        requestorNameRef.current.focus();
+        setRequestorNameError(() => ({error: true, message: "Please enter your name."}));
         return false;
       }else{
-        setEmailError(() => ({error: false, message: ''}));
+        setRequestorNameError(() => ({error: false, message: ''}));
+      }
+    }
+
+    if(!isAuthenticated) {
+      if(!values['requested_by_email'] || !isEmailValid(values['requested_by_email'])) {
+        requestorEmailRef.current.focus();
+        setRequestorEmailError(() => ({error: true, message: "Please enter a valid email."}));
+        return false;
+      }else{
+        setRequestorEmailError(() => ({error: false, message: ''}));
       }
     }
 
@@ -442,7 +454,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
             </Grid>
             <Grid item xs={12} sm={12} md={12}>
               <CustomInput
-                type="select"
+                type="multiselect"
                 labelText="Proof of address?"
                 id="proof_of_address"
                 options={PROOF_OF_ADDRESS}
@@ -452,7 +464,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
                 inputProps={{
                   onChange: handleChange,
                   name: "proof_of_address",
-                  value: values.proof_of_address ? values.proof_of_address : '',
+                  value: values.proof_of_address && values.proof_of_address[0] !== null ? values.proof_of_address : [],
                 }}
               />
             </Grid>
@@ -676,11 +688,16 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
                 <Grid item xs={12} sm={12} md={6}>
                   <CustomInput
                     id="requested_by_name"
+                    errorDetails={{
+                      error: requestorNameError && requestorNameError.error ? true : false,
+                      message: requestorNameError ? requestorNameError.message : '',
+                    }}
                     formControlProps={{
                       fullWidth: true
                     }}
                     inputProps={{
-                      label: "Please provide your name",
+                      inputRef: requestorNameRef,
+                      label: "Please provide your name *",
                       onChange: handleChange,
                       name: "requested_by_name",
                       value: values.requested_by_name ? values.requested_by_name : [],
@@ -695,8 +712,8 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
                   <CustomInput
                     id="requested_by_email"
                     errorDetails={{
-                      error: emailError && emailError.error ? true : false,
-                      message: emailError ? emailError.message : '',
+                      error: requestorEmailError && requestorEmailError.error ? true : false,
+                      message: requestorEmailError ? requestorEmailError.message : '',
                     }}
                     formControlProps={{
                       fullWidth: true

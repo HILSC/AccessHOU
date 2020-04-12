@@ -19,6 +19,7 @@ import {
   AGE_GROUPS,
   IMMIGRATION_STATUSES,
   IDS,
+  PROOF_OF_ADDRESS,
   LANGUAGES,
   AVAILABLE_INTERPRETATION
 } from 'constants.js';
@@ -369,10 +370,10 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
             (queueAgencyData && queueAgencyData.accepted_ids_current && queueAgencyData.accepted_ids_current.length) ||
             (queueAgencyData && queueAgencyData.accepted_ids_expired && queueAgencyData.accepted_ids_expired.length) ||
             (queueAgencyData && queueAgencyData.notes) ||
-            (queueAgencyData && queueAgencyData.proof_of_address) ||
+            (queueAgencyData && queueAgencyData.proof_of_address && queueAgencyData.proof_of_address.length) ||
             showMissingData || (agency && agency.accepted_ids_current && agency.accepted_ids_current.length) ||
             (agency && agency.accepted_ids_expired && agency.accepted_ids_expired.length) || (agency && agency.notes) ||
-            (agency && agency.proof_of_address) ? (
+            (agency && agency.proof_of_address && agency.proof_of_address.length && agency.proof_of_address[0] !== null) ? (
               <Grid item xs={12} sm={12} md={12}>
                 <Label text="Requirements" variant="h5" color="primary" />
               </Grid>
@@ -448,18 +449,22 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
           }
           {
             // Proof of address
-            queueAgencyData && queueAgencyData.proof_of_address !== agency.proof_of_address ? (
+            queueAgencyData && JSON.stringify(queueAgencyData.proof_of_address) !== JSON.stringify(agency.proof_of_address) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
+                  isAList={true}
+                  listOptions={PROOF_OF_ADDRESS}
                   labelText={'Proof of address?'}
                   dataText={queueAgencyData.proof_of_address !== '' ? queueAgencyData.proof_of_address : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.proof_of_address !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
               </Grid>
             ) :
-            showMissingData || (agency && agency.proof_of_address) ? (
+            showMissingData || (agency && agency.proof_of_address && agency.proof_of_address.length && agency.proof_of_address[0] !== null) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
+                  isAList={true}
+                  listOptions={PROOF_OF_ADDRESS}
                   labelText={'Proof of address?'}
                   dataText={agency.proof_of_address}
                 />

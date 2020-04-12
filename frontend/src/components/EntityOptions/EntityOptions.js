@@ -6,6 +6,9 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
+// Custom Components
+import ArrowTooltip from '../ArrowTooltip/ArrowTooltip';
+
 // Styles
 import { makeStyles } from '@material-ui/core/styles';
 import styles from './EntityOptionsStyles';
@@ -20,20 +23,24 @@ const EntityOptions = ({ entity, handleChange }) => {
 
   return (
     <RadioGroup row defaultValue={entity}>
-      <FormControlLabel
-        className={classes.entityOption}
-        value="agency"
-        control={<Radio color="primary" onChange={handleOptionChange} />}
-        label="Agency"
-        labelPlacement="end"
-      />
-      <FormControlLabel
-        className={classes.entityOption}
-        value="program"
-        control={<Radio color="primary" onChange={handleOptionChange} />}
-        label="Program"
-        labelPlacement="end"
-      />
+      <ArrowTooltip title={'Search results are all matching agency names, with all programs listed.'}>
+        <FormControlLabel
+          className={classes.entityOption}
+          value="agency"
+          control={<Radio color="primary" onChange={handleOptionChange} />}
+          label="Agency"
+          labelPlacement="end"
+        />
+      </ArrowTooltip>
+      <ArrowTooltip title={'Search results are all matching program name and descriptions.'}>
+        <FormControlLabel
+          className={classes.entityOption}
+          value="program"
+          control={<Radio color="primary" onChange={handleOptionChange} />}
+          label="Program"
+          labelPlacement="end"
+        />
+      </ArrowTooltip>
     </RadioGroup>
   )
 }
