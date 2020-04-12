@@ -74,7 +74,7 @@ export default (theme) => ({
   },
   formControl: {
     minWidth: '100%',
-    maxWidth: 150,
+    maxWidth: 250,
   },
   hilscButton: {
     minWidth: '120px',
