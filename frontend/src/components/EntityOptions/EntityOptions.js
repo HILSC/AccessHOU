@@ -23,7 +23,7 @@ const EntityOptions = ({ entity, handleChange }) => {
 
   return (
     <RadioGroup row defaultValue={entity}>
-      <ArrowTooltip title={'Search results are all matching agency names, with all programs listed.'}>
+      <ArrowTooltip title={'Search results for matching phrase in agency name. Will display all programs.'}>
         <FormControlLabel
           className={classes.entityOption}
           value="agency"
@@ -32,7 +32,7 @@ const EntityOptions = ({ entity, handleChange }) => {
           labelPlacement="end"
         />
       </ArrowTooltip>
-      <ArrowTooltip title={'Search results are all matching program name and descriptions.'}>
+      <ArrowTooltip title={'Search results for matching phrase in program name and/or description. Will display relevant programs.'}>
         <FormControlLabel
           className={classes.entityOption}
           value="program"

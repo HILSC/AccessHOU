@@ -141,10 +141,7 @@ export default ({ match, location }) => {
   let HILSCVerified = true
 
   // Note: The local storage has been cleaned if we are getting to this page from the home.
-  if(localStorage.getItem('cleared')) {
-    HILSCVerified = HILSCVerified;
-    serviceType = serviceType;
-  } else {
+  if(!localStorage.getItem('cleared')) {
     addInLocalStorage('search', keyword);
     addInLocalStorage('entity', entity);
   
