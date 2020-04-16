@@ -29,7 +29,7 @@ const Alert = ({ message, variant, className, iconClassName, queueMessage}) => {
     return (
       <div>
         The change request has been submitted to the queue and will be fielded by an administrator shortly.
-        For questions, please contact <a href="mailto:needhou@houstonimmigration.org">needhou@houstonimmigration.org</a>.
+        For questions, please contact <a href="mailto:accesshou@houstonimmigration.org">accesshou@houstonimmigration.org</a>.
       </div>
     )
   }
