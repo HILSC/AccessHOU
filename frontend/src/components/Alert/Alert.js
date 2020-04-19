@@ -28,7 +28,7 @@ const VARIANT_ICONS = {
   info: InfoIcon,
 };
 
-const Alert = ({ message, variant, className, iconClassName, queueMessage}) => {
+const Alert = ({ message, variant, className, iconClassName, queueMessage, generalMessage}) => {
   const classes = useStyles();
   const Icon = VARIANT_ICONS[variant];
 
@@ -37,6 +37,14 @@ const Alert = ({ message, variant, className, iconClassName, queueMessage}) => {
       <div>
         The change request has been submitted to the queue and will be fielded by an administrator shortly.
         For questions, please contact <a href="mailto:accesshou@houstonimmigration.org">accesshou@houstonimmigration.org</a>.
+      </div>
+    )
+  }
+
+  const showGeneralMessage = () => {
+    return (
+      <div>
+        An error has occurred. Please try again and if the error persists email <a href="mailto:accesshou@houstonimmigration.org">accesshou@houstonimmigration.org</a>. Thank you.
       </div>
     )
   }
@@ -52,7 +60,7 @@ const Alert = ({ message, variant, className, iconClassName, queueMessage}) => {
           </div>
           <div>
             {
-              queueMessage ? showQueueMessage() : message
+              queueMessage ? showQueueMessage() : generalMessage ? showGeneralMessage() : message
             }
           </div>
         </div>

@@ -4,5 +4,11 @@ export default (theme) => ({
   },
   infoChanged: {
     color: 'green'
+  },
+  customLabel: {
+    display: 'flex',
+  },
+  customlabelSVG: {
+    marginLeft: 5
   }
 });

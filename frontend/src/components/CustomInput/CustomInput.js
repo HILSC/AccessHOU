@@ -72,7 +72,7 @@ const CustomInput = ({
           labelInfo.show ? (
             <span className={classes.customlabelSVG}>
               <ArrowTooltip title={labelInfo.msg}>
-                <InfoOutlinedIcon color="primary" fontSize="medium" />
+                <InfoOutlinedIcon color="primary" fontSize="default" />
               </ArrowTooltip>
             </span>
           ) : null

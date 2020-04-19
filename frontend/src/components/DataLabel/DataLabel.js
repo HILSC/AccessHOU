@@ -1,7 +1,12 @@
 import React from 'react';
 
+// Material UI Components
 import Typography from '@material-ui/core/Typography';
 import BadgeList from 'components/BadgeList/BadgeList';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+
+// Custom Components
+import ArrowTooltip from 'components/ArrowTooltip/ArrowTooltip';
 
 import {
   ACTION_CLASS
@@ -12,7 +17,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import styles from "./DataLabelStyles";
 const useStyles = makeStyles(styles);
 
-export default ({ labelText, dataText, dataTextWithFormat, dataTextClass, isAList=false, listOptions=[] }) => {
+export default ({ labelText, dataText, dataTextWithFormat, dataTextClass, isAList=false, listOptions=[], labelInfo={show: false} }) => {
   const classes = useStyles();
 
   const textClass = dataTextClass && dataTextClass === ACTION_CLASS.CHANGED ? classes.infoChanged :
@@ -20,8 +25,19 @@ export default ({ labelText, dataText, dataTextWithFormat, dataTextClass, isALis
 
   return (
     <div>
-      <Typography variant="body1" align="left" color="textSecondary">
+      <Typography variant="body1" align="left" color="textSecondary" classes={{
+        root: classes.customLabel
+      }}>
         {labelText}
+        {
+          labelInfo && labelInfo.show ? (
+            <span className={classes.customlabelSVG}>
+              <ArrowTooltip title={labelInfo.msg}>
+                <InfoOutlinedIcon color="primary" fontSize="default" />
+              </ArrowTooltip>
+            </span>
+          ) : null
+        }
       </Typography>
       {
         isAList ? (

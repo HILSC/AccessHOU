@@ -529,6 +529,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                 labelText="Documents"
                 id="documents_languages"
                 options={LANGUAGES}
+                labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -562,6 +563,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                 labelText="Frontline Staff"
                 id="frontline_staff_languages"
                 options={LANGUAGES}
+                labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}

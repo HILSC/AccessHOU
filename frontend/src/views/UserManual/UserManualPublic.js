@@ -131,7 +131,7 @@ export default () => {
             </li>
             <li>
               <a className={classes.primaryAnchor} href="#iiap">
-                Informs Immigrant Accessibility Profile
+                Immigrant Accessibility Profile
               </a>
             </li>
           </ul>
@@ -532,17 +532,23 @@ export default () => {
             during the emergency, and approve information that is accurate for
             longer-term recovery
           </p>
-          <h2 id="iiap">Informs Immigrant Accessibility Profile.</h2>
+          <h2 id="iiap">Immigrant Accessibility Profile</h2>
           <p>
-            A program is considered an "Informs Immigrant Accessibility Profile." if this information is provided: {" "}
+            Profile questions are based on <a target="_blank" rel="noopener noreferrer" href="https://www.dropbox.com/s/9xqzhusuc69ypi9/HILSC%20IAI_10_22_19.docx?dl=0">HILSC's Immigrant Accessibility Index</a> which is a self-assessment tool to help social service organizations assess the extent to which their services 
+            are accessible to all immigrants, regardless of legal status.
           </p>
+          <p>The Immigrant Accessibility Profile helps navigators determine if services are 
+          appropriate for their immigrant clients. Programs are considered to have a full Profile if 
+          information has been provided for the following fields:</p>
           <ol>
             <li>Agency
               <ul>
                 <li>IDs accepted -- current</li>
                 <li>IDs accepted -- expired</li>
                 <li>Proof of address</li>
-                <li>Website Languages</li>
+                <li>Website languages</li>
+                <li>Document languages</li>
+                <li>Frontline staff languages</li>
                 <li>Interpretation Available</li>
                 <li>Assistance to fill out intake forms</li>
                 <li>Visual aids for low-literacy clients</li>

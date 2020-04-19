@@ -626,7 +626,7 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
         <Grid item xs={12} sm={12} md={12}>
           <CustomInput
             type="multiselect"
-            labelText="Program languages"
+            labelText="Languages"
             id="languages"
             labelInfo={{show: true, msg: IAI_MESSAGE}}
             options={LANGUAGES}

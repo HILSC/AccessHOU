@@ -118,16 +118,15 @@ export default ({ match }) => {
           messageQueue: result.data.model === "queue" && !result.data.program.emergency_mode ? true: false,
           message: `Program "${result.data.program.name}" was created successfully under agency "${stateData.agency.name}".`
         }));
-      }else if (result.data.error){
-        setData((stateData) => ({
-          ...stateData,
-          messageType: 'error',
-          messageQueue: false,
-          message: result.data.message
-        }));
       }
-    }).catch((error) => {
-      // Show Message
+    }).catch(() => {
+      setData((stateData) => ({
+        ...stateData,
+        messageType: 'error',
+        messageQueue: false,
+        messageGeneral: true,
+        message: ''
+      }));
     });
   }
 
@@ -208,6 +207,7 @@ export default ({ match }) => {
                     <Alert
                       variant={data.messageType}
                       message={data.message}
+                      generalMessage={data.messageGeneral}
                     />
                   ) : null
                 }

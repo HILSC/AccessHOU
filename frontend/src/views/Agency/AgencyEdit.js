@@ -5,7 +5,6 @@ import React, {
 import { Redirect } from 'react-router-dom';
 
 import {
-  useDispatch,
   useSelector,
 } from 'react-redux';
 
@@ -31,9 +30,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import AgencyForm from 'components/Agency/AgencyForm';
 import Alert from 'components/Alert/Alert';
 
-// ACTIONS
-import { LOGOUT } from 'actions/user';
-
 // Styles
 import { makeStyles } from '@material-ui/core/styles';
 import styles from './AgencyEditStyles';
@@ -41,7 +37,6 @@ const useStyles = makeStyles(styles);
 
 export default ({ match }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   const {
     params: { slug }
@@ -89,20 +84,14 @@ export default ({ match }) => {
           message: `Agency "${result.data.agency.name}" was updated successfully.`,
           agencySlug: result.data.agency.slug
         }));
-      }else if (result.data.error){
-        setFormState((stateData) => ({
-          ...stateData,
-          messageType: 'error',
-          messageQueue: false,
-          message: result.data.message
-        }));
       }
     }).catch(() => {
-      // Logout user
-      dispatch({
-        type: LOGOUT,
-        data: null,
-      });
+      setFormState((stateData) => ({
+        ...stateData,
+        messageType: 'error',
+        messageQueue: false,
+        messageGeneral: true
+      }));
     });
   }
 
@@ -116,20 +105,14 @@ export default ({ match }) => {
           messageAction: USER_ACTIONS.DELETE,
           message: `Agency "${result.data.agency.name}" was deleted.`,
         }));
-      } else if(result.data.error) {
-        setFormState((stateData) => ({
-          ...stateData,
-          messageType: 'error',
-          messageQueue: false,
-          message: result.data.message
-        }));
       }
     }).catch(() => {
-      // Logout user
-      dispatch({
-        type: LOGOUT,
-        data: null,
-      });
+      setFormState((stateData) => ({
+        ...stateData,
+        messageType: 'error',
+        messageQueue: false,
+        message: ''
+      }));
     });
   }
 
@@ -178,85 +161,85 @@ export default ({ match }) => {
 
   return (
     <Container maxWidth="lg">      
-        {
-          formState.messageType === 'success' ? (
-            <div className={classes.messages}>
-              <Alert
-                variant={formState.messageType}
-                message={formState.message}
-                queueMessage={formState.messageQueue}
-              />
-              <div className={classes.buttons}>
-                {
-                  formState.messageAction === USER_ACTIONS.UPDATE ? (
-                    <React.Fragment>
-                      <Button
-                        variant="outlined"
-                        color="secondary"
-                        onClick={handleView}
-                        className={classes.button}
-                      >
-                        View agency
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="secondary"
-                        onClick={handleGoSearch}
-                        className={classes.button}
-                      >
-                        Go back to search results
-                      </Button>
-                    </React.Fragment>
-                  ) : (
+      {
+        formState.messageType === 'success' ? (
+          <div className={classes.messages}>
+            <Alert
+              variant={formState.messageType}
+              message={formState.message}
+              queueMessage={formState.messageQueue}
+            />
+            <div className={classes.buttons}>
+              {
+                formState.messageAction === USER_ACTIONS.UPDATE ? (
+                  <React.Fragment>
                     <Button
                       variant="outlined"
                       color="secondary"
-                      onClick={handleGoEditor}
+                      onClick={handleView}
                       className={classes.button}
                     >
-                      Go back to editor
+                      View agency
                     </Button>
-                  )
-                }
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={handleGoHome}
-                  className={classes.button}
-                >
-                  Go back to homepage
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <Paper className={classes.paper}>
-             {
-                formState.messageType === 'error' ? (
-                  <Alert
-                    variant={formState.messageType}
-                    message={formState.message}
-                    queueMessage={formState.messageQueue}
-                  />
-                ) : null
-              }
-              {
-                formState.agency ? (
-                  <AgencyForm
-                    isAuthenticated={isAuthenticated} 
-                    title={'Update Agency'} 
-                    handleSave={handleSave}
-                    handleDelete={handleDelete}
-                    agency={formState.agency}
-                  />
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={handleGoSearch}
+                      className={classes.button}
+                    >
+                      Go back to search results
+                    </Button>
+                  </React.Fragment>
                 ) : (
-                  <div className={classes.messages}>
-                    <CircularProgress className={classes.progress} color="primary" />
-                  </div>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={handleGoEditor}
+                    className={classes.button}
+                  >
+                    Go back to editor
+                  </Button>
                 )
               }
-            </Paper>
-          )
-        }
+              <Button
+                variant="outlined"
+                color="secondary"
+                onClick={handleGoHome}
+                className={classes.button}
+              >
+                Go back to homepage
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <Paper className={classes.paper}>
+            {
+              formState.messageType === 'error' ? (
+                <Alert
+                  variant={formState.messageType}
+                  message={formState.message}
+                  generalMessage={formState.messageGeneral}
+                />
+              ) : null
+            }
+            {
+              formState.agency ? (
+                <AgencyForm
+                  isAuthenticated={isAuthenticated} 
+                  title={'Update Agency'} 
+                  handleSave={handleSave}
+                  handleDelete={handleDelete}
+                  agency={formState.agency}
+                />
+              ) : (
+                <div className={classes.messages}>
+                  <CircularProgress className={classes.progress} color="primary" />
+                </div>
+              )
+            }
+          </Paper>
+        )
+      }
     </Container>
   );
 }

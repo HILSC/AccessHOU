@@ -5,7 +5,6 @@ import React, {
 import { Redirect } from 'react-router-dom';
 
 import {
-  useDispatch,
   useSelector,
 } from 'react-redux';
 
@@ -31,9 +30,6 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import ProgramForm from 'components/Program/ProgramForm';
 import Alert from 'components/Alert/Alert';
 
-// Actions
-import { LOGOUT } from 'actions/user';
-
 // Styles
 import { makeStyles } from '@material-ui/core/styles';
 import styles from './ProgramEditStyles';
@@ -41,7 +37,6 @@ const useStyles = makeStyles(styles);
 
 export default ({ match }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
   
   const {
     params: { slug, agency }
@@ -73,7 +68,10 @@ export default ({ match }) => {
         error: result.data.error ? true : false
       }));
     }).catch(() => {
-      // Show general error message
+      setFormState(data => ({
+        ...data,
+        error: true
+      }));
     });
   }, [
     slug,
@@ -96,16 +94,15 @@ export default ({ match }) => {
           agencySlug: result.data.program.agency_slug,
           agencyId: result.data.program.agency,
         }));
-      }else if (result.data.error){
-        setFormState((stateData) => ({
-          ...stateData,
-          messageType: 'error',
-          messageQueue: false,
-          message: result.data.message
-        }));
       }
     }).catch((error) => {
-      // Show error
+      setFormState((stateData) => ({
+        ...stateData,
+        messageType: 'error',
+        messageQueue: false,
+        messageGeneral: true,
+        message: ''
+      }));
     });
   }
 
@@ -128,11 +125,7 @@ export default ({ match }) => {
         }));
       }
     }).catch(() => {
-      // Logout user
-      dispatch({
-        type: LOGOUT,
-        data: null,
-      });
+      // Show message
     });
   }
 
@@ -258,6 +251,7 @@ export default ({ match }) => {
                       variant={formState.messageType}
                       message={formState.message}
                       queueMessage={formState.messageQueue}
+                      generalMessage={formState.messageGeneral}
                     />
                   ) : null
                 }

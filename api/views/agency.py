@@ -54,9 +54,8 @@ class AgencyQueueView(APIView):
             ):
                 return JsonResponse(
                     {
-                        "error": True,
-                        "message": "An Agency with that name already exists.",
-                    }
+                        "message": "An agency with that name already exists.",
+                    }, status=500
                 )
 
             # Address
@@ -207,9 +206,8 @@ class AgencyQueueView(APIView):
             ):
                 return JsonResponse(
                     {
-                        "error": True,
                         "message": "An Agency with that name already exists."
-                    }
+                    }, status=500
                 )
 
             # Address
@@ -551,9 +549,8 @@ class AgencyView(APIView):
                 if Agency.objects.filter(slug=slug).exists():
                     return JsonResponse(
                         {
-                            "error": True,
                             "message": "An agency with that name already exists.",
-                        }
+                        }, status=500
                     )
 
                 # Address
@@ -657,9 +654,8 @@ class AgencyView(APIView):
                 ):
                     return JsonResponse(
                         {
-                            "error": True,
                             "message": "An Agency with that name already exists.",
-                        }
+                        }, status=500
                     )
 
                 street = request.data.get("street", None)

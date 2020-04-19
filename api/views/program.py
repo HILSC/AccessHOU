@@ -65,9 +65,8 @@ class ProgramQueueView(APIView):
             ):
                 return JsonResponse(
                     {
-                        "error": True,
                         "message": "A program with that name already exists.",
-                    }
+                    }, status=500
                 )
 
             # Address
@@ -235,9 +234,8 @@ class ProgramQueueView(APIView):
             ):
                 return JsonResponse(
                     {
-                        "error": True,
                         "message": "A program with that name already exists.",
-                    }
+                    }, status=500
                 )
 
             street = request.data.get("street", None)
@@ -619,9 +617,8 @@ class ProgramView(APIView):
                 ):
                     return JsonResponse(
                         {
-                            "error": True,
                             "message": "A program with that name already exists.",
-                        }
+                        }, status=500
                     )
 
                 street = request.data.get("street", None)
@@ -746,9 +743,8 @@ class ProgramView(APIView):
                 ):
                     return JsonResponse(
                         {
-                            "error": True,
                             "message": "A program with that name already exists.",
-                        }
+                        }, status=500
                     )
 
                 street = request.data.get("street", None)

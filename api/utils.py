@@ -36,31 +36,19 @@ def getMapURL(address_model):
 def isProgramAccessibilityCompleted(program=None, **extra_fields):
   agency = program.agency
   if agency and program:
-    if program.languages is None:
+    if agency.proof_of_address is None or len(agency.proof_of_address) <= 0:
       return False
 
-    if program.immigration_statuses is None:
+    if agency.accepted_ids_current is None or len(agency.accepted_ids_current) <= 0:
       return False
 
-    if agency.accepted_ids_current is None:
+    if agency.accepted_ids_expired is None or len(agency.accepted_ids_expired) <= 0:
       return False
 
-    if agency.accepted_ids_expired is None:
+    if agency.website_languages is None or len(agency.website_languages) <= 0:
       return False
 
-    if agency.proof_of_address is None:
-      return False
-
-    if program.service_same_day_intake is None:
-      return False
-
-    if agency.website_languages is None:
-      return False
-
-    if agency.interpretations_available is None :
-      return False
-
-    if program.schedule is None:
+    if agency.interpretations_available is None or len(agency.interpretations_available) <= 0:
       return False
 
     if agency.assistance_with_forms is None:
@@ -69,13 +57,31 @@ def isProgramAccessibilityCompleted(program=None, **extra_fields):
     if agency.visual_aids is None:
       return False
 
-    if program.client_consult is None:
-      return False
-
     if agency.response_requests is None:
       return False
 
     if agency.cultural_training is None:
+      return False
+
+    if agency.documents_languages is None or len(agency.documents_languages) <= 0:
+      return False
+    
+    if agency.frontline_staff_languages is None or len(agency.frontline_staff_languages) <= 0:
+      return False
+
+    if program.languages is None or len(program.languages) <= 0:
+      return False
+
+    if program.immigration_statuses is None or len(program.immigration_statuses) <= 0:
+      return False
+
+    if program.service_same_day_intake is None:
+      return False
+
+    if program.schedule is None or len(program.schedule) <= 0:
+      return False
+
+    if program.client_consult is None:
       return False
 
   return True

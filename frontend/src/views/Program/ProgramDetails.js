@@ -63,7 +63,10 @@ export default ({ match }) => {
         error: result.data.error ? true : false
       }));
     }).catch(() => {
-      // Show general error message
+      setData(data => ({
+        ...data,
+        error: true
+      }));
     })
   }, [
     slug,

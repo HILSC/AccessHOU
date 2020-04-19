@@ -59,6 +59,11 @@ export default ({ match }) => {
         agency: result.data.error ? null : result.data,
         error: result.data.error ? true : false
       }));
+    }).catch(() => {
+      setData(data => ({
+        ...data,
+        error: true
+      }));
     })
   }, [slug]);
 

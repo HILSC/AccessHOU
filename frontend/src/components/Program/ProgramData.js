@@ -18,7 +18,9 @@ import {
   PROGRAM_SERVICES,
   AGE_GROUPS,
   IMMIGRATION_STATUSES,
-  CRISIS
+  CRISIS,
+  LANGUAGES,
+  IAI_MESSAGE,
 } from 'constants.js';
 
 // Utils
@@ -203,7 +205,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               <Grid item xs={12} sm={12} md={12}>
                 <DataLabel
                   labelText={'Address'}
-                  dataText={`${program.street}. ${program.city}, ${program.state} ${program.zip_code}`}
+                  dataText={`${program.street ? program.street + '. ' : ''}${program.city ? program.city + ', ' : ''}${program.state ? program.state + ' ' : ''}${program.zip_code ? program.zip_code : ''}`}
                 />
               </Grid>
             ) : null
@@ -380,6 +382,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                   isAList={true}
                   listOptions={IMMIGRATION_STATUSES}
                   labelText={'Immigrant status(es)'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueProgramData.immigrant_statuses ? queueProgramData.immigrant_statuses : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueProgramData.immigrant_statuses ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
@@ -391,6 +394,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                   isAList={true}
                   listOptions={IMMIGRATION_STATUSES}
                   labelText={'Immigrant status(es)'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={program ? program.immigrant_statuses : ''}
                 />
               </Grid>
@@ -560,7 +564,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
             (program && program.schedule_notes) ||
             (program && program.holiday_schedule) ? (
               <Grid item xs={12} sm={12} md={12}>
-                <Label text="Schedules" variant="h5" color="primary" />
+                <Label text="Schedules" variant="h5" color="primary" labelInfo={{show: true, msg: IAI_MESSAGE}} />
               </Grid>
             ) : null
           }
@@ -646,6 +650,41 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
             ) : null
           }
           {
+            // Language section
+            (queueProgramData && queueProgramData.languages && queueProgramData.languages.lenth) ||
+            showMissingData || (program && program.languages) ? (
+              <Grid item xs={12} sm={12} md={12}>
+                <Label text="Program Languages" variant="h5" color="primary" />
+              </Grid>
+            ): null
+          }
+          {
+            // Crisis
+            queueProgramData && JSON.stringify(queueProgramData.languages) !== JSON.stringify(program.languages) ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  isAList={true}
+                  listOptions={LANGUAGES}
+                  labelText={'Languages'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  dataText={queueProgramData.languages ? queueProgramData.languages : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueProgramData.languages ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
+            showMissingData || (program && program.languages) ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  isAList={true}
+                  listOptions={LANGUAGES}
+                  labelText={'Languages'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  dataText={program ? program.languages : ''}
+                />
+              </Grid>
+            ) : null
+          }
+          {
             // services section
             (queueProgramData && queueProgramData.service_same_day_intake) ||
             (queueProgramData && queueProgramData.intake_notes) ||
@@ -668,6 +707,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Are services available same day as intake?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueProgramData.service_same_day_intake ? queueProgramData.service_same_day_intake : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueProgramData.service_same_day_intake ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
@@ -677,6 +717,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               <Grid item xs={12} sm={12} md={12}>
                 <DataLabel
                   labelText={'Are services available same day as intake?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={program.service_same_day_intake}
                 />
               </Grid>
@@ -772,6 +813,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Client consult before completing paperwork?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueProgramData.client_consult ? queueProgramData.client_consult : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueProgramData.client_consult ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
@@ -781,6 +823,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               <Grid item xs={12} sm={12} md={12}>
                 <DataLabel
                   labelText={'Client consult before completing paperwork?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={program.client_consult}
                 />
               </Grid>

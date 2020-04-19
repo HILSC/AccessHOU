@@ -50,15 +50,14 @@ export default () => {
           message: `Agency "${result.data.agency.name}" was created successfully.`,
           agencySlug: result.data.agency.slug
         }));
-      }else if (result.data.error){
-        setFormState(() => ({
-          messageType: 'error',
-          messageQueue: false,
-          message: result.data.message
-        }));
       }
     }).catch(() => {
-      // Show Message
+      // Pending: Show proper message from server
+      setFormState(() => ({
+        messageType: 'error',
+        messageQueue: false,
+        messageGeneral: true,
+      }));
     });
   }
 
@@ -121,7 +120,7 @@ export default () => {
                   <Alert
                     variant={formState.messageType}
                     message={formState.message}
-                    queueMessage={formState.messageQueue}
+                    generalMessage={formState.messageGeneral}
                   />
                 ) : null
               }
