@@ -21,7 +21,8 @@ import {
   IDS,
   PROOF_OF_ADDRESS,
   LANGUAGES,
-  AVAILABLE_INTERPRETATION
+  AVAILABLE_INTERPRETATION,
+  IAI_MESSAGE
 } from 'constants.js';
 
 import { 
@@ -363,6 +364,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={IDS}
                   labelText={'IDs accepted -- current'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.accepted_ids_current !== '' ? queueAgencyData.accepted_ids_current : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.accepted_ids_current !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
@@ -374,6 +376,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={IDS}
                   labelText={'IDs accepted -- current'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.accepted_ids_current}
                 />
               </Grid>
@@ -387,6 +390,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={IDS}
                   labelText={'IDs accepted -- expired'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.accepted_ids_expired !== '' ? queueAgencyData.accepted_ids_expired : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.accepted_ids_expired !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
@@ -398,6 +402,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={IDS}
                   labelText={'IDs accepted -- expired'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.accepted_ids_expired}
                 />
               </Grid>
@@ -431,6 +436,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={PROOF_OF_ADDRESS}
                   labelText={'Proof of address?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.proof_of_address !== '' ? queueAgencyData.proof_of_address : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.proof_of_address !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
@@ -442,6 +448,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={PROOF_OF_ADDRESS}
                   labelText={'Proof of address?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.proof_of_address}
                 />
               </Grid>
@@ -588,6 +595,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={LANGUAGES}
                   labelText={'Website'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.website_languages !== '' ? queueAgencyData.website_languages : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.website_languages !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
@@ -599,6 +607,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={LANGUAGES}
                   labelText={'Website'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.website_languages}
                 />
               </Grid>
@@ -636,6 +645,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={AVAILABLE_INTERPRETATION}
                   labelText={'Interpretation available?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.interpretations_available !== '' ? queueAgencyData.interpretations_available : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.interpretations_available !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
@@ -647,6 +657,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={AVAILABLE_INTERPRETATION}
                   labelText={'Interpretation available?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.interpretations_available}
                 />
               </Grid>
@@ -673,6 +684,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Assitance to fill out intake forms?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.assistance_with_forms !== '' ? queueAgencyData.assistance_with_forms : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.assistance_with_forms !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
@@ -682,6 +694,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Assitance to fill out intake forms?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.assistance_with_forms}
                 />
               </Grid>
@@ -693,6 +706,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Visual aids for low-literacy clients?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.visual_aids !== '' ? queueAgencyData.visual_aids : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.visual_aids !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
@@ -702,6 +716,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Visual aids for low-literacy clients?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.visual_aids}
                 />
               </Grid>
@@ -733,6 +748,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Response to Immigrations and Customs Enforcement requests?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.response_requests !== '' ? queueAgencyData.response_requests : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.response_requests !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
@@ -742,6 +758,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Response to Immigrations and Customs Enforcement requests?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.response_requests}
                 />
               </Grid>
@@ -753,6 +770,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Staff cultural competency/effectiveness training?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.cultural_training !== '' ? queueAgencyData.cultural_training : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.cultural_training !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
@@ -762,6 +780,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Staff cultural competency/effectiveness training?'}
+                  labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.cultural_training}
                 />
               </Grid>

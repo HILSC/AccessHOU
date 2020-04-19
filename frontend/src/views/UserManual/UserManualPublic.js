@@ -131,7 +131,7 @@ export default () => {
             </li>
             <li>
               <a className={classes.primaryAnchor} href="#iiap">
-                Informs Immigrant Accessibility Profile
+                Immigrant Accessibility Profile
               </a>
             </li>
           </ul>
@@ -532,9 +532,9 @@ export default () => {
             during the emergency, and approve information that is accurate for
             longer-term recovery
           </p>
-          <h2 id="iiap">Informs Immigrant Accessibility Profile.</h2>
+          <h2 id="iiap">Immigrant Accessibility Profile</h2>
           <p>
-            A program is considered an "Informs Immigrant Accessibility Profile." if this information is provided: {" "}
+            Programs are considered to have a full Immigrant Accessibility Profile if information has been provided for the following fields:
           </p>
           <ol>
             <li>Agency
