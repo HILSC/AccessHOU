@@ -5,11 +5,10 @@ export default (theme) => ({
     minHeight: '100vh',
   },
   main: {
-    marginBottom: theme.spacing(2),
+    flex: 1,
   },
   footer: {
     padding: theme.spacing(2),
-    marginTop: 'auto',
     backgroundColor: '#F5F5F5',
   },
   menuButton: {

@@ -4,7 +4,7 @@
 
 **1. Go to the `frontend`**
 
-```cd accesshouapp/needhout/frontend```
+```cd accesshouapp/needhou/frontend```
 
 **2. Install dependencies**
 

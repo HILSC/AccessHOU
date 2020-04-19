@@ -9,7 +9,7 @@ import {
 // Material UI Components
 import FormControl from "@material-ui/core/FormControl";
 import FormHelperText from "@material-ui/core/FormHelperText";
-import InputLabel from "@material-ui/core/InputLabel";
+import Typography from '@material-ui/core/Typography';
 import TextField from "@material-ui/core/TextField";
 import Select from '@material-ui/core/Select';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -17,6 +17,10 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 import Chip from '@material-ui/core/Chip';
 import Input from '@material-ui/core/Input';
+import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
+
+// Custom Components
+import ArrowTooltip from 'components/ArrowTooltip/ArrowTooltip';
 
 // Styles
 import { makeStyles } from "@material-ui/core/styles";
@@ -24,7 +28,7 @@ import styles from "./CustomInputStyles";
 const useStyles = makeStyles(styles);
 
 // Masked input
-function PhoneInput(props) {
+const PhoneInput = (props) => {
   const { inputRef, ...other } = props;
 
   return (
@@ -47,16 +51,35 @@ const CustomInput = ({
   formControlProps,
   labelText,
   id,
-  htmlFor,
   labelProps,
   inputProps,
   options,
   errorDetails,
   isRequired,
   showNA=true,
-  autoFocus=false
+  autoFocus=false,
+  labelInfo={ show: false }
 }) => {
   const classes = useStyles();
+
+  const renderInputLabel = () => {
+    return (
+      <Typography htmlFor={`${id}-input`} {...labelProps} classes={{
+        root: classes.customLabel
+      }}>
+        {labelText}{' '}{isRequired ? (<span className={classes.required}> * </span>) : null}
+        {
+          labelInfo.show ? (
+            <span className={classes.customlabelSVG}>
+              <ArrowTooltip title={labelInfo.msg}>
+                <InfoOutlinedIcon color="primary" fontSize="medium" />
+              </ArrowTooltip>
+            </span>
+          ) : null
+        }
+      </Typography>
+    )
+  }
 
   return (
     <FormControl
@@ -65,7 +88,7 @@ const CustomInput = ({
       {
         type === "select" ? (
           <React.Fragment>
-            <InputLabel {...labelProps}>{labelText}{isRequired ? (<span className={classes.required}> *</span>) : null}</InputLabel>
+            {renderInputLabel()}
             <Select
                 id={id}
                 classes={{
@@ -83,10 +106,10 @@ const CustomInput = ({
           </React.Fragment>
         ) : type === "multiselect" ? (
           <React.Fragment>
-            <InputLabel htmlFor={`${id}-input`}>{labelText}{isRequired ? (<span className={classes.required}> *</span>) : null}</InputLabel>
+            {renderInputLabel()}
             <Select
               multiple
-              id={id}
+              id={`${id}-input`}
               classes={{
                 root: isMobile && labelText.length > 35 ? classes.controlLabelSpace : ''
               }}
@@ -119,7 +142,7 @@ const CustomInput = ({
           </React.Fragment>
         ) : type === "phone" ? (
           <React.Fragment>
-            <InputLabel htmlFor={htmlFor}>{labelText}{isRequired ? (<span className={classes.required}> *</span>) : null}</InputLabel>
+            {renderInputLabel()}
             <Input
               classes={{
                 root: isMobile && labelText.length > 35 ? classes.controlLabelSpace : ''
@@ -155,6 +178,7 @@ CustomInput.propTypes = {
   selectedOptions: PropTypes.array,
   errorDetails: PropTypes.object,
   showNA: PropTypes.bool,
+  labelInfo: PropTypes.object,
 };
 
 export default CustomInput;

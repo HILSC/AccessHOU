@@ -60,6 +60,7 @@ import styles from './ResultsStyles';
 const useStyles = makeStyles(styles);
 
 const SERVICE_TYPE = 'Service type';
+const PROGRAM_LANGUAGES = 'Program languages';
 
 const BootstrapInput = withStyles(theme => ({
   root: {
@@ -115,16 +116,16 @@ const removePropertyFromObject = (values, key_name) => {
   return values;
 }
 
+const addInLocalStorage = (name, value) => {
+  if([null, undefined].includes(value)) {
+    localStorage.removeItem(name);
+  }else{
+    localStorage.setItem(name, value);
+  }
+}
+
 export default ({ match, location }) => {
   const classes = useStyles();
-
-  const addInLocalStorage = (name, value) => {
-    if([null, undefined].includes(value)) {
-      localStorage.removeItem(name);
-    }else{
-      localStorage.setItem(name, value);
-    }
-  }
 
   const [goProgram, setGoProgram] = useState({go: false, slug: ''})
   const [results, setResults] = useState({
@@ -133,46 +134,78 @@ export default ({ match, location }) => {
   });
 
   const params = queryString.parse(location.search);
-  const keyword = params.keyword;
-  const entity = params.entity;
-  const serviceType = params.service ? [params.service] : [SERVICE_TYPE];
+  let keyword = params.keyword;
+  let entity = params.entity;
+  let serviceType = params.service ? [params.service] : [SERVICE_TYPE];
   const useStorage = params.storage ? true : false;
+  let HILSCVerified = true
 
-  addInLocalStorage('search', keyword);
-  addInLocalStorage('entity', entity);
-
-  if(useStorage){
-    let serviceTypeArr = localStorage.getItem('serviceType') ? localStorage.getItem('serviceType').split(",") : serviceType;
-    serviceTypeArr = serviceTypeArr.length > 1 ? serviceTypeArr.filter(st => st !== SERVICE_TYPE): serviceTypeArr;
-    addInLocalStorage('serviceType', serviceTypeArr);
-    addInLocalStorage('HILSCVerified', localStorage.getItem('HILSCVerified') ? localStorage.getItem('HILSCVerified') : true)
-  } else {
-    addInLocalStorage('serviceType', serviceType);
-    addInLocalStorage('HILSCVerified', true);
+  // Note: The local storage has been cleaned if we are getting to this page from the home.
+  if(!localStorage.getItem('cleared')) {
+    addInLocalStorage('search', keyword);
+    addInLocalStorage('entity', entity);
+  
+    // Set service type
+    const serviceTypeInParams = serviceType.filter(st => st !== SERVICE_TYPE);
+    if (serviceTypeInParams.length){
+      addInLocalStorage('serviceType', serviceTypeInParams);
+    }
+    
+    addInLocalStorage('HILSCVerified', HILSCVerified);
   }
 
-  const [zipCode, setZipCode] = useState(useStorage ? localStorage.getItem('zipCode') : '');
-  
-  const [newSearch, setNewSearch] = useState(keyword);
-  const [showMoreFilters, setShowMorefilters] = useState(false);
+  let immigrationStatus = null;
+  let zipCodeValue = '';
+  let radius = null;
+  let incomeEligibility = null;
+  let immigrantAccProfile = null;
+  let walkInHours = false;
+  let programLanguages = []
+  let adaAccessible = false;
+  let showMorefiltersSaved = false;
 
-  const selectedServiceTypes = localStorage.getItem('serviceType').split(",")
-  const finalServiceType = selectedServiceTypes && selectedServiceTypes[0] === SERVICE_TYPE ? null : selectedServiceTypes;
+  if(useStorage){
+    keyword = localStorage.getItem('search') ? localStorage.getItem('search') : keyword;
+    entity = localStorage.getItem('entity') ? localStorage.getItem('entity') : entity;
+
+    let serviceTypeArr = localStorage.getItem('serviceType') ? localStorage.getItem('serviceType').split(",") : serviceType;
+    serviceType = Array.isArray(serviceTypeArr) && serviceTypeArr.length > 1 ? serviceTypeArr.filter(st => st !== SERVICE_TYPE): serviceTypeArr;
+    addInLocalStorage('serviceType', serviceType);
+
+    showMorefiltersSaved = localStorage.getItem('showMorefilters') ? localStorage.getItem('showMorefilters') : showMorefiltersSaved;
+
+    HILSCVerified = localStorage.getItem('HILSCVerified') ? localStorage.getItem('HILSCVerified') : HILSCVerified;
+    immigrationStatus = localStorage.getItem('immigrationStatus') ? localStorage.getItem('immigrationStatus') : immigrationStatus;
+    zipCodeValue = localStorage.getItem('zipCode') ? localStorage.getItem('zipCode') : zipCodeValue;
+    radius = localStorage.getItem('radius') ? localStorage.getItem('radius') : radius;
+    incomeEligibility = localStorage.getItem('incomeEligibility') ? localStorage.getItem('incomeEligibility') : incomeEligibility;
+    immigrantAccProfile = localStorage.getItem('immigrantAccProfile') ? localStorage.getItem('immigrantAccProfile') : immigrantAccProfile;
+    walkInHours = localStorage.getItem('walkInHours') ? localStorage.getItem('walkInHours') : walkInHours;
+    
+    let programLanguagesArr = localStorage.getItem('programLanguages') ? localStorage.getItem('programLanguages').split(",") : programLanguages;
+    programLanguages = Array.isArray(programLanguagesArr) && programLanguagesArr.length > 1 ? programLanguagesArr.filter(st => st !== PROGRAM_LANGUAGES): programLanguagesArr;
+
+    adaAccessible = localStorage.getItem('adaAccessible') ? localStorage.getItem('adaAccessible') : adaAccessible;
+  }
+
+  const [zipCode, setZipCode] = useState(zipCodeValue);
+  const [newSearch, setNewSearch] = useState(keyword);
+  const [showMoreFilters, setShowMorefilters] = useState(showMorefiltersSaved);
 
   // Filters
   const [filters, setFilters] = useState({
     search: newSearch,
     entity: entity,
-    serviceType: finalServiceType,
-    HILSCVerified: localStorage.getItem('HILSCVerified'),
-    immigrationStatus: useStorage ? localStorage.getItem('immigrationStatus') : null,
-    zipCode: useStorage ? localStorage.getItem('zipCode') : null,
-    radius: useStorage ? localStorage.getItem('radius') : null,
-    incomeEligibility: useStorage ? localStorage.getItem('incomeEligibility') : null,
-    immigrantAccProfile: useStorage ? localStorage.getItem('immigrantAccProfile') : null,
-    walkInHours: useStorage ? localStorage.getItem('walkInHours') : false,
-    programLanguages: useStorage && localStorage.getItem('programLanguages') ? localStorage.getItem('programLanguages').split(",") : [],
-    adaAccessible: useStorage ? localStorage.getItem('adaAccessible') : false,
+    serviceType: serviceType,
+    HILSCVerified: Boolean(HILSCVerified),
+    immigrationStatus: immigrationStatus,
+    zipCode: zipCodeValue,
+    radius: radius,
+    incomeEligibility: incomeEligibility,
+    immigrantAccProfile: immigrantAccProfile,
+    walkInHours: walkInHours,
+    programLanguages: programLanguages,
+    adaAccessible: Boolean(adaAccessible),
   });
 
   const loadMoreData = () => {
@@ -227,6 +260,7 @@ export default ({ match, location }) => {
     for (const property in filters) {
       localStorage.removeItem(property);
     }
+    localStorage.removeItem('showMorefilters');
   }
 
   const handleKeywordSearch = () => {
@@ -235,7 +269,7 @@ export default ({ match, location }) => {
       isSearching: true
     }));
     setFilters(values => ({ ...values, 'search': newSearch }));
-    addInLocalStorage('keyword', newSearch);
+    addInLocalStorage('search', newSearch);
   }
 
   const handleKeyPress = (event) => {
@@ -333,6 +367,7 @@ export default ({ match, location }) => {
 
   const handleShowMoreFilters = () => {
     setShowMorefilters(!showMoreFilters);
+    addInLocalStorage('showMorefilters', !showMoreFilters);
   }
 
   const handleWalkInHours = () => {
@@ -412,13 +447,16 @@ export default ({ match, location }) => {
   }
 
   const handleClearFilters = () => {
+    cleanLocalStorage();
+    localStorage.setItem('cleared', true);
+
     setNewSearch('');
     setZipCode('');
     setShowMorefilters(false);
+
     setFilters(data => ({
       ...data,
       search: '',
-      serviceType: [],
       immigrationStatus: null,
       zipCode: null,
       radius: null,
@@ -428,12 +466,16 @@ export default ({ match, location }) => {
       programLanguages: [],
       adaAccessible: false,
     }));
+
     setResults(data => ({
       ...data,
       isSearching: true
     }));
 
-    cleanLocalStorage();
+    if(params.storage){
+      delete params.storage;
+      window.location.href = `${window.location.origin}${window.location.pathname}?${queryString.stringify(params)}`;
+    }
   }
 
   if(goProgram.go){
@@ -667,7 +709,7 @@ export default ({ match, location }) => {
       <FormControl className={classes.formControl}>
         <Select
           multiple
-          value={filters.programLanguages && filters.programLanguages.length ? showSelectedOptions(filters.programLanguages, 'Program languages') : ['Program languages']}
+          value={filters.programLanguages && filters.programLanguages.length ? showSelectedOptions(filters.programLanguages, PROGRAM_LANGUAGES) : [PROGRAM_LANGUAGES]}
           onChange={handleChange}
           classes={{
             icon: classes.selectIcon,
@@ -681,7 +723,7 @@ export default ({ match, location }) => {
       }}
         >
           <MenuItem value="" disabled>
-            Program languages
+            {PROGRAM_LANGUAGES}
           </MenuItem>
           {LANGUAGES.map(language => (
             <MenuItem key={language.value} value={language.value}>
@@ -801,10 +843,10 @@ export default ({ match, location }) => {
                 </Grid>
               </MobileView>
               {
-                showMoreFilters ? (
+                Boolean(showMoreFilters) ? (
                   <React.Fragment>
                     <BrowserView>
-                      <Grow in={showMoreFilters}>
+                      <Grow in={Boolean(showMoreFilters)}>
                         <Grid container spacing={2}>
                           <Grid item xs={6} sm={6} md={3}>
                             {zipCodeFilter()}
@@ -831,7 +873,7 @@ export default ({ match, location }) => {
                       </Grow>
                     </BrowserView>
                     <MobileView>
-                      <Grow in={showMoreFilters}>
+                      <Grow in={Boolean(showMoreFilters)}>
                         <Grid container spacing={2}>
                           <Grid item xs={12} sm={12} md={12}>
                             <div className={classes.tableContainer}>

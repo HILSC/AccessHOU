@@ -59,7 +59,7 @@ export default ({ children }) =>{
 
   return (
     <div className={classes.root}>
-     <AppBar position="static" color="default">
+      <AppBar position="static" color="default">
         <Toolbar>
           <PublicHeader />
         </Toolbar>

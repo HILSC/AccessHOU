@@ -1,4 +1,22 @@
 import { createMuiTheme } from '@material-ui/core/styles';
+import { withStyles } from "@material-ui/styles";
+import MuiButton from "@material-ui/core/Button";
+
+export const CustomBlueButton = withStyles(theme => ({
+  root: props =>
+    props.color === "info" && props.variant === "contained"
+      ? {
+          color: theme.palette.info.contrastText,
+          backgroundColor: theme.palette.info.main,
+          "&:hover": {
+            backgroundColor: theme.palette.info.dark,
+            "@media (hover: none)": {
+              backgroundColor: theme.palette.info.main
+            }
+          }
+        }
+      : {}
+}))(MuiButton);
 
 const theme = createMuiTheme({
   typography: {
@@ -21,7 +39,17 @@ const theme = createMuiTheme({
       dark: '#28a745',
       contrastText: '#fff',
     },
+    info: {
+      light: '#64b5f6',
+      main: '#2196f3',
+      dark: '#1976d2',
+      contrastText: '#fff'
+    }
   },
+});
+
+theme.palette.success = theme.palette.augmentColor({
+  main: "#689f38"
 });
 
 export default theme;

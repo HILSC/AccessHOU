@@ -129,6 +129,11 @@ export default () => {
                 Emergency Mode
               </a>
             </li>
+            <li>
+              <a className={classes.primaryAnchor} href="#iiap">
+                Informs Immigrant Accessibility Profile
+              </a>
+            </li>
           </ul>
         </Grid>
         <Grid item xs={12} sm={12} md={12}>
@@ -527,6 +532,37 @@ export default () => {
             during the emergency, and approve information that is accurate for
             longer-term recovery
           </p>
+          <h2 id="iiap">Informs Immigrant Accessibility Profile.</h2>
+          <p>
+            A program is considered an "Informs Immigrant Accessibility Profile." if this information is provided: {" "}
+          </p>
+          <ol>
+            <li>Agency
+              <ul>
+                <li>IDs accepted -- current</li>
+                <li>IDs accepted -- expired</li>
+                <li>Proof of address</li>
+                <li>Website Languages</li>
+                <li>Interpretation Available</li>
+                <li>Assistance to fill out intake forms</li>
+                <li>Visual aids for low-literacy clients</li>
+                <li>Policy for response to Immigrations and Customs Enforcement requests</li>
+                <li>Staff cultural competency/effectiveness training</li>
+              </ul>
+            </li>
+            <li>Program
+              <ul>
+                <li>Languages</li>
+                <li>Immigration status(es)</li>
+                <li>Services available same day as intake</li>
+                <li>Schedule</li>
+                <li>Client consult before completing paperwork</li>
+              </ul>
+            </li>
+          </ol>
+        </Grid>
+        <Grid item xs={12} sm={12} md={12}>
+          <hr/>
         </Grid>
       </Grid>
     </Container>

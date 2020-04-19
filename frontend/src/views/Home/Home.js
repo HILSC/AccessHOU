@@ -42,6 +42,26 @@ import { makeStyles } from '@material-ui/core/styles';
 import styles from './HomeStyles';
 const useStyles = makeStyles(styles);
 
+const cleanLocalStorage = () => {
+  const filters = [
+    'search',
+    'entity',
+    'serviceType',
+    'HILSCVerified',
+    'immigrationStatus',
+    'zipCode',
+    'radius',
+    'incomeEligibility',
+    'immigrantAccProfile',
+    'walkInHours',
+    'programLanguages',
+    'adaAccessible',
+    'showMorefilters',
+    'cleared'
+  ];
+  filters.forEach(item => localStorage.removeItem(item));
+}
+
 export default () => {
   const classes = useStyles();
   const [entity, setEntity] = useState('agency')
@@ -50,6 +70,7 @@ export default () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    cleanLocalStorage();
   });
 
   const handleKeyPress = (event) => {

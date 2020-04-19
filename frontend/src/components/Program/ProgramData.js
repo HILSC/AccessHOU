@@ -199,11 +199,11 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                 />
               </Grid>
             ) :
-            showMissingData || (program && program.street) ? (
+            showMissingData || program ? (
               <Grid item xs={12} sm={12} md={12}>
                 <DataLabel
-                  labelText={'Street'}
-                  dataText={program ? program.street : ''}
+                  labelText={'Address'}
+                  dataText={`${program.street}. ${program.city}, ${program.state} ${program.zip_code}`}
                 />
               </Grid>
             ) : null
@@ -218,14 +218,6 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                   dataTextClass={queueProgramData.city ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
               </Grid>
-            ) :
-            showMissingData || (program && program.city) ? (
-              <Grid item xs={12} sm={12} md={6}>
-                <DataLabel
-                  labelText={'City'}
-                  dataText={program ? program.city : ''}
-                />
-              </Grid>
             ) : null
           }
           {
@@ -238,14 +230,6 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                   dataTextClass={queueProgramData.state ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
               </Grid>
-            ) :
-            showMissingData || (program && program.state) ? (
-              <Grid item xs={12} sm={12} md={6}>
-                <DataLabel
-                  labelText={'State'}
-                  dataText={program ? program.state : ''}
-                />
-              </Grid>
             ) : null
           }
           {
@@ -256,14 +240,6 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                   labelText={'Zip Code'}
                   dataText={queueProgramData.zip_code ? queueProgramData.zip_code : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueProgramData.zip_code ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
-                />
-              </Grid>
-            ) :
-            showMissingData || (program && program.zip_code) ? (
-              <Grid item xs={12} sm={12} md={6}>
-                <DataLabel
-                  labelText={'Zip Code'}
-                  dataText={program ? program.zip_code : ''}
                 />
               </Grid>
             ) : null

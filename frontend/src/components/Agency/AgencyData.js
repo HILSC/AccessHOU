@@ -124,13 +124,13 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                 />
               </Grid>
             ) :
-            showMissingData || (agency && agency.street) ? (
-              <Grid item xs={12} sm={12} md={6}>
-                <DataLabel
-                  labelText={'Street'}
-                  dataText={agency.street}
-                />
-              </Grid>
+              showMissingData || agency ? (
+                <Grid item xs={12} sm={12} md={12}>
+                  <DataLabel
+                    labelText={'Address'}
+                    dataText={`${agency.street}. ${agency.city}, ${agency.state} ${agency.zip_code}`}
+                  />
+                </Grid>
             ) : null
           }
           {
@@ -141,14 +141,6 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   labelText={'City'}
                   dataText={queueAgencyData.city !== '' ? queueAgencyData.city : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.city !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
-                />
-              </Grid>
-            ) :
-            showMissingData || (agency && agency.city) ? (
-              <Grid item xs={12} sm={12} md={6}>
-                <DataLabel
-                  labelText={'City'}
-                  dataText={agency.city}
                 />
               </Grid>
             ) : null
@@ -163,14 +155,6 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   dataTextClass={queueAgencyData.state !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
               </Grid>
-            ) :
-            showMissingData || (agency && agency.state) ? (
-              <Grid item xs={12} sm={12} md={6}>
-                <DataLabel
-                  labelText={'State'}
-                  dataText={agency.state}
-                />
-              </Grid>
             ) : null
           }
           {
@@ -181,14 +165,6 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   labelText={'Zip Code'}
                   dataText={queueAgencyData.zip_code !== '' ? queueAgencyData.zip_code : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.zip_code !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
-                />
-              </Grid>
-            ) :
-            showMissingData || (agency && agency.zip_code) ? (
-              <Grid item xs={12} sm={12} md={6}>
-                <DataLabel
-                  labelText={'Zip Code'}
-                  dataText={agency.zip_code}
                 />
               </Grid>
             ) : null

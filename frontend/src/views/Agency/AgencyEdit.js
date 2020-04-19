@@ -230,7 +230,7 @@ export default ({ match }) => {
             </div>
           ) : (
             <Paper className={classes.paper}>
-              {
+             {
                 formState.messageType === 'error' ? (
                   <Alert
                     variant={formState.messageType}

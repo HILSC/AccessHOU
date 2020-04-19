@@ -23,6 +23,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TablePagination from '@material-ui/core/TablePagination';
 
+// Custom components
+import Alert, { ALERT_VARIANTS } from 'components/Alert/Alert';
+
 // Styles
 import { makeStyles } from '@material-ui/core/styles';
 import styles from './QueueStyles';
@@ -34,6 +37,7 @@ export default () => {
   const [data, setData] = useState({queue: []});
   
   const token = useSelector(state => state.user.accessToken);
+  const [showMessage, setShowMessage] = useState({show: false});
 
   useEffect(() => {
     getQueue(token, filters).then(resultSet => {
@@ -47,6 +51,15 @@ export default () => {
         hasPrev: resultSet.data.has_prev
       }));
     });
+
+    if(localStorage.getItem('queueMessage')){
+      setShowMessage(data => ({
+        ...data,
+        show: true,
+        msg: localStorage.getItem('queueMessage')
+      }));
+      localStorage.removeItem('queueMessage');
+    }
   }, [
     token,
     filters,
@@ -62,6 +75,14 @@ export default () => {
         <h2 className={classes.title}>Queue</h2>
       </Grid>
       <Grid item xs={12} sm={12} md={12}>
+        {
+          showMessage.show ? (
+            <Alert
+              variant={ALERT_VARIANTS.SUCCESS}
+              message={showMessage.msg}
+            />
+          ) : null
+        }
         <Table className={classes.table} aria-label="simple table">
           <TableHead>
             <TableRow>

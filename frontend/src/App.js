@@ -24,7 +24,9 @@ import Results from 'views/Search/Results';
 
 import Queue from 'views/Queue/Queue';
 import AgencyQueue from 'views/Queue/AgencyQueue';
+import AgencyEditQueue from 'views/Queue/AgencyEditQueue';
 import ProgramQueue from 'views/Queue/ProgramQueue';
+import ProgramEditQueue from 'views/Queue/ProgramEditQueue';
 
 import Users from 'views/UserManagement/UserManagement';
 import Settings from 'views/Settings/Settings';
@@ -68,7 +70,9 @@ const App = () => {
           {/* Only admin and AccessHOU Quality Team */}
           <SecureRoute exact path="/private/queue" component={Queue} layout={DashboardLayout} menu={3} />
           <SecureRoute exact path="/private/queue/agency/:queueId" component={AgencyQueue} layout={DashboardLayout} menu={3} />
+          <SecureRoute exact path="/private/queue/agency/edit/:queueId" component={AgencyEditQueue} layout={DashboardLayout} menu={3} />
           <SecureRoute exact path="/private/queue/program/:queueId" component={ProgramQueue} layout={DashboardLayout} menu={3} />
+          <SecureRoute exact path="/private/queue/program/edit/:queueId" component={ProgramEditQueue} layout={DashboardLayout} menu={3} />
 
           <AdvocacyCreateRoute exact path="/private/create/advocacy-report" component={CreateAdvocacyReport} layout={DashboardLayout} menu={2} />
           <AdvocacyReportViewRoute exact path="/private/advocacy-reports" component={AdvocacyReports} layout={DashboardLayout} menu={6} />
