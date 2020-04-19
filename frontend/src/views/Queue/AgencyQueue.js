@@ -2,6 +2,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { Redirect } from 'react-router-dom';
 
 import {
   useSelector,
@@ -30,7 +31,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 // Custom components
 import AgencyData from 'components/Agency/AgencyData';
-import Alert from 'components/Alert/Alert';
+import Alert, { ALERT_VARIANTS } from 'components/Alert/Alert';
+import { CustomBlueButton } from 'theme/customTheme';
 
 // Styles
 import { makeStyles } from '@material-ui/core/styles';
@@ -51,6 +53,8 @@ const AgencyQueue = ({ match }) => {
   });
 
   const [confirmation, setConfirmation] = useState({ isOpen: false });
+  const [editQueue, setEditQueue] = useState(false);
+  const [goBackToQueue, setGoBackToQueue] = useState(false);
   
   useEffect(() => {
     getAgencyQueue(token, queueId).then(resulSet => {
@@ -65,7 +69,7 @@ const AgencyQueue = ({ match }) => {
       setConfirmation(data => ({
         ...data,
         message: 'There was a problem while trying to get this queue. Most likely, these queue does not exist.',
-        messageType: 'error'
+        messageType: ALERT_VARIANTS.ERROR
       }));
     });
   }, [
@@ -89,6 +93,10 @@ const AgencyQueue = ({ match }) => {
     }));
   }
 
+  const handleEditClick = () => {
+    setEditQueue(true);
+  }
+
   const handleDialogClose = () => {
     setConfirmation(data => ({
       ...data,
@@ -103,18 +111,18 @@ const AgencyQueue = ({ match }) => {
       action: confirmation.action,
       hilsc_verified: pageData.hilscVerified
     }).then(result => {
+      localStorage.setItem('queueMessage', result.data.message);
+      setGoBackToQueue(true);
       setConfirmation(data => ({
         ...data,
         isOpen: false,
         action: null,
-        messageType: 'success',
-        message: result.data.message,
       }));
     }).catch(() => {
       setConfirmation(data => ({
         ...data,
         message: 'There was a problem while trying to approve/reject this queue.',
-        messageType: 'error'
+        messageType: ALERT_VARIANTS.ERROR
       }));
     });
   }
@@ -123,13 +131,14 @@ const AgencyQueue = ({ match }) => {
     setPageData({ ...pageData, "hilscVerified": target.checked });
   }
 
-  if(confirmation && confirmation.message){
-    return (
-      <Alert
-        variant={confirmation.messageType}
-        message={confirmation.message}
-      />
-    );
+  if(editQueue) {
+    let url = `/private/queue/agency/edit/${queueId}`;
+    return <Redirect push to={url} />
+  }
+
+  if(goBackToQueue){
+    let url = `/private/queue/?menu=3`;
+    return <Redirect push to={url} />
   }
 
   return(
@@ -154,6 +163,14 @@ const AgencyQueue = ({ match }) => {
         </Breadcrumbs>
       </Grid>
       <Grid item xs={12} sm={12} md={12}>
+        {
+          confirmation && confirmation.message ? (
+            <Alert
+              variant={confirmation.messageType}
+              message={confirmation.message}
+            />
+          ) : null
+        }
         {
           pageData.loading ? (
             <div className={classes.messages}>
@@ -183,6 +200,16 @@ const AgencyQueue = ({ match }) => {
               >
                 Reject
               </Button>
+              <CustomBlueButton
+                variant="contained"
+                color="info"
+                type="button"
+                className={classes.button}
+                onClick={handleEditClick}
+                disabled={pageData.agencyQueue.emergency_mode && pageData.emergencyModeOn}
+              >
+                Edit
+              </CustomBlueButton>
               <Button
                 variant="contained"
                 color="secondary"

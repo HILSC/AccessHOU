@@ -4,7 +4,6 @@ import React, {
 import { Redirect } from 'react-router-dom';
 
 import {
-  useDispatch,
   useSelector,
 } from 'react-redux';
 
@@ -22,9 +21,6 @@ import Button from '@material-ui/core/Button';
 import AgencyForm from 'components/Agency/AgencyForm';
 import Alert from 'components/Alert/Alert';
 
-// ACTIONS
-import { LOGOUT } from 'actions/user';
-
 // Styles
 import { makeStyles } from '@material-ui/core/styles';
 import styles from './AgencyCreateStyles';
@@ -32,7 +28,6 @@ const useStyles = makeStyles(styles);
 
 export default () => {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   const [formState, setFormState ] = useState({
     messageType: null,
@@ -63,11 +58,7 @@ export default () => {
         }));
       }
     }).catch(() => {
-      // Logout user
-      dispatch({
-        type: LOGOUT,
-        data: null,
-      });
+      // Show Message
     });
   }
 

@@ -583,6 +583,8 @@ const ADVOCACY_REPORT_STATUSES = [
     }
 ]
 
+const IAI_MESSAGE = 'Informs Immigrant Accessibility Profile.'
+
 export {
   USER_ACTIONS,
   ACTION_CLASS,
@@ -603,4 +605,5 @@ export {
   CRISIS,
   PROGRAM_SERVICES,
   ADVOCACY_REPORT_STATUSES,
+  IAI_MESSAGE
 }

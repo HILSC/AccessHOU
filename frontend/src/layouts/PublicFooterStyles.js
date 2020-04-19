@@ -1,4 +1,8 @@
 export default (theme) => ({
+  footer: {
+    bottom: 0,
+    width: '100%',
+  },
   mobileFooter: {
     display: 'flex',
     textAlign: 'center',

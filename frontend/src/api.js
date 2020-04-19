@@ -381,6 +381,19 @@ const getAgencyQueue = (token, id) => {
   )
 }
 
+const updateAgencyQueue = (token, data) => {
+  return client.put(
+    `/queue/agency/${data.id}`,
+    JSON.stringify(data),
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  )
+}
+
 const approveRejectAgencyQueue = (token, params) => {
   return client.post(
     `/queue/agency/`,
@@ -399,6 +412,19 @@ const getProgramQueue = (token, id) => {
     `/queue/program/${id}`,
     {
       headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  )
+}
+
+const updateProgramQueue = (token, data) => {
+  return client.put(
+    `/queue/program/${data.id}`,
+    JSON.stringify(data),
+    {
+      headers: {
+        'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       }
     }
@@ -504,7 +530,9 @@ export {
 
   getQueue,
   getAgencyQueue,
+  updateAgencyQueue,
   getProgramQueue,
+  updateProgramQueue,
 
   approveRejectAgencyQueue,
   approveRejectProgramQueue,

@@ -39,7 +39,8 @@ import {
   IDS,
   AVAILABLE_INTERPRETATION,
   YES_NO_OPTIONS,
-  DEFAULT_WEEKDAYS_TIME
+  DEFAULT_WEEKDAYS_TIME,
+  IAI_MESSAGE
 } from "constants.js";
 
 // Styles
@@ -47,7 +48,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import styles from './AgencyFormStyles';
 const useStyles = makeStyles(styles);
 
-export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) => {
+export default ({ isAuthenticated, title, handleSave, handleDelete, agency, showDeleteButton=true }) => {
   const classes = useStyles();
 
   const captchaEl = useRef(null);
@@ -268,9 +269,6 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
             <Grid item xs={12} sm={12} md={4}>
               <CustomInput
                 labelText="State"
-                labelProps={{
-                  htmlFor: "state"
-                }}
                 type="select"
                 id="state"
                 options={USA_STATES.map(state => state.name)}
@@ -337,9 +335,6 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
               <CustomInput
                 type="multiselect"
                 labelText="Age groups"
-                labelProps={{
-                  htmlFor: "age_groups"
-                }}
                 id="age_groups"
                 options={AGE_GROUPS}
                 formControlProps={{
@@ -356,9 +351,6 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
               <CustomInput
                 type="multiselect"
                 labelText="Immigration status(es)"
-                labelProps={{
-                  htmlFor: "immigration_statuses"
-                }}
                 id="immigration_statuses"
                 options={IMMIGRATION_STATUSES}
                 formControlProps={{
@@ -410,6 +402,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
                 labelText="IDs accepted -- current"
                 id="accepted_ids_current"
                 options={IDS}
+                labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -426,6 +419,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
                 labelText="IDs accepted -- expired"
                 id="accepted_ids_expired"
                 options={IDS}
+                labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -458,6 +452,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
                 labelText="Proof of address?"
                 id="proof_of_address"
                 options={PROOF_OF_ADDRESS}
+                labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -550,6 +545,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
                 labelText="Website"
                 id="website_languages"
                 options={LANGUAGES}
+                labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -582,6 +578,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
                 labelText="Interpretation Available?"
                 id="interpretations_available"
                 options={AVAILABLE_INTERPRETATION}
+                labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -601,6 +598,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
                 labelText="Assistance to fill out intake forms?"
                 id="assistance_with_forms"
                 options={YES_NO_OPTIONS}
+                labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -617,6 +615,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
                 labelText="Visual aids for low-literacy clients?"
                 id="visual_aids"
                 options={YES_NO_OPTIONS}
+                labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -649,6 +648,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
                 labelText="Policy for response to Immigrations and Customs Enforcement requests?"
                 id="response_requests"
                 options={YES_NO_OPTIONS}
+                labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -666,6 +666,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
                 labelText="Staff cultural competency/effectiveness training?"
                 id="cultural_training"
                 options={STAFF_CULTURAL_TRAINING}
+                labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -732,7 +733,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency }) =>
             <Grid item xs={12} sm={12} md={12}>
               <div className={classes.buttons}>
               {
-                values.agency_id ? 
+                values.agency_id && showDeleteButton ? 
                 (
                   <Button
                   variant="contained"

@@ -40,6 +40,9 @@ class AgencyQueueView(APIView):
     @is_registered_api_consumer
     @transaction.atomic
     def post(self, request, *args, **kwargs):
+        """
+        Used when an non logged user request to add a new agency
+        """
         try:
             agency_name = request.data.get("name", None)
             slug = slugify(agency_name)
@@ -178,6 +181,9 @@ class AgencyQueueView(APIView):
     @is_registered_api_consumer
     @transaction.atomic
     def put(self, request, *args, **kwargs):
+        """
+        Used when an non logged user request to edit an agency
+        """
         try:
             agency_name = request.data.get("name", None)
             slug = slugify(agency_name)
@@ -412,6 +418,9 @@ class AgencyQueueDeleteView(APIView):
     @is_registered_api_consumer
     @transaction.atomic
     def post(self, request, *args, **kwargs):
+        """
+        Used when an non logged user request to delete an agency
+        """
         try:
             related_agency_id = int(request.data.get("id", 0))
             related_agency = Agency.objects.get(id=related_agency_id)
@@ -500,7 +509,7 @@ class AgencyQueueDeleteView(APIView):
                 }, status=500
             )
 
-
+    
 class AgencyView(APIView):
     @is_registered_api_consumer
     def get(self, request, property_name, property_value):

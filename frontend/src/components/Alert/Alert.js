@@ -14,7 +14,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import styles from './AlertStyles';
 const useStyles = makeStyles(styles);
 
-const variantIcon = {
+export const ALERT_VARIANTS = {
+  ERROR: 'error',
+  SUCCESS: 'success',
+  INFO: 'info',
+  WARNING: 'warning'
+}
+
+const VARIANT_ICONS = {
   success: CheckCircleIcon,
   warning: WarningIcon,
   error: ErrorIcon,
@@ -23,7 +30,7 @@ const variantIcon = {
 
 const Alert = ({ message, variant, className, iconClassName, queueMessage}) => {
   const classes = useStyles();
-  const Icon = variantIcon[variant];
+  const Icon = VARIANT_ICONS[variant];
 
   const showQueueMessage = () => {
     return (
@@ -57,7 +64,7 @@ const Alert = ({ message, variant, className, iconClassName, queueMessage}) => {
 Alert.propTypes = {
   className: PropTypes.string,
   message: PropTypes.string,
-  variant: PropTypes.oneOf(['error', 'info', 'success', 'warning']).isRequired,
+  variant: PropTypes.oneOf([ALERT_VARIANTS.ERROR, ALERT_VARIANTS.INFO, ALERT_VARIANTS.SUCCESS, ALERT_VARIANTS.WARNING]).isRequired,
 };
 
 export default Alert;

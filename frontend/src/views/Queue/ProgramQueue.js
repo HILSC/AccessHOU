@@ -2,6 +2,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { Redirect } from 'react-router-dom';
 
 import {
   useSelector,
@@ -27,7 +28,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 
 // Custom components
 import ProgramData from 'components/Program/ProgramData';
-import Alert from 'components/Alert/Alert';
+import Alert, { ALERT_VARIANTS } from 'components/Alert/Alert';
+import { CustomBlueButton } from 'theme/customTheme';
 
 // Styles
 import { makeStyles } from '@material-ui/core/styles';
@@ -45,7 +47,9 @@ const ProgramQueue = ({ match }) => {
     loading: true
   });
 
-  const [confirmation, setConfirmation] = useState({ isOpen: false})
+  const [confirmation, setConfirmation] = useState({ isOpen: false});
+  const [editQueue, setEditQueue] = useState(false);
+  const [goBackToQueue, setGoBackToQueue] = useState(false);
 
   useEffect(() => {
     getProgramQueue(token, queueId).then(resulSet => {
@@ -60,7 +64,7 @@ const ProgramQueue = ({ match }) => {
       setConfirmation(data => ({
         ...data,
         message: 'There was a problem while trying to get this queue. Most likely, these queue does not exist.',
-        messageType: 'error'
+        messageType: ALERT_VARIANTS.ERROR
       }));
     });
   }, [
@@ -84,6 +88,10 @@ const ProgramQueue = ({ match }) => {
     }));
   }
 
+  const handleEditClick = () => {
+    setEditQueue(true);
+  }
+
   const handleDialogClose = () => {
     setConfirmation(data => ({
       ...data,
@@ -97,29 +105,30 @@ const ProgramQueue = ({ match }) => {
       queue_id: pageData.programQueue.id,
       action: confirmation.action
     }).then(result => {
+      localStorage.setItem('queueMessage', result.data.message);
+      setGoBackToQueue(true);
       setConfirmation(data => ({
         ...data,
         isOpen: false,
-        action: null,
-        messageType: 'success',
-        message: result.data.message,
+        action: null
       }));
     }).catch(() => {
       setConfirmation(data => ({
         ...data,
         message: 'There was a problem while trying to approve/reject this queue.',
-        messageType: 'error'
+        messageType: ALERT_VARIANTS.ERROR
       }));
     });
   }
 
-  if(confirmation && confirmation.message){
-    return (
-      <Alert
-        variant={confirmation.messageType}
-        message={confirmation.message}
-      />
-    );
+  if(editQueue) {
+    let url = `/private/queue/program/edit/${queueId}`;
+    return <Redirect push to={url} />
+  }
+
+  if(goBackToQueue){
+    let url = `/private/queue/?menu=3`;
+    return <Redirect push to={url} />
   }
 
   return(
@@ -146,6 +155,14 @@ const ProgramQueue = ({ match }) => {
       </Grid>
       <Grid item xs={12} sm={12} md={12}>
         {
+          confirmation && confirmation.message ? (
+            <Alert
+              variant={confirmation.messageType}
+              message={confirmation.message}
+            />
+          ) : null
+        }
+        {
           pageData.loading ? (
             <div className={classes.messages}>
               <CircularProgress className={classes.progress} color="primary" />
@@ -164,6 +181,16 @@ const ProgramQueue = ({ match }) => {
                 >
                   Reject
                 </Button>
+                <CustomBlueButton
+                  variant="contained"
+                  color="info"
+                  type="button"
+                  className={classes.button}
+                  onClick={handleEditClick}
+                  disabled={pageData.programQueue.emergency_mode && pageData.emergencyModeOn}
+                >
+                  Edit
+                </CustomBlueButton>
                 <Button
                   variant="contained"
                   color="secondary"

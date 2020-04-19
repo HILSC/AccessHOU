@@ -38,7 +38,8 @@ import {
   PROGRAM_SERVICES,
   DEFAULT_WEEKDAYS_TIME,
   INCOME_POVERTY_LEVEL_PERCENTS,
-  CRISIS
+  CRISIS,
+  IAI_MESSAGE,
 } from "constants.js";
 
 // Styles
@@ -46,7 +47,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import styles from './ProgramFormStyles';
 const useStyles = makeStyles(styles);
 
-export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }) => {
+export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, showDeleteButton=true }) => {
   const classes = useStyles();
 
   const captchaEl = useRef(null);
@@ -228,9 +229,6 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }
           <CustomInput
             type="multiselect"
             labelText="Service Types"
-            labelProps={{
-              htmlFor: "service_types"
-            }}
             id="service_types"
             options={PROGRAM_SERVICES}
             formControlProps={{
@@ -247,9 +245,6 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }
           <CustomInput
             type="select"
             labelText="Is case management provided?"
-            labelProps={{
-              htmlFor: "case_management_provided"
-            }}
             id="case_management_provided"
             options={YES_NO_OPTIONS}
             formControlProps={{
@@ -448,6 +443,7 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }
             labelText="Immigration status(es)"
             id="immigration_statuses"
             options={IMMIGRATION_STATUSES}
+            labelInfo={{show: true, msg: IAI_MESSAGE}}
             formControlProps={{
               fullWidth: true
             }}
@@ -574,7 +570,7 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }
           />
         </Grid>
         <Grid item xs={12} sm={12} md={12}>
-          <Label text="Program schedule" variant="h5" color="primary" />
+          <Label text="Program schedule" variant="h5" color="primary" labelInfo={{show: true, msg: IAI_MESSAGE}} />
         </Grid>
         <Grid item xs={12} sm={12} md={12}>
           <ScheduleForm
@@ -632,6 +628,7 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }
             type="multiselect"
             labelText="Program languages"
             id="languages"
+            labelInfo={{show: true, msg: IAI_MESSAGE}}
             options={LANGUAGES}
             formControlProps={{
               fullWidth: true
@@ -652,6 +649,7 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }
             labelText="Are services available same day as intake?"
             id="service_same_day_intake"
             options={YES_NO_OPTIONS}
+            labelInfo={{show: true, msg: IAI_MESSAGE}}
             formControlProps={{
               fullWidth: true
             }}
@@ -729,9 +727,10 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }
         <Grid item xs={12} sm={12} md={12}>
           <CustomInput
             type="select"
-            labelText="Client consult before completing  paperwork?"
+            labelText="Client consult before completing paperwork?"
             id="client_consult"
             options={YES_NO_OPTIONS}
+            labelInfo={{show: true, msg: IAI_MESSAGE}}
             formControlProps={{
               fullWidth: true
             }}
@@ -798,7 +797,7 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false }
         <Grid item xs={12} sm={12} md={12}>
           <div className={classes.buttons}>
           {
-            !isNew ? (
+            !isNew && showDeleteButton ? (
               <Button
                 variant="contained"
                 color="primary"

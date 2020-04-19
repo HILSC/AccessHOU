@@ -5,7 +5,6 @@ import React, {
 import { Redirect } from 'react-router-dom';
 
 import {
-  useDispatch,
   useSelector,
 } from 'react-redux';
 
@@ -30,9 +29,6 @@ import Autocomplete from 'components/Autocomplete/Autocomplete';
 import ProgramForm from 'components/Program/ProgramForm';
 import Alert from 'components/Alert/Alert';
 
-// Actions
-import { LOGOUT } from 'actions/user';
-
 // Styles
 import { makeStyles } from '@material-ui/core/styles';
 import styles from './ProgramCreateStyles';
@@ -40,7 +36,6 @@ const useStyles = makeStyles(styles);
 
 export default ({ match }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   const {
     params: { agencySlug }
@@ -132,11 +127,7 @@ export default ({ match }) => {
         }));
       }
     }).catch((error) => {
-      // Logout user
-      dispatch({
-        type: LOGOUT,
-        data: null,
-      });
+      // Show Message
     });
   }
 

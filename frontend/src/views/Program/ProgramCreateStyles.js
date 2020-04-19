@@ -20,5 +20,5 @@ export default (theme) => ({
   },
   button: {
     marginRight: '5px'
-  }
+  },
 });

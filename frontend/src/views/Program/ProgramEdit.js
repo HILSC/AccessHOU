@@ -105,11 +105,7 @@ export default ({ match }) => {
         }));
       }
     }).catch((error) => {
-       // Logout user
-       dispatch({
-        type: LOGOUT,
-        data: null,
-      });
+      // Show error
     });
   }
 
