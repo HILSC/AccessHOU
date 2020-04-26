@@ -163,7 +163,7 @@ const deleteAgency = (token, data) => {
     }
 
     return client.delete(
-      `/agency/${data.agency_id}`,
+      `/agency/${data.agency_id}/`,
       {
         headers: headers
       }
@@ -172,7 +172,7 @@ const deleteAgency = (token, data) => {
 
   // Delete is sent as a post because we need post data more than the id
   return client.post(
-    `/agency/queue/delete`,
+    `/agency/queue/delete/`,
     JSON.stringify(data),
     {
       headers: headers
@@ -188,7 +188,7 @@ const getAgency = (data) => {
 
 const getAgencies = (data) => {
   return client.get(
-    `/agencies/${data.property}/${data.value}/${data.page}`,
+    `/agencies/${data.property}/${data.value}/${data.page}/`,
   );
 }
 
@@ -257,7 +257,7 @@ const deleteProgram = (token, data) => {
     }
     
     return client.delete(
-      `/program/${data.program_id}`,
+      `/program/${data.program_id}/`,
       {
         headers: headers
       }
@@ -266,7 +266,7 @@ const deleteProgram = (token, data) => {
 
   // Delete is sent as a post because we need post data more than the id
   return client.post(
-    `/program/queue/delete`,
+    `/program/queue/delete/`,
     JSON.stringify(data),
     {
       headers: headers
@@ -276,13 +276,13 @@ const deleteProgram = (token, data) => {
 
 const getProgram = (data) => {
   return client.get(
-    `/program/${data.property}/${data.value}/${data.agency}`,
+    `/program/${data.property}/${data.value}/${data.agency}/`,
   );
 }
 
 const getPrograms = (data) => {
   return client.get(
-    `/programs/${data.property}/${data.value}/${data.page}`,
+    `/programs/${data.property}/${data.value}/${data.page}/`,
   )
 }
 
@@ -372,7 +372,7 @@ const getQueue = (token, params) => {
 
 const getAgencyQueue = (token, id) => {
   return client.get(
-    `/queue/agency/${id}`,
+    `/queue/agency/${id}/`,
     {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -383,7 +383,7 @@ const getAgencyQueue = (token, id) => {
 
 const updateAgencyQueue = (token, data) => {
   return client.put(
-    `/queue/agency/${data.id}`,
+    `/queue/agency/${data.id}/`,
     JSON.stringify(data),
     {
       headers: {
@@ -409,7 +409,7 @@ const approveRejectAgencyQueue = (token, params) => {
 
 const getProgramQueue = (token, id) => {
   return client.get(
-    `/queue/program/${id}`,
+    `/queue/program/${id}/`,
     {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -420,7 +420,7 @@ const getProgramQueue = (token, id) => {
 
 const updateProgramQueue = (token, data) => {
   return client.put(
-    `/queue/program/${data.id}`,
+    `/queue/program/${data.id}/`,
     JSON.stringify(data),
     {
       headers: {
@@ -478,7 +478,7 @@ const getAdvocacyReports = (token, params) => {
 
 const getAdvocacyReport = (token, id) => {
   return client.get(
-    `/advocacy-report/${id}`,
+    `/advocacy-report/${id}/`,
     {
       headers: {
         'Content-Type': 'application/json',
@@ -490,11 +490,36 @@ const getAdvocacyReport = (token, id) => {
 
 const updateAdvocacyReport = (token, data) => {
   return client.put(
-    `/advocacy-report/${data.id}`,
+    `/advocacy-report/${data.id}/`,
     JSON.stringify(data),
     {
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  )
+}
+
+const getPublicLogs = (token, params) => {
+  return client.get(
+    '/app/public-logs/',
+    {
+      params,
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    }
+  )
+}
+
+const exportPublicLogs = (token, params) => {
+  return client.get(
+    '/app/public-logs/export/',
+    {
+      params,
+      responseType: 'blob',
+      headers: {
         'Authorization': `Bearer ${token}`
       }
     }
@@ -543,4 +568,7 @@ export {
   getAdvocacyReports,
   getAdvocacyReport,
   updateAdvocacyReport,
+
+  getPublicLogs,
+  exportPublicLogs,
 }

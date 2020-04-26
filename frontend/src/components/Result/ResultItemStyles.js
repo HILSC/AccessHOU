@@ -21,7 +21,15 @@ export default (theme) => ({
       backgroundColor: '#EDEDED'
     },
   },
-  agencyCustomLink:{
+  agency: {
+    cursor: 'pointer',
+    borderRadius: '4px',
+    padding: theme.spacing(2),
+    '&:hover': {
+      backgroundColor: '#F9F9F9'
+    },
+  },
+  agencyTitle:{
     color: '#000000',
     fontSize: '20px',
     textDecoration: 'none',

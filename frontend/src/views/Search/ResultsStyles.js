@@ -89,7 +89,7 @@ export default (theme) => ({
     height: 41,
     '&:hover': {
       backgroundColor: '#F8F8F8',
-      color: 'black'
+      color: 'black',
     }
   },
   searchButtonActive: {
@@ -100,7 +100,7 @@ export default (theme) => ({
     height: 41,
     '&:hover': {
       backgroundColor: '#e53123',
-      color: '#FFFFFF'
+      color: '#FFFFFF',
     }
   },
   selectIcon: {
@@ -142,5 +142,16 @@ export default (theme) => ({
     display: 'flex',
     justifyContent: 'flex-end',
     color: '#696969',
+  },
+  disabledButton: {
+    backgroundColor: '#E0E0E0'
+  },
+  emergencyModeMessageContainer: {
+    position: 'absolute',
+    top: 0,
+    zIndex: 99,
+  },
+  toolTipText: {
+    fontSize: '1rem !important'
   }
 });

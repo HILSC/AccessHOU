@@ -51,27 +51,30 @@ class AdvocacyReportListView(APIView):
 
         open_reports = AdvocacyReport.objects.filter(status="Open").order_by('-created_at', '-id')
         in_review_reports = AdvocacyReport.objects.filter(status="In Review").order_by('-created_at', '-id')
+        in_process_reports = AdvocacyReport.objects.filter(status="In Process").order_by('-created_at', '-id')
         closed_reports = AdvocacyReport.objects.filter(status="Close").order_by('-created_at', '-id')
         na_reports = AdvocacyReport.objects.filter(status="n/a").order_by('-created_at', '-id')
 
-        reports = list(chain(open_reports, in_review_reports, closed_reports, na_reports))
+        reports = list(chain(open_reports, in_review_reports, in_process_reports, closed_reports, na_reports))
         results = []
 
         for report in reports:
           entity_selected = AdvocacyReportEntity(report.entity_reported)
           if entity_selected == AdvocacyReportEntity.agency:
-            entity = Agency.objects.get(id=report.entity_reported_id)
+            entity_name = Agency.objects.values_list("name", flat=True).get(id=report.entity_reported_id)
+          elif entity_selected == AdvocacyReportEntity.program:
+            entity_name = Program.objects.values_list("name", flat=True).get(id=report.entity_reported_id)
           else:
-            entity = Program.objects.get(id=report.entity_reported_id)
+            entity_name = report.custom_entity_name
 
           results.append({
               "id": report.id,
               "status": report.status,
               "created_at": report.created_at.strftime("%m-%d-%Y"),
-              "entity_selected": entity_selected.name.capitalize(),
+              "entity_selected": entity_selected.name,
               "user": "{} {}".format(report.user.first_name, report.user.last_name),
               "entity": {
-                "name": entity.name,
+                "name": entity_name
               }
           })
 
@@ -94,7 +97,7 @@ class AdvocacyReportListView(APIView):
         
       raise Exception('User does not have access to view an advocacy report.')
     except Exception as e:
-      logger.error("Error getting Advocacy Reports", e)
+      logger.error("Error getting Advocacy Reports: {}".format(str(e)))
       return JsonResponse(
         {
           "message": "Error getting Advocacy Reports",
@@ -116,7 +119,8 @@ class AdvocacyReportListView(APIView):
           submitter_phone_number=request.data.get("phone", None),
           incident_datetime=incident_time,
           entity_reported=entity_reported.value,
-          entity_reported_id=request.data.get("entity_reported_id"),
+          entity_reported_id=request.data.get("entity_reported_id", None),
+          custom_entity_name=request.data.get("custom_entity", None),
           description=request.data.get("description"),
           recommendation=request.data.get("recommendation", None),
           status=request.data.get("status", "Open"),
@@ -131,7 +135,7 @@ class AdvocacyReportListView(APIView):
 
       raise Exception('User does not have access to add an advocacy report.')
     except Exception as e:
-      logger.error("Error creating an Advocacy Report", e)
+      logger.error("Error creating an Advocacy Report: {}".format(str(e)))
       return JsonResponse(
         {
           "message": "Error creating an Advocacy Report",
@@ -146,19 +150,27 @@ class AdvocacyReportView(APIView):
       if request.user and request.user.is_active and request.user.profile.role.add_advocacy_reports:
         report = AdvocacyReport.objects.get(id=id)
         
-        parent_agency = None
         entity_selected = AdvocacyReportEntity(report.entity_reported)
+        parent_agency = None
+
         if entity_selected == AdvocacyReportEntity.agency:
           entity = Agency.objects.get(id=report.entity_reported_id)
-        else:
+          entity_name = entity.name
+          entity_slug = entity.slug
+        elif entity_selected == AdvocacyReportEntity.program:
           entity = Program.objects.get(id=report.entity_reported_id)
+          entity_name = entity.name
+          entity_slug = entity.slug
           parent_agency = entity.agency.id
+        else:
+          entity_name = report.custom_entity_name
+          entity_slug = None
 
         return JsonResponse(
           {
             "id": report.id,
             "status": report.status,
-            "entity_selected": entity_selected.name.capitalize(),
+            "entity_selected": entity_selected.name,
             "user": {
               "email": report.user.email,
               "name": "{} {}".format(report.user.first_name, report.user.last_name),
@@ -171,8 +183,8 @@ class AdvocacyReportView(APIView):
             "recommendation": report.recommendation,
             "notes": report.notes,
             "entity": {
-              "name": entity.name,
-              "slug": entity.slug,
+              "name": entity_name,
+              "slug": entity_slug,
               "agency": parent_agency,
             },
           }
@@ -180,7 +192,7 @@ class AdvocacyReportView(APIView):
 
       raise Exception('User does not have access to view an advocacy report.')
     except Exception as e:
-      logger.error("Error getting Advocacy Report", e)
+      logger.error("Error getting Advocacy Report: {}".format(str(e)))
       return JsonResponse(
         {
           "message": "Error getting Advocacy Report",
@@ -204,7 +216,7 @@ class AdvocacyReportView(APIView):
 
       raise Exception('User does not have access to view an advocacy report.')
     except Exception as e:
-      logger.error("Error getting Advocacy Report", e)
+      logger.error("Error getting Advocacy Report: {}".format(str(e)))
       return JsonResponse(
         {
           "message": "Error getting Advocacy Report",

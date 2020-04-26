@@ -23,6 +23,7 @@ class ActionLog(Base):
 
 
 class PublicActionLog(Base):
+    entity_name = models.CharField(max_length=250, null=True, blank=True)
     entity_slug = models.CharField(max_length=350, null=False, blank=False)
     action = models.CharField(max_length=45, null=False, blank=False)
     model = models.CharField(max_length=45, null=False, blank=False)

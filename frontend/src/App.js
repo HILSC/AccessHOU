@@ -28,6 +28,8 @@ import AgencyEditQueue from 'views/Queue/AgencyEditQueue';
 import ProgramQueue from 'views/Queue/ProgramQueue';
 import ProgramEditQueue from 'views/Queue/ProgramEditQueue';
 
+import PublicLogs from 'views/PublicLogs/PublicLogs';
+
 import Users from 'views/UserManagement/UserManagement';
 import Settings from 'views/Settings/Settings';
 
@@ -73,6 +75,8 @@ const App = () => {
           <SecureRoute exact path="/private/queue/agency/edit/:queueId" component={AgencyEditQueue} layout={DashboardLayout} menu={3} />
           <SecureRoute exact path="/private/queue/program/:queueId" component={ProgramQueue} layout={DashboardLayout} menu={3} />
           <SecureRoute exact path="/private/queue/program/edit/:queueId" component={ProgramEditQueue} layout={DashboardLayout} menu={3} />
+
+          <SecureRoute exact path="/private/changelogs" component={PublicLogs} layout={DashboardLayout} menu={9} />
 
           <AdvocacyCreateRoute exact path="/private/create/advocacy-report" component={CreateAdvocacyReport} layout={DashboardLayout} menu={2} />
           <AdvocacyReportViewRoute exact path="/private/advocacy-reports" component={AdvocacyReports} layout={DashboardLayout} menu={6} />

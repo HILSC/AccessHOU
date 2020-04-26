@@ -34,5 +34,5 @@ export default (theme) => ({
   },
   iconButton: {
     padding: 5,
-  },
+  }
 });

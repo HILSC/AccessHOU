@@ -21,10 +21,4 @@ export default (theme) => ({
   heart:{
     textShadow: '0 0 0 red',
   },
-  emergencyMode: {
-    fontSize: 18
-  },
-  emergencyModeIcon: {
-    fontSize: 50
-  }
 });
