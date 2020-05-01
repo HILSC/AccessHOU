@@ -18,6 +18,6 @@ export default (theme) => ({
     fontSize: 18
   },
   emergencyModeIcon: {
-    fontSize: 50
+    fontSize: 20
   }
 });
