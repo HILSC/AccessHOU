@@ -14,7 +14,8 @@ export default (theme) => ({
     marginLeft: theme.spacing(1),
   },
   dialogContent: {
-    overflow: 'hidden',
+    overflowY: 'auto',
+    maxHeight: 600
   },
   messages: {
     marginTop: theme.spacing(4),
