@@ -6,6 +6,7 @@ import { Redirect } from 'react-router-dom';
 import clsx from 'clsx';
 import queryString from 'query-string';
 import InfiniteScroll from 'react-infinite-scroller';
+import ReactTooltip from "react-tooltip";
 
 import {
   BrowserView,
@@ -127,10 +128,13 @@ const addInLocalStorage = (name, value) => {
 export default ({ match, location }) => {
   const classes = useStyles();
 
-  const [goProgram, setGoProgram] = useState({go: false, slug: ''})
+  const [goProgram, setGoProgram] = useState({go: false, slug: ''});
+  const [goAgency, setGoAgency] = useState({go: false, slug: ''});
   const [results, setResults] = useState({
     agencies: [],
     isSearching: true,
+    emergencyMode: false,
+    emergencyModeMsg: '',
   });
 
   const params = queryString.parse(location.search);
@@ -218,7 +222,8 @@ export default ({ match, location }) => {
         page: resultSet.data.page,
         hasNext: resultSet.data.has_next,
         hasPrev: resultSet.data.has_prev,
-        emergencyMode: resultSet.data.emergency_mode
+        emergencyMode: resultSet.data.emergency_mode,
+        emergencyModeMsg: resultSet.data.emergency_mode_msg,
       }));
     });
   }
@@ -235,7 +240,8 @@ export default ({ match, location }) => {
         page: resultSet.data.page,
         hasNext: resultSet.data.has_next,
         hasPrev: resultSet.data.has_prev,
-        emergencyMode: resultSet.data.emergency_mode
+        emergencyMode: resultSet.data.emergency_mode,
+        emergencyModeMsg: resultSet.data.emergency_mode_msg,
       }));
     });
 
@@ -437,6 +443,10 @@ export default ({ match, location }) => {
     setGoProgram({go: true, slug: program.slug, agency: program.agency});
   }
 
+  const handleAgencySelect = (agency) => {
+    setGoAgency({go: true, slug: agency.slug})
+  }
+
   const showSelectedOptions = (selectedOptions, optionToRemove) => {
     let index = selectedOptions.indexOf(optionToRemove);
     if (index >= 0) {
@@ -478,22 +488,33 @@ export default ({ match, location }) => {
     }
   }
 
-  if(goProgram.go){
+  if(goProgram.go) {
     const url = `/program/${goProgram.agency}/${goProgram.slug}`;
     return <Redirect push to={url} />
   }
 
+  if(goAgency.go) {
+    const url = `/agency/${goAgency.slug}`;
+    return <Redirect push to={url} />
+  }
+
   const hilscVerifiedFilter = () => {
-    const filterActive = filters && filters.HILSCVerified !== 'undefined' ? filters.HILSCVerified : null;
-    const resultEmergencyMode = results && results.emergencyMode === true ? false : true;
-    const active = filterActive || filterActive === false ? filters.HILSCVerified : resultEmergencyMode;
+    const filterActive = filters && filters.HILSCVerified ? filters.HILSCVerified : null;
+    const buttonClasses = !results.emergencyMode ? (
+      filterActive ? clsx(classes.searchButtonActive, classes.hilscButton) :  clsx(classes.searchButton, classes.hilscButton)
+    ) : clsx(classes.disabledButton, classes.hilscButton)
     return (
       <FormControl className={classes.formControl}>
         <Button
-          className={active ? clsx(classes.searchButtonActive, classes.hilscButton) : clsx(classes.searchButton, classes.hilscButton)}
-          onClick={handleFilterHILSC}>
+          data-tip="React-tooltip"
+          className={buttonClasses}
+          onClick={handleFilterHILSC}
+          disabled={results.emergencyMode}>
           HILSC verified
         </Button>
+        <ReactTooltip className={classes.toolTipText} place="bottom" type="dark" effect='solid' backgroundColor='#000000'>
+          <span>Agencies that are trusted resources for immigrants.</span>
+        </ReactTooltip>
       </FormControl>
     );
   }
@@ -757,6 +778,8 @@ export default ({ match, location }) => {
   }
 
   const getResultsContainerStyle = () => {
+    // Note: If we want to show a dynamic message as the emergency mode message
+    // this function needs to be smarter to consider the dynamic height of the message.
     let containerStyles = classes.resultsContainer;
 
     if(showMoreFilters) {
@@ -784,6 +807,17 @@ export default ({ match, location }) => {
           <div className={classes.publicHeader}>
             <PublicHeader />
           </div>
+          {/* {
+            results.emergencyMode ? (
+              <div className={classes.emergencyModeMessageContainer}>
+                <Alert
+                  className={classes.emergencyMode}
+                  iconClassName={classes.emergencyModeIcon}
+                  variant={"warning"}
+                  message={results.emergencyModeMsg} />
+              </div>
+            ) : null
+          } */}
           <Container classes={{
             root: isMobile ? classes.filtersContainerMobile : classes.filtersContainer
           }}>
@@ -940,7 +974,9 @@ export default ({ match, location }) => {
                       loader={<div className={classes.loading}>
                           <CircularProgress className={classes.progress} color="primary" />
                         </div>}>
-                      <ResultItem data={results.agencies} handleOnClickProgram={handleProgramSelect} />
+                      <ResultItem data={results.agencies}
+                        handleOnClickProgram={handleProgramSelect}
+                        handleOnClickAgency={handleAgencySelect} />
                     </InfiniteScroll>
                   ) : (
                     <div className={classes.messages}>

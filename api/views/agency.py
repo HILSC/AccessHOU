@@ -169,8 +169,8 @@ class AgencyQueueView(APIView):
                     "model": "queue",
                 }
             )
-        except Exception:
-            logger.error("Error requesting to create a new agency")
+        except Exception as e:
+            logger.error("Error requesting to create a new agency: {}".format(str(e)))
             return JsonResponse(
                 {
                     "message": "Request couldn't be completed. Please try again!"
@@ -401,8 +401,8 @@ class AgencyQueueView(APIView):
                     "model": "queue",
                 }
             )
-        except Exception:
-            logger.error("Error requesting to update agency {}".format(related_agency.name))
+        except Exception as e:
+            logger.error("Error requesting to update agency {}: {}".format(related_agency.name, str(e)))
             return JsonResponse(
                 {
                     "message": "Request couldn't be completed. Please try again!"
@@ -499,8 +499,8 @@ class AgencyQueueDeleteView(APIView):
                     "model": "queue",
                 }
             )
-        except Exception:
-            logger.error("Error requesting to delete an agency")
+        except Exception as e:
+            logger.error("Error requesting to delete an agency: {}".format(str(e)))
             return JsonResponse(
                 {
                     "message": "Request couldn't be completed. Please try again!"

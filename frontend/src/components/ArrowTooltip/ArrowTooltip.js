@@ -38,7 +38,7 @@ const ArrowTooltip = (props) => {
 }
 
 ArrowTooltip.propTypes = {
-  title: PropTypes.node,
+  title: PropTypes.string,
 };
 
 export default ArrowTooltip;

@@ -1,6 +1,5 @@
 import React from 'react';
 import clsx from 'clsx';
-import { NavLink } from "react-router-dom";
 
 import {
   MobileView,
@@ -59,42 +58,51 @@ const ProgramItem = ({ classes, program, handleProgramSelect }) => {
   )
 }
 
-const AgencyItem = ({ classes, agency, programs, handleProgramSelect }) => {
+const AgencyItem = ({ classes, agency, programs, handleAgencySelect, handleProgramSelect }) => {
+
+  const handleSelect = (e) => {
+    handleAgencySelect(agency);
+  }
+
+  const handleClickLocation = (e) => {
+    e.stopPropagation();
+  }
+
   return (
     <React.Fragment>
-      <Typography>
-        <NavLink to={`/agency/${agency.slug}`} className={classes.agencyCustomLink}>
+      <div className={classes.agency} onClick={handleSelect}>
+        <Typography className={classes.agencyTitle}>
           {agency.name}
-        </NavLink>
-      </Typography>
-      {
-        (agency.street && agency.city && agency.state && agency.zipcode) || agency.street ? (
-          <div className={classes.info}>
-            <LocationOnIcon fontSize="small" color="primary" classes={{
-              root: classes.icons
-            }} />
-            <Typography className={classes.title} color="textSecondary" gutterBottom>
-            {agency.street && agency.city && agency.state && agency.zipcode ?
-                (<a className={classes.customLink} target="_blank" rel="noopener noreferrer" href={`http://maps.google.com/?q=${agency.street}. ${agency.city}, ${agency.state} ${agency.zipcode}`}>{`${agency.street}, ${agency.city}, ${agency.state} ${agency.zipcode}`}</a>) :
-                (<a className={classes.customLink} target="_blank" rel="noopener noreferrer" href={`http://maps.google.com/?q=${agency.street}`}>{agency.street}</a>)}
-            </Typography>
-          </div>
-        ) : null
-      }
-      {
-        agency.website && agency.website.length ? (
-          <div className={classes.info}>
-            <LinkIcon fontSize="small" color="primary" classes={{
-              root: classes.icons
-            }} />
-            <Typography className={classes.title} color="textSecondary" gutterBottom>
-              { agency.website !== '' ? (
-                <a className={classes.customLink} target="_blank" rel="noopener noreferrer" href={formatURL(agency.website)}>{agency.website}</a>
-              ) : null }
-            </Typography>
-          </div>
-        ) : null
-      }
+        </Typography>
+        {
+          (agency.street && agency.city && agency.state && agency.zipcode) || agency.street ? (
+            <div className={classes.info}>
+              <LocationOnIcon fontSize="small" color="primary" classes={{
+                root: classes.icons
+              }} />
+              <Typography className={classes.title} color="textSecondary" gutterBottom>
+              {agency.street && agency.city && agency.state && agency.zipcode ?
+                  (<a className={classes.customLink} onClick={handleClickLocation} target="_blank" rel="noopener noreferrer" href={`http://maps.google.com/?q=${agency.street}. ${agency.city}, ${agency.state} ${agency.zipcode}`}>{`${agency.street}, ${agency.city}, ${agency.state} ${agency.zipcode}`}</a>) :
+                  (<a className={classes.customLink} onClick={handleClickLocation} target="_blank" rel="noopener noreferrer" href={`http://maps.google.com/?q=${agency.street}`}>{agency.street}</a>)}
+              </Typography>
+            </div>
+          ) : null
+        }
+        {
+          agency.website && agency.website.length ? (
+            <div className={classes.info}>
+              <LinkIcon fontSize="small" color="primary" classes={{
+                root: classes.icons
+              }} />
+              <Typography className={classes.title} color="textSecondary" gutterBottom>
+                { agency.website !== '' ? (
+                  <a className={classes.customLink} target="_blank" rel="noopener noreferrer" href={formatURL(agency.website)}>{agency.website}</a>
+                ) : null }
+              </Typography>
+            </div>
+          ) : null
+        }
+      </div>
       {programs.map((program, programIdx) => (
         <ProgramItem key={programIdx} classes={classes} program={program} handleProgramSelect={handleProgramSelect} />
       ))}
@@ -102,14 +110,19 @@ const AgencyItem = ({ classes, agency, programs, handleProgramSelect }) => {
   )
 }
 
-export default ({ data, handleOnClickProgram}) => {
+export default ({ data, handleOnClickAgency, handleOnClickProgram}) => {
   const classes = useStyles();
   return (
     <React.Fragment>
       {data.map((d, dIdx)=> (
         <Card className={classes.card} key={dIdx}>
           <CardContent>
-            <AgencyItem classes={classes} agency={d.agency} programs={d.programs} handleProgramSelect={handleOnClickProgram} />
+            <AgencyItem
+              classes={classes}
+              agency={d.agency}
+              programs={d.programs}
+              handleAgencySelect={handleOnClickAgency}
+              handleProgramSelect={handleOnClickProgram} />
           </CardContent>
         </Card>
       ))}

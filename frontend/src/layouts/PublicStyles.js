@@ -13,5 +13,11 @@ export default (theme) => ({
   },
   menuButton: {
     marginRight: theme.spacing(1),
+  },
+  emergencyMode: {
+    fontSize: 18
+  },
+  emergencyModeIcon: {
+    fontSize: 50
   }
 });

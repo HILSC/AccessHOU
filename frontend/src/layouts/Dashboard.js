@@ -28,6 +28,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import SettingsIcon from '@material-ui/icons/Settings';
 import QueueIcon from '@material-ui/icons/Queue';
+import TrackChangesIcon from '@material-ui/icons/TrackChanges';
 import EditIcon from '@material-ui/icons/Edit';
 import AccountBoxIcon from '@material-ui/icons/AccountBox';
 import NoteIcon from '@material-ui/icons/Note';
@@ -161,15 +162,37 @@ export default ({ children, menu }) => {
             ) : null
           }
           {
-            loggedUser.approveQueue ? (
+            loggedUser.viewAdvocacyReport ? (
               <CustomNavLink
-                to="/private/queue?menu=3"
+                to="/private/advocacy-reports?menu=6"
                 selectedIndex={selectedIndex}
-                itemPosition={3}
-                text="Queue"
-                icon={QueueIcon}
+                itemPosition={6}
+                text="Advocacy Reports"
+                icon={SubjectIcon}
                 handleClick={handleListItemClick}
               />
+            ) : null
+          }
+          {
+            loggedUser.approveQueue ? (
+              <React.Fragment>
+                <CustomNavLink
+                  to="/private/queue?menu=3"
+                  selectedIndex={selectedIndex}
+                  itemPosition={3}
+                  text="Queue"
+                  icon={QueueIcon}
+                  handleClick={handleListItemClick}
+                />
+                <CustomNavLink
+                  to="/private/changelogs?menu=9"
+                  selectedIndex={selectedIndex}
+                  itemPosition={9}
+                  text="Changelog"
+                  icon={TrackChangesIcon}
+                  handleClick={handleListItemClick}
+                />
+              </React.Fragment>
             ) : null
           }
           {
@@ -192,18 +215,6 @@ export default ({ children, menu }) => {
                   handleClick={handleListItemClick}
                 />
               </React.Fragment>
-            ) : null
-          }
-          {
-            loggedUser.viewAdvocacyReport ? (
-              <CustomNavLink
-                to="/private/advocacy-reports?menu=6"
-                selectedIndex={selectedIndex}
-                itemPosition={6}
-                text="Advocacy Reports"
-                icon={SubjectIcon}
-                handleClick={handleListItemClick}
-              />
             ) : null
           }
           <CustomNavLink

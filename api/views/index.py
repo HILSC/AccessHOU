@@ -2,9 +2,13 @@ import csv
 import json
 import logging
 import os
+from pytz import timezone
 import re
 import requests
+from datetime import datetime
+from datetime import timedelta
 
+from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.http import JsonResponse
 from django.views.generic import View
@@ -20,6 +24,8 @@ from rest_framework.views import status
 
 from api.decorators import is_registered_api_consumer
 
+from api.models.action_log import PublicActionLog
+
 from api.models.agency import Agency
 from api.models.agency import AgencyQueue
 
@@ -27,7 +33,6 @@ from api.models.program import Program
 from api.models.program import ProgramQueue
 
 from api.models.zip_code import ZipCodeData
-
 from api.models.app_settings import AppSettings
 
 from api.utils import getZipCodeRadiusRawSQL
@@ -73,6 +78,7 @@ class SearchAppView(APIView):
             app_settings = AppSettings.objects.first()
             if app_settings:
                 emergency_mode = app_settings.emergency_mode
+                emergency_mode_msg = app_settings.emergency_message
 
             HILSC_verified = False
             HILSC_verified_get_value = request.GET.get("HILSCVerified", None)
@@ -163,7 +169,8 @@ class SearchAppView(APIView):
                 program_filters &= models.Q(immigration_accessibility_profile=True)
 
             # HILSC Verified Program's agency
-            if entity == ENTITY_PROGRAM:
+
+            if entity == ENTITY_PROGRAM and not emergency_mode:
                 program_filters &= models.Q(agency__hilsc_verified=HILSC_verified,)
 
             # Walk in hours
@@ -182,7 +189,7 @@ class SearchAppView(APIView):
                 ]
 
             # HILSC Verified
-            if entity == ENTITY_AGENCY:
+            if entity == ENTITY_AGENCY and not emergency_mode:
                 agency_filters &= models.Q(hilsc_verified=HILSC_verified,)
 
             # Apply filters to agencies queryset
@@ -375,6 +382,7 @@ class SearchAppView(APIView):
                     "has_next": results_page.has_next(),
                     "has_prev": results_page.has_previous(),
                     "emergency_mode": emergency_mode,
+                    "emergency_mode_msg": emergency_mode_msg
                 },
                 safe=False,
             )
@@ -408,20 +416,85 @@ class EmergencyModeView(APIView):
             )
 
 
-class ExportPublicActionLogs(APIView):
+class PublicActionLogsView(APIView):
     @is_registered_api_consumer
     @permission_classes([IsAuthenticated])
     def get(self, request):
         try:
+            if request.user and request.user.is_active:
+                page = request.GET.get("page", 1)
+
+                public_logs = PublicActionLog.objects.all().order_by(
+                    "-updated_at", "-created_at", "entity_name"
+                )
+
+                results = [{
+                    "id": public_log.id,
+                    "entity_name": public_log.entity_name,
+                    "action": public_log.action,
+                    "model": public_log.model,
+                    "requestor_name": public_log.requested_by_name,
+                    "requestor_email": public_log.requested_by_email,
+                    "created_at": public_log.created_at.strftime('%b/%d/%Y')
+                } for public_log in public_logs]
+
+                # Paginate results
+                paginator = Paginator(results, 10)  # Show 10 results per page
+                results_page = paginator.get_page(page)
+                results_json = json.dumps(results_page.object_list)
+
+                return JsonResponse(
+                    {
+                        "results": json.loads(results_json),
+                        "total_records": paginator.count,
+                        "total_pages": paginator.num_pages,
+                        "page": results_page.number,
+                        "has_next": results_page.has_next(),
+                        "has_prev": results_page.has_previous(),
+                    },
+                    safe=False,
+                )
+        except Exception as ex:
+            logger.error("Error getting public logs: {}".format(str(ex)))
+            return JsonResponse(
+                {
+                    "message": "Public logs cannot be found."
+                }, status=500
+            )
+
+
+class ExportPublicActionLogsView(APIView):
+    @is_registered_api_consumer
+    @permission_classes([IsAuthenticated])
+    def get(self, request):
+        try:
+            default_start_date = datetime.now() - timedelta(days=30)
+            default_end_date = datetime.now()
+
+            start_date = datetime.strptime(request.GET.get("startDate", default_start_date), '%m/%d/%Y')
+            end_date = datetime.strptime(request.GET.get("endDate", default_end_date), '%m/%d/%Y') + timedelta(days=1)
+
+            start_date.replace(tzinfo=timezone('UTC'))
+            end_date.replace(tzinfo=timezone('UTC'))
+
+            results = PublicActionLog.objects.filter(created_at__gte=start_date, created_at__lte=end_date)
+
             response = HttpResponse(content_type='text/csv')
-            response['Content-Disposition'] = 'attachment; filename="public_request.logs.csv"'
-            writer = csv.DictWriter(response, fieldnames=['emp_name', 'dept', 'birth_month'])
+            response['Content-Disposition'] = 'attachment; filename="accesshou_changelog.csv"'
+            writer = csv.DictWriter(response, fieldnames=['entity_name', 'action', 'model', 'requested_by_name', 'requested_by_email', 'created_at'])
             writer.writeheader()
-            # writer.writerow({'emp_name': 'John Smith', 'dept': 'Accounting', 'birth_month': 'November'})
-            # writer.writerow({'emp_name': 'Erica Meyers', 'dept': 'IT', 'birth_month': 'March'})
+            for result in results:
+                writer.writerow({
+                    'entity_name': result.entity_name,
+                    'action': result.action,
+                    'model': result.model,
+                    'requested_by_name': result.requested_by_name,
+                    'requested_by_email': result.requested_by_email,
+                    'created_at': result.created_at.strftime('%m/%d/%Y')
+                })
             return response
         except Exception as ex:
-            logger.error("Error getting CSV from {} to {}: {}".format(start_date, str(e)))
+            logger.error("Error getting CSV: {}".format(str(ex)))
             return JsonResponse(
                 {
                     "message": "Program cannot be updated. Please try again!"

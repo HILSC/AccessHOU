@@ -11,6 +11,7 @@
     "@material-ui/pickers": "^3.2.10",
     "axios": "^0.19.0",
     "clsx": "^1.0.4",
+    "file-saver": "^2.0.2",
     "lodash.debounce": "^4.0.8",
     "moment": "^2.24.0",
     "prop-types": "^15.7.2",
@@ -27,6 +28,7 @@
     "react-scripts": "^3.4.0",
     "react-select": "^3.0.8",
     "react-text-mask": "^5.4.3",
+    "react-tooltip": "^4.2.5",
     "redux": "^4.0.4",
     "redux-persist": "^6.0.0",
     "redux-thunk": "^2.3.0"

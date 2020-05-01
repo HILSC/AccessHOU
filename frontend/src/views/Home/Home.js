@@ -2,8 +2,7 @@ import React, {
   useState,
   useEffect
 } from 'react';
-import { Redirect } from 'react-router-dom';
-import { NavLink } from "react-router-dom";
+import { Redirect, NavLink } from 'react-router-dom';
 import clsx from 'clsx';
 
 import {

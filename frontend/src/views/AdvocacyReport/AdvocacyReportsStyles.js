@@ -21,6 +21,7 @@ export default (theme) => ({
     marginRight: '5px'
   },
   dialogContent: {
-    overflow: 'hidden',
+    overflowY: 'auto',
+    maxHeight: 600
   },
 });

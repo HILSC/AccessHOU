@@ -350,7 +350,7 @@ export default () => {
                   'value': values.search ? values.search : ''
                 }}
               />
-              <IconButton className={classes.iconButton} aria-label="search" onClick={() => {}}>
+              <IconButton className={classes.iconButton} aria-label="search" disabled>
                 <SearchIcon />
               </IconButton>
             </div>

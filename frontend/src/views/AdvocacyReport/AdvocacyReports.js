@@ -34,6 +34,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DataLabel from 'components/DataLabel/DataLabel';
 import CustomInput from "components/CustomInput/CustomInput";
 import Alert from 'components/Alert/Alert';
+import { ENTITY_TO_REPORT } from 'components/AdvocacyReport/AdvocacyReportForm';
 
 import {
   ADVOCACY_REPORT_STATUSES
@@ -170,7 +171,10 @@ export default () => {
             {data.reports.map(report => (
               <TableRow key={`${report.id}`}>
                 <TableCell align="center">{report.created_at}</TableCell>
-                <TableCell align="center">{report.entity_selected}</TableCell>
+                <TableCell align="center">{
+                  report.entity_selected === ENTITY_TO_REPORT.NEW ?
+                  "Agency/Program not in AccessHOU" : report.entity_selected.charAt(0).toUpperCase() + report.entity_selected.slice(1)
+                  }</TableCell>
                 <TableCell align="center">{report.entity.name}</TableCell>
                 <TableCell align="center">{report.status}</TableCell>
                 <ViewTableCell report={report} handleAction={handleViewClick} token={token} />
@@ -234,16 +238,17 @@ export default () => {
                 </Grid>
                 <Grid item xs={12} sm={12} md={12}>
                   <DataLabel
-                    labelText={values.entity_selected}
-                    dataText={values.entity && !values.entity.agency ? (
+                    labelText={values.entity_selected === ENTITY_TO_REPORT.NEW ? "Agency/Program not in AccessHOU" : 
+                    values.entity_selected ? values.entity_selected[0].toUpperCase() + values.entity_selected.slice(1) : ''}
+                    dataText={values.entity && values.entity.slug && !values.entity.agency ? (
                       <NavLink to={`/${values.entity_selected.toLowerCase()}/${values.entity.slug}`} target="_blank">
                         {values.entity ? values.entity.name : ''}
                       </NavLink>
-                    ) : values.entity ? (
+                    ) : values.entity && values.entity.agency && values.entity.slug ? (
                       <NavLink to={`/${values.entity_selected.toLowerCase()}/${values.entity.agency}/${values.entity.slug}`} target="_blank">
                         {values.entity ? values.entity.name : ''}
                       </NavLink>
-                    ) : null }
+                    ) : <span>{values.entity ? values.entity.name : ''}</span> }
                   />
                 </Grid>
                 <Grid item xs={12} sm={6} md={6}>
@@ -258,19 +263,19 @@ export default () => {
                     dataText={values.issue_date}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={6}>
+                <Grid item xs={12} sm={12} md={12}>
                   <DataLabel
                     labelText={`Issue description`}
                     dataText={values.issue}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={6}>
+                <Grid item xs={12} sm={12} md={12}>
                   <DataLabel
                     labelText={`Recommended alternative to issue`}
                     dataText={values.recommendation}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={6}>
+                <Grid item xs={12} sm={12} md={12}>
                   <CustomInput
                     id="notes"
                     formControlProps={{
@@ -284,7 +289,7 @@ export default () => {
                     }}
                   />
                 </Grid>
-                <Grid item xs={12} sm={6} md={6}>
+                <Grid item xs={12} sm={12} md={12}>
                   <CustomInput
                     type="select"
                     labelText="Status"

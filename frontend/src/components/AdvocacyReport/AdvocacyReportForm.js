@@ -45,15 +45,21 @@ import { makeStyles } from '@material-ui/core/styles';
 import styles from './AvocacyReportFormStyles';
 const useStyles = makeStyles(styles);
 
+export const ENTITY_TO_REPORT = {
+  AGENCY: "agency",
+  PROGRAM: "program",
+  NEW: "new",
+}
+
 export default ({ handleSave, userName, entity, entityId, agencyId }) => {
   const classes = useStyles();
 
   const descriptionRef = useRef(null);
   const phoneRef = useRef(null);
+  const customEntityRef = useRef(null);
 
   const moment = new MomentUtils({ locale: "en" });
 
-  // Check why is not updating
   const [values, setValues] = useState({
     entity_reported: 'agency',
     incident_time: moment.moment().format('LLL'),
@@ -66,6 +72,7 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
   const [entityError, setEntityError] = useState({error: false, message: ''}); 
   const [descriptionError, setDescriptionError] = useState({error: false, message: ''});
   const [phoneError, setPhoneError] = useState({error: false, message: ''});
+  const [customEntityError, setCustomEntityError] = useState({error: false, message: ''});
 
   const [searchTerm, setSearchTerm] = useState('');
   const [resultSuggestions, setResultSuggestions] = useState([])
@@ -86,7 +93,7 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
     }
     
     setValuesManually();
-  }, [entity, entityId, agencyId])
+  }, [entity, entityId, agencyId]);
 
   // Get agency/program based on props
   useEffect(()=> {
@@ -156,14 +163,26 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
   };
 
   const isFormValid = () => {
-    if (!values['entity_reported_id'] ||
+    if(values['entity_reported'] !== ENTITY_TO_REPORT.NEW){
+      if (!values['entity_reported_id'] ||
       values['entity_reported_id'] === '') {
         setEntityError(() => ({error: true, message: "Please select entity of issue"}));
         return false;
-    }else{
-      setEntityError(() => ({error: false, message: ''}));
+      }else{
+        setEntityError(() => ({error: false, message: ''}));
+      }
     }
 
+    if (values['entity_reported'] === ENTITY_TO_REPORT.NEW){
+      if (!values['custom_entity'] || values['custom_entity'].trim() === '') {
+        customEntityRef.current.focus();
+        setCustomEntityError(() => ({error: true, message: "Please enter agency/program name."}));
+        return false;
+      }else{
+        setCustomEntityError(() => ({error: false, message: ''}));
+      }
+    }
+    
     if(!values['phone'] ||
       values['phone'].trim().length < 14) {
         phoneRef.current.focus();
@@ -248,30 +267,55 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
                         root: classes.customLabel,
                       }} filled={true}>Please select entity of issue *</FormLabel>
                       <RadioGroup defaultValue={values.entity_reported} name="entity_reported">
-                        <FormControlLabel value="agency" control={<Radio onChange={handleChange} />} label="Agency" />
-                        <FormControlLabel value="program" control={<Radio onChange={handleChange} />} label="Program" />
+                        <FormControlLabel value={ENTITY_TO_REPORT.AGENCY} control={<Radio onChange={handleChange} />} label="Agency" />
+                        <FormControlLabel value={ENTITY_TO_REPORT.PROGRAM} control={<Radio onChange={handleChange} />} label="Program" />
+                        <FormControlLabel value={ENTITY_TO_REPORT.NEW} control={<Radio onChange={handleChange} />} label="Agency/Program not in AccessHOU" />
                       </RadioGroup>
                     </FormControl>
                   </Grid>
                   <Grid item xs={12} sm={12} md={12}>
-                  <Autocomplete
-                    placeholder={`Enter name of the ${values.entity_reported} of issue *`}
-                    suggestions={resultSuggestions}
-                    handleSelect={handleSelect}
-                    handleChange={handleSearch}
-                  />
                   {
-                    entityError.message && !values.entityID ? (
-                      <FormHelperText classes={{
-                        root: classes.helperText
-                      }}>{entityError.message}</FormHelperText>
-                    ) : null
+                    values.entity_reported === ENTITY_TO_REPORT.NEW ? (
+                      <CustomInput
+                        id="custom_entity"
+                        errorDetails={{
+                          error: customEntityError && customEntityError.error ? true : false,
+                          message: customEntityError ? customEntityError.message : '',
+                        }}
+                        formControlProps={{
+                          fullWidth: true
+                        }}
+                        inputProps={{
+                          inputRef: customEntityRef,
+                          onChange: handleChange,
+                          label: "Agency/Program name *",
+                          name: "custom_entity",
+                          value: values.custom_entity ? values.custom_entity : '',
+                        }}
+                      />
+                    ) : (
+                      <React.Fragment>
+                        <Autocomplete
+                          placeholder={`Enter name of the ${values.entity_reported} of issue *`}
+                          suggestions={resultSuggestions}
+                          handleSelect={handleSelect}
+                          handleChange={handleSearch}
+                        />
+                        {
+                          entityError.message && !values.entityID ? (
+                            <FormHelperText classes={{
+                              root: classes.helperText
+                            }}>{entityError.message}</FormHelperText>
+                          ) : null
+                        }
+                      </React.Fragment>
+                    )
                   }
                 </Grid>
                 </React.Fragment>
               )
             }
-            { values.entity_reported_id ?
+            { values.entity_reported_id || values.entity_reported === ENTITY_TO_REPORT.NEW ?
               (
                 <React.Fragment>
                   <Grid item xs={12} sm={6} md={6}>
@@ -389,7 +433,6 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
                 </React.Fragment>
               ) : null
             }
-           
           </Grid>
         </form>
     </Container>

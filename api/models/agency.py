@@ -25,7 +25,7 @@ class AgencyBase(Base):
     # Eligibility
     age_groups = ArrayField(models.CharField(max_length=250), null=True)
     zip_codes = models.CharField(max_length=500, null=True)
-    gender = models.CharField(max_length=50, null=True)
+    gender = models.CharField(max_length=500, null=True)
     immigration_statuses = ArrayField(models.CharField(max_length=250), null=True)
 
     # Requirements

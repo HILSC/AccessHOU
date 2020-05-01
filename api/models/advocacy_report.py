@@ -7,13 +7,15 @@ from api.models.base import Base
 class AdvocacyReportEntity(enum.Enum):
   agency = 1
   program = 2
+  new = 3
 
 class AdvocacyReport(Base):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False)
     submitter_phone_number = models.CharField(max_length=15, null=True, blank=True)
     incident_datetime = models.DateTimeField(auto_now_add=False, null=True, blank=True)
     entity_reported = models.IntegerField(choices=[(entity.value, entity) for entity in AdvocacyReportEntity], null=False)
-    entity_reported_id = models.IntegerField(null=False)
+    entity_reported_id = models.IntegerField(null=True)
+    custom_entity_name = models.CharField(max_length=250, null=True)
     description = models.TextField(null=False)
     recommendation = models.TextField(null=True)
     status = models.CharField(max_length=45, default="Open", null=False)

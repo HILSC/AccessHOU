@@ -81,7 +81,7 @@ class QueueListView(APIView):
             safe=False,
         )
     except Exception as e:
-      logger.error("Error getting Queue", e)
+      logger.error("Error getting Queue: {}".format(str(e)))
       return JsonResponse(
           {
               "message": "Error getting results",
@@ -116,7 +116,7 @@ class QueueAgencyView(APIView):
           safe=False,
       )
     except Exception as e:
-      logger.error("Error getting Agency queue", e)
+      logger.error("Error getting Agency queue: {}".format(str(e)))
       return JsonResponse(
         {
           "message": "Error getting agency queue",
@@ -193,7 +193,7 @@ class QueueAgencyView(APIView):
               }
             )
     except Exception as e:
-      logger.error("Error approving/rejecting agency queue", e)
+      logger.error("Error approving/rejecting agency queue: {}".format(str(e)))
       return JsonResponse(
         {
           "message": "Error approving/rejecting agency queue",
@@ -358,7 +358,7 @@ class QueueProgramView(APIView):
           safe=False,
       )
     except Exception as e:
-      logger.error("Error getting Program queue", e)
+      logger.error("Error getting Program queue: {}".format(str(e)))
       return JsonResponse(
         {
           "message": "Error getting Program queue",
@@ -430,7 +430,7 @@ class QueueProgramView(APIView):
               }
             )
     except Exception as e:
-      logger.error("Error approving/rejecting program queue", e)
+      logger.error("Error approving/rejecting program queue: {}".format(str(e)))
       return JsonResponse(
         {
           "message": "Error approving/rejecting program queue",
