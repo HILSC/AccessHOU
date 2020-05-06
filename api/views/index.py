@@ -350,21 +350,22 @@ class SearchAppView(APIView):
                     else:
                         # We want this results to be appended a the end of list, agencies
                         # without programs should be shown at the end.
-                        more_results.append(
-                            {
-                                "agency": {
-                                    "name": agency.name,
-                                    "slug": agency.slug,
-                                    "phone": agency.phone,
-                                    "street": agency.street,
-                                    "city": city,
-                                    "state": state,
-                                    "zipcode": agency.zip_code,
-                                    "website": agency.website,
-                                },
-                                "programs": [],
-                            }
-                        )
+                        if len(program_filters) == 0:
+                            more_results.append(
+                                {
+                                    "agency": {
+                                        "name": agency.name,
+                                        "slug": agency.slug,
+                                        "phone": agency.phone,
+                                        "street": agency.street,
+                                        "city": city,
+                                        "state": state,
+                                        "zipcode": agency.zip_code,
+                                        "website": agency.website,
+                                    },
+                                    "programs": [],
+                                }
+                            )
 
             results = results + more_results
 
