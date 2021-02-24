@@ -167,6 +167,9 @@ export default () => {
         </Container>
       </div>
       {<Container className={isMobile ? classes.cardGridMobile : classes.cardGrid} maxWidth="lg">
+          <div className={classes.stormMessage}>
+            For short-term disaster resources, find and share help <a className={classes.stormMessageText} href="http://bit.ly/37GE4n4" target="_blank" rel="noopener noreferrer">here</a>.
+          </div>
         <Grid container spacing={4}>
           {PROGRAM_SERVICES.map(service => (
             <Grid item key={service.value} xs={6} sm={6} md={3}>

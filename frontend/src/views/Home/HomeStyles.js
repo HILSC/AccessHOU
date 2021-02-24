@@ -30,7 +30,7 @@ export default (theme) => ({
     margin: 4,
   },
   cardGrid: {
-    paddingTop: theme.spacing(8),
+    paddingTop: theme.spacing(2),
     paddingBottom: theme.spacing(8)
   },
   cardGridMobile: {
@@ -57,4 +57,17 @@ export default (theme) => ({
     color: 'inherit',
     textDecoration: 'none'
   },
+  stormMessage: {
+    padding: '4px',
+    border: 'solid 1px #e8463a',
+    borderRadius: 4,
+    fontSize: '18px',
+    marginBottom: theme.spacing(2),
+    textAlign: 'center',
+    fontWeight: 'bold'
+  },
+  stormMessageText : {
+    color: '#e8463a',
+    textDecoration: 'none',
+  }
 });
