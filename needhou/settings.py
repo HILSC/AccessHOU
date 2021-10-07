@@ -22,6 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', None)
+SECRET_KEY = "8z^(37^9-f%m3#1x=y7tiw!65+izvn9h#tth1)i_(s!c2+2w^w"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -194,7 +195,17 @@ ALLOWED_CLIENTS = (
 
 # DATABASE
 import dj_database_url
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+# DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'accesshou',
+        'USER': 'mike',
+        'PASSWORD': 'pass',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
 
 try:
     from .local_settings import *

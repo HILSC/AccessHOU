@@ -12,7 +12,7 @@
 
 **3. Configure API URL**
 
-Open the file named `env.development` and modify the environment variable `REACT_APP_API_URL` to the endpoint of your local Django API which should be running in 
+Open the file named `env.development` and modify the environment variable `REACT_APP_API_URL` to the endpoint of your local Django API which should be running in
 
 [http://localhost:8000](http://localhost:8000)
 
@@ -28,6 +28,6 @@ If you made some changes and you are ready to deploy your changes you have to do
 
   - Modify the `.env.production` file and make sure the `REACT_APP_API_URL` is pointing to the production API endpoint.
 
-  - Create a new build by running 
-  
+  - Create a new build by running
+
     ```npm run build```
