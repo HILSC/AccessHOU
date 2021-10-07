@@ -57,14 +57,14 @@ const App = () => {
           <PublicRoute path="/agency/create" component={AgencyCreate} layout={PublicLayout} />
           <PublicRoute path="/agency/edit/:slug" component={AgencyEdit} layout={PublicLayout} />
           <PublicRoute path="/agency/:slug" component={AgencyDetails} layout={PublicLayout} />
-          
+
           <PublicRoute exact path="/program/create/" component={ProgramCreate} layout={PublicLayout} />
           <PublicRoute path="/program/create/:agencySlug" component={ProgramCreate} layout={PublicLayout} />
           <PublicRoute path="/program/edit/:agency/:slug" component={ProgramEdit} layout={PublicLayout} />
           <PublicRoute path="/program/:agency/:slug" component={ProgramDetails} layout={PublicLayout} />
 
           <PublicRoute path="/user-manual" component={UserManualPublic} layout={PublicLayout}/>
-          
+
           {/* Logged Users */}
           <PrivateRoute exact path="/private" component={Dashboard} layout={DashboardLayout} menu={1} />
           <PrivateRoute exact path="/private/profile" component={Profile} layout={DashboardLayout} menu={7} />
