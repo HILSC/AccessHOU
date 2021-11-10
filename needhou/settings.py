@@ -22,14 +22,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', None)
-# SECRET_KEY = "2^@of(lnx13-2w*#8*syrctkvcm@npqaa)lw$5braq@&1i8$$$"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 # DEBUG = True
 
 ALLOWED_HOSTS = [
-    "accesshou.brightanchor.com",
     "dev-accesshou.herokuapp.com",
     "prod-accesshou.herokuapp.com",
     "accesshou.org",
@@ -184,8 +182,6 @@ GEOLOCATOR_API_KEY = os.getenv('GEOLOCATOR_API_KEY', None)
 
 # ALLOWED CLIENTS
 ALLOWED_CLIENTS = (
-    'http://accesshou.brightanchor.com',
-    'https://accesshou.brightanchor.com',
     'https://dev-accesshou.herokuapp.com',
     'https://prod-accesshou.herokuapp.com',
     'https://accesshou.org',
@@ -229,9 +225,9 @@ DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True
 #     },
 # }
 
-MAILCHIMP_API = 'e1eeefebb8b7a89f677308aa9046671a-us14'
-MAILCHIMP_USER = 'marva@houstonimmigration.org'
-MAILCHIMP_LIST = '4a834618a7'
+MAILCHIMP_API = os.getenv('MAILCHIMP_API', None)
+MAILCHIMP_USER = os.getenv('MAILCHIMP_USER', None)
+MAILCHIMP_LIST = os.getenv('MAILCHIMP_LIST', None)
 
 try:
     from .local_settings import *
