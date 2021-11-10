@@ -1,4 +1,15 @@
 export default (theme) => ({
+    heroList: {
+        maxWidth: '800px',
+        margin: 'auto',
+        textAlign: 'left',
+    },
+    heroStrong: {
+        fontSize: '30px',
+        paddingBottom: '30px',
+        display: 'inline-block',
+        paddingTop:'20px'
+    },
   heroContent: {
     backgroundColor: '#e9ecef',
     padding: theme.spacing(5, 0, 6),
@@ -9,6 +20,22 @@ export default (theme) => ({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
     margin: '0 auto'
+  },
+  heroTextSecondary: {
+      fontSize: '22px',
+      color: '#333',
+      lineHeight: '36px',
+      margin: 'auto',
+      marginBottom: '30px',
+      maxWidth: '1024px',
+      textAlign:'center',
+  },
+  heroTextPrimary: {
+      fontSize: '50px',
+      color: '#111',
+      lineHeight: '60px',
+      marginBottom: '30px',
+      fontWeight: '600'
   },
   entityOptions: {
     maxWidth: '50%',
@@ -60,14 +87,46 @@ export default (theme) => ({
   stormMessage: {
     padding: '4px',
     border: 'solid 1px #e8463a',
+    background: '#e8463a',
+    color: '#fff',
     borderRadius: 4,
     fontSize: '18px',
     marginBottom: theme.spacing(2),
     textAlign: 'center',
-    fontWeight: 'bold'
-  },
+    fontWeight: '400',
+    padding:'20px',
+    textAlign:'left',
+    overflow:'hidden',
+    margin: '0 0 30px 0',
+    },
+    stormIcon: {
+        maxWidth: '50px',
+        float: 'left',
+        paddingLeft:'15px',
+        transform: 'rotate(180deg)',
+    },
   stormMessageText : {
-    color: '#e8463a',
+    color: '#fff',
     textDecoration: 'none',
+    float: 'left',
+    maxWidth:'70%',
+    margin:'0',
+},
+stormMessageLink : {
+  color: '#f3bbb5',
+  textDecoration: 'none',
+  '&:hover': {
+    textDecoration: 'underline',
   }
+},
+stormMessageButton : {
+  color: '#fff',
+  textDecoration: 'none',
+  float: 'right',
+  background: '#a2392c',
+  padding: '15px 40px',
+  textAlgin: 'center',
+  borderRadius: '10px',
+  maxWidth:'20%',
+}
 });

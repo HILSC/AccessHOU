@@ -69,7 +69,7 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
     entity_name: null,
   });
 
-  const [entityError, setEntityError] = useState({error: false, message: ''}); 
+  const [entityError, setEntityError] = useState({error: false, message: ''});
   const [descriptionError, setDescriptionError] = useState({error: false, message: ''});
   const [phoneError, setPhoneError] = useState({error: false, message: ''});
   const [customEntityError, setCustomEntityError] = useState({error: false, message: ''});
@@ -91,7 +91,7 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
         entity_reported_id: null,
       });
     }
-    
+
     setValuesManually();
   }, [entity, entityId, agencyId]);
 
@@ -152,7 +152,7 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
           }
         });
       }
-      
+
     }
   }, [debouncedSearchTerm, searchTerm, values]);
 
@@ -182,7 +182,7 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
         setCustomEntityError(() => ({error: false, message: ''}));
       }
     }
-    
+
     if(!values['phone'] ||
       values['phone'].trim().length < 14) {
         phoneRef.current.focus();
@@ -433,6 +433,9 @@ export default ({ handleSave, userName, entity, entityId, agencyId }) => {
                 </React.Fragment>
               ) : null
             }
+            <p className={classes.disclaimerText}> Note: If trends of issues are identified
+            with a specific program or agency, it may be addressed by HILSC's
+            Access to Services Workgroup.</p>
           </Grid>
         </form>
     </Container>

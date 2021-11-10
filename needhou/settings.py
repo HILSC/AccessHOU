@@ -22,10 +22,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY', None)
-SECRET_KEY = "8z^(37^9-f%m3#1x=y7tiw!65+izvn9h#tth1)i_(s!c2+2w^w"
+# SECRET_KEY = "2^@of(lnx13-2w*#8*syrctkvcm@npqaa)lw$5braq@&1i8$$$"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
+# DEBUG = True
 
 ALLOWED_HOSTS = [
     "accesshou.brightanchor.com",
@@ -71,6 +72,7 @@ MIDDLEWARE = [
 
 CORS_ORIGIN_ALLOW_ALL = True
 CSRF_COOKIE_NAME = "csrftoken"
+SESSION_COOKIE_AGE = 2609600
 
 CORS_ORIGIN_WHITELIST = [
     "https://accesshou.org",
@@ -94,8 +96,8 @@ ROOT_URLCONF = 'needhou.urls'
 REACT_APP_DIR = os.path.join(BASE_DIR, 'frontend')
 
 # HTTPS
-#SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-#SECURE_SSL_REDIRECT = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
 
 TEMPLATES = [
     {
@@ -122,8 +124,8 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=2),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=14),
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),
@@ -147,7 +149,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
@@ -190,22 +191,47 @@ ALLOWED_CLIENTS = (
     'https://accesshou.org',
     'http://accesshou.org',
     'https://www.accesshou.org',
-    'http://www.accesshou.org'
+    'http://www.accesshou.org',
+    # 'http://localhost:8000',
+    # 'http://localhost:3000',
 )
 
 # DATABASE
 import dj_database_url
-# DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'accesshou',
-        'USER': 'mike',
-        'PASSWORD': 'pass',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
-}
+DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'accesshou',
+#         'USER': 'mike',
+#         'PASSWORD': 'pass',
+#         'HOST': 'localhost',
+#         'PORT': '5432',
+#     }
+# }
+
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'handlers': {
+#         'file': {
+#             'level': 'DEBUG',
+#             'class': 'logging.FileHandler',
+#             'filename': 'debug.log',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['file'],
+#             'level': 'INFO',
+#             'propagate': True,
+#         },
+#     },
+# }
+
+MAILCHIMP_API = 'e1eeefebb8b7a89f677308aa9046671a-us14'
+MAILCHIMP_USER = 'marva@houstonimmigration.org'
+MAILCHIMP_LIST = '4a834618a7'
 
 try:
     from .local_settings import *

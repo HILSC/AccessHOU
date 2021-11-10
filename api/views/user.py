@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import logout
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
+from django.conf import settings
 from django.db import transaction
 from django.db import models
 from django.http import JsonResponse
@@ -26,8 +27,9 @@ from api.models.user import Profile
 
 from api.utils import randomStringGenerator
 
-logger = logging.getLogger(__name__)
+from mailchimp3 import MailChimp
 
+logger = logging.getLogger(__name__)
 
 class UserAuthView(APIView):
     @is_registered_api_consumer
@@ -44,7 +46,7 @@ class UserAuthView(APIView):
 
             user_obj = User.objects.get(email=email)
             user = authenticate(request, username=user_obj.username, password=password)
-            
+
             if user:
                 user.last_login = timezone.now()
                 user.save()
@@ -56,6 +58,24 @@ class UserAuthView(APIView):
                 is_admin = False
                 if(user.profile.role.name == 'Admin'):
                     is_admin = True
+
+                # mailchimp = AddToMailchimp(user)
+                # Sync Login Date to Mailchimp
+                # try:
+                #     client = MailChimp(mc_api=settings.MAILCHIMP_API, mc_user=settings.MAILCHIMP_USER)
+                #     client.lists.members.create_or_update(settings.MAILCHIMP_LIST, user.email, {
+                #         'email_address': user.email,
+                #         'status': 'subscribed',
+                #         'status_if_new': 'subscribed',
+                #         'merge_fields': {
+                #             'FNAME':user.first_name,
+                #             'LNAME':user.last_name,
+                #             'APPUSER': 'Yes',
+                #             'LASTLOGIN': user.last_login.strftime('%m/%d/%Y'),
+                #         }
+                #     })
+                # except Exception:
+                #     pass
 
                 return JsonResponse(
                     {
@@ -132,7 +152,7 @@ class UserView(APIView):
 
                     if password and len(password) >= 6:
                         user.set_password(password)
-                    
+
                     user.profile.role = role
                     user.profile.agency = request.data.get("agency", None)
                     user.save()
@@ -142,7 +162,7 @@ class UserView(APIView):
                         "is_active": user.is_active,
                     },
                     safe=False,
-                ) 
+                )
 
         except:
             logger.error("User couldn't be updated.")
@@ -174,7 +194,7 @@ class UserView(APIView):
                         })
                 except User.DoesNotExist:
                             logger.info("Emil is unique")
-                
+
                 user = User.objects.create_user(
                     email=request.data.get("email", None),
                     first_name=first_name,
@@ -192,7 +212,7 @@ class UserView(APIView):
                         "email": user.email,
                     },
                     safe=False,
-                ) 
+                )
         except:
             logger.error("User couldn't be created.")
             return JsonResponse(
@@ -206,12 +226,13 @@ class UserListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        print('test')
         users = None
         try:
             if request.user and request.user.profile.is_admin:
                 page = request.GET.get("page", 1)
                 search = request.GET.get("search", None)
-                
+
                 if search:
                     user_filters = models.Q()
                     user_filters &= models.Q(email__icontains=search,)
@@ -245,7 +266,7 @@ class UserListView(APIView):
                                     "id": user.profile.role.id,
                                     "name": user.profile.role.name
                                 }
-                                
+
                             }
                         )
 
@@ -288,7 +309,7 @@ class UserProfileView(APIView):
                         "role": user_profile.role.name,
                     },
                     safe=False,
-                )  
+                )
         except Exception as e:
             logger.error("Error while getting user info by id")
             return JsonResponse(
@@ -319,7 +340,7 @@ class UserProfileView(APIView):
                 if new_password and current_password_valid:
                     logout_user = True
                     user.set_password(new_password)
-                
+
                 user.email = email
                 user.profile.agency = request.data.get("agency", None)
                 user.first_name = request.data.get("first_name", None)
@@ -348,3 +369,47 @@ class UserProfileView(APIView):
                 }, status=500
             )
 
+class SyncMailchimp(APIView):
+    @is_registered_api_consumer
+    def get(self, request):
+        try:
+            all_users = User.objects.all()
+            for baby in all_users :
+                if baby.last_login :
+                    baby_login_time = baby.last_login.strftime('%m/%d/%Y')
+                else:
+                    baby_login_time = ''
+                client = MailChimp(mc_api=settings.MAILCHIMP_API, mc_user=settings.MAILCHIMP_USER)
+                client.lists.members.create_or_update(settings.MAILCHIMP_LIST, baby.email, {
+                    'email_address': baby.email,
+                    'status': 'subscribed',
+                    'status_if_new': 'subscribed',
+                    'merge_fields': {
+                        'FNAME':baby.first_name,
+                        'LNAME':baby.last_name,
+                        'APPUSER': 'Yes',
+                        'LASTLOGIN': baby_login_time,
+                    }
+                })
+        except Exception as e:
+            print(e)
+
+
+# class AddToMailchimp():
+#     def get(user, is_user):
+#         try:
+#             print('testing')
+#             client = MailChimp(mc_api=settings.MAILCHIMP_API, mc_user=settings.MAILCHIMP_USER)
+#             client.lists.members.create_or_update(settings.MAILCHIMP_LIST, user.email, {
+#                 'email_address': user.email,
+#                 'status': 'subscribed',
+#                 'status_if_new': 'subscribed',
+#                 'merge_fields': {
+#                     'FNAME':user.first_name,
+#                     'LNAME':user.last_name,
+#                     'APPUSER': is_user,
+#                     'LASTLOGIN': user.last_login.strftime('%m/%d/%Y'),
+#                 }
+#             })
+#         except Exception:
+#             pass

@@ -19,7 +19,10 @@ export default () => {
         <div className={classes.headerContainer}>
           <div><img className={classes.imageLogo} alt='logo' src={logo} /></div>
           <div className={classes.logoTextContainer}>
-            <span className={classes.logoText}>A database of resources for agencies working with immigrants in Greater Houston</span>
+            <span className={classes.logoText}>An insiders guide to social services for immigrants in Greater Houston</span>
+            <div style={{margin:'5px 25px'}}>
+              <span id="google_translate_element" />
+            </div>
           </div>
         </div>
       </BrowserView>

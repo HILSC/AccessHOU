@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { 
+import {
   IMMIGRATION_STATUSES,
   IDS
 } from './constants';
@@ -69,7 +69,7 @@ const signIn = (data) => {
         'Content-Type': 'application/json'
       }
     }
-  ); 
+  );
 }
 
 const refreshToken = (refreshToken) => {
@@ -133,7 +133,6 @@ const updateAgency = (token, data) => {
   let headers = {
     'Content-Type': 'application/json',
   }
-
   if (token) {
     url = '/agency/';
     headers = {
@@ -183,6 +182,12 @@ const deleteAgency = (token, data) => {
 const getAgency = (data) => {
   return client.get(
     `/agency/${data.property}/${data.value}/`,
+  );
+}
+
+const copyAgency = (data) => {
+  return client.get(
+    `/agency/copy/${data.property}/${data.value}/`,
   );
 }
 
@@ -255,7 +260,7 @@ const deleteProgram = (token, data) => {
       ...headers,
       'Authorization': `Bearer ${token}`
     }
-    
+
     return client.delete(
       `/program/${data.program_id}/`,
       {
@@ -271,7 +276,7 @@ const deleteProgram = (token, data) => {
     {
       headers: headers
     }
-  ); 
+  );
 }
 
 const getProgram = (data) => {
@@ -286,13 +291,41 @@ const getPrograms = (data) => {
   )
 }
 
-const search = (params) => {
+const copyProgram = (data) => {
   return client.get(
+    `/program/copy/${data.property}/${data.value}/${data.agency}/`,
+  );
+}
+
+const search = (params) => {
+  var results = client.get(
     '/search/',
-    { 
+    {
       params
     }
   )
+  console.log(results);
+  return results;
+}
+
+const mapPoints = (params) => {
+  var results = client.get(
+    '/agencies/map',
+    {
+      params
+    }
+  )
+  return results;
+}
+
+const verifyAgencies = (params) => {
+  var results = client.get(
+    '/agencies/verify',
+    {
+      params
+    }
+  )
+  return results;
 }
 
 const getUsers = (token, params) => {
@@ -536,15 +569,19 @@ export {
   updateAgency,
   deleteAgency,
   getAgency,
+  copyAgency,
   getAgencies,
+  verifyAgencies,
 
   createProgram,
   updateProgram,
   deleteProgram,
   getProgram,
   getPrograms,
-  
+  copyProgram,
+
   search,
+  mapPoints,
 
   getUsers,
   createUser,

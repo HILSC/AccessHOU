@@ -7,6 +7,7 @@ import clsx from 'clsx';
 import queryString from 'query-string';
 import InfiniteScroll from 'react-infinite-scroller';
 import ReactTooltip from "react-tooltip";
+import { useSelector } from 'react-redux';
 
 import {
   BrowserView,
@@ -15,7 +16,7 @@ import {
 } from "react-device-detect";
 
 // API
-import { 
+import {
   search
 } from 'api';
 
@@ -126,7 +127,46 @@ const addInLocalStorage = (name, value) => {
 }
 
 export default ({ match, location }) => {
+
+
+
+
   const classes = useStyles();
+
+  const [width, setWidth] = useState(window.innerWidth);
+
+  function handleWindowSizeChange() {
+      setWidth(window.innerWidth);
+  }
+
+  useEffect(() => {
+
+      const loadScript = (src) => {
+        var tag = document.createElement('script');
+        tag.async = false;
+        tag.src = src;
+        var body = document.getElementsByTagName('body')[0];
+        body.appendChild(tag);
+      }
+
+      loadScript('//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit');
+
+      window.googleTranslateElementInit = () => {
+        new window.google.translate.TranslateElement({
+          pageLanguage: 'en',
+          layout: isMobile ? 0 : 1,
+        }, 'google_translate_element')
+      };
+
+      window.addEventListener('resize', handleWindowSizeChange);
+      return () => {
+          window.removeEventListener('resize', handleWindowSizeChange);
+      }
+  }, []);
+
+  let isSmall: boolean = (width <= 960);
+
+  const isAuthenticated = useSelector( state => state.user.isAuthenticated );
 
   const [goProgram, setGoProgram] = useState({go: false, slug: ''});
   const [goAgency, setGoAgency] = useState({go: false, slug: ''});
@@ -142,19 +182,19 @@ export default ({ match, location }) => {
   let entity = params.entity;
   let serviceType = params.service ? [params.service] : [SERVICE_TYPE];
   const useStorage = params.storage ? true : false;
-  let HILSCVerified = true
+  let HILSCVerified = false
 
   // Note: The local storage has been cleaned if we are getting to this page from the home.
   if(!localStorage.getItem('cleared')) {
     addInLocalStorage('search', keyword);
     addInLocalStorage('entity', entity);
-  
+
     // Set service type
     const serviceTypeInParams = serviceType.filter(st => st !== SERVICE_TYPE);
     if (serviceTypeInParams.length){
       addInLocalStorage('serviceType', serviceTypeInParams);
     }
-    
+
     addInLocalStorage('HILSCVerified', HILSCVerified);
   }
 
@@ -185,7 +225,7 @@ export default ({ match, location }) => {
     incomeEligibility = localStorage.getItem('incomeEligibility') ? localStorage.getItem('incomeEligibility') : incomeEligibility;
     immigrantAccProfile = localStorage.getItem('immigrantAccProfile') ? localStorage.getItem('immigrantAccProfile') : immigrantAccProfile;
     walkInHours = localStorage.getItem('walkInHours') ? localStorage.getItem('walkInHours') : walkInHours;
-    
+
     let programLanguagesArr = localStorage.getItem('programLanguages') ? localStorage.getItem('programLanguages').split(",") : programLanguages;
     programLanguages = Array.isArray(programLanguagesArr) && programLanguagesArr.length > 1 ? programLanguagesArr.filter(st => st !== PROGRAM_LANGUAGES): programLanguagesArr;
 
@@ -504,18 +544,19 @@ export default ({ match, location }) => {
       filterActive ? clsx(classes.searchButtonActive, classes.hilscButton) :  clsx(classes.searchButton, classes.hilscButton)
     ) : clsx(classes.disabledButton, classes.hilscButton)
     return (
-      <FormControl className={classes.formControl}>
-        <Button
-          data-tip="React-tooltip"
-          className={buttonClasses}
-          onClick={handleFilterHILSC}
-          disabled={results.emergencyMode}>
-          HILSC verified
-        </Button>
-        <ReactTooltip className={classes.toolTipText} place="bottom" type="dark" effect='solid' backgroundColor='#000000'>
-          <span>Agencies that are trusted resources for immigrants.</span>
-        </ReactTooltip>
-      </FormControl>
+        // isAuthenticated &&
+        <FormControl className={classes.formControl}>
+            <Button
+              data-tip="React-tooltip"
+              className={buttonClasses}
+              onClick={handleFilterHILSC}
+              disabled={results.emergencyMode}>
+              HILSC Network Partner
+            </Button>
+            <ReactTooltip className={classes.toolTipText} place="bottom" type="dark" effect='solid' backgroundColor='#000000'>
+              <span>Agencies that are trusted resources for immigrants.</span>
+            </ReactTooltip>
+        </FormControl>
     );
   }
 
@@ -682,7 +723,7 @@ export default ({ match, location }) => {
           input={<BootstrapInput name="incomeEligibility" id="income-customized-select" />}
         >
           <MenuItem value="income">
-            Annual median income
+            Eligibility: % of FPL
           </MenuItem>
           <MenuItem value={80}>{`< 80%`}</MenuItem>
           <MenuItem value={110}>{`< 110%`}</MenuItem>
@@ -786,7 +827,7 @@ export default ({ match, location }) => {
       containerStyles = classes.resultsContainersOpenFilters;
     }
 
-    if(isMobile){
+    if(isSmall){
       containerStyles = classes.resultsContainerMobile;
       if(showMoreFilters) {
         containerStyles = classes.resultsContainersOpenFiltersMobile;
@@ -827,15 +868,15 @@ export default ({ match, location }) => {
                   <Grid item xs={12} sm={12} md={2}>
                     {keywordFilter()}
                   </Grid>
-                  <Grid item xs={6} sm={6} md={2}>
+                  <Grid className={ isAuthenticated ? classes.hilscTrue : classes.hilscFalse } item xs={6} sm={6} md={2}>
                     {hilscVerifiedFilter()}
                   </Grid>
                   <Grid item xs={6} sm={6} md={2}>
                     {serviceTypeFilter()}
                   </Grid>
-                  <Grid item xs={6} sm={6} md={2}>
+                  { /* <Grid item xs={6} sm={6} md={2}>
                     {immigrationStatusFilter()}
-                  </Grid>
+                  </Grid> */ }
                   <Grid item xs={6} sm={6} md={2}>
                     {showHideMoreFilters()}
                   </Grid>
@@ -854,7 +895,7 @@ export default ({ match, location }) => {
                       <Table aria-label="simple table">
                         <TableBody>
                           <TableRow>
-                            <TableCell align="center" classes={{
+                            <TableCell className={ isAuthenticated ? classes.hilscTrue : classes.hilscFalse } align="center" classes={{
                               root: classes.tableCellContainer
                             }}>{hilscVerifiedFilter()}</TableCell>
                             <TableCell align="center" classes={{
@@ -862,7 +903,7 @@ export default ({ match, location }) => {
                             }}>{serviceTypeFilter()}</TableCell>
                             <TableCell align="center" classes={{
                               root: classes.tableCellContainer
-                            }}>{immigrationStatusFilter()}</TableCell>
+                          }}>{/* immigrationStatusFilter() */}</TableCell>
                           </TableRow>
                         </TableBody>
                       </Table>
@@ -888,15 +929,15 @@ export default ({ match, location }) => {
                           <Grid item xs={6} sm={6} md={3}>
                             {radiusFilter()}
                           </Grid>
-                          <Grid item xs={12} sm={12} md={3}>
+                          { /* <Grid item xs={12} sm={12} md={3}>
                             {incomeFilter()}
-                          </Grid>
-                          <Grid item xs={12} sm={12} md={3}>
+                          </Grid> */ }
+                          { /* <Grid item xs={12} sm={12} md={3}>
                             {accessibleProfileFilter()}
-                          </Grid>
-                          <Grid item xs={12} sm={12} md={3}>
+                          </Grid> */ }
+                          { /* <Grid item xs={12} sm={12} md={3}>
                             {walkInHoursFilter()}
-                          </Grid>
+                          </Grid> */ }
                           <Grid item xs={12} sm={12} md={3}>
                             {programLanguageFilter()}
                           </Grid>
@@ -920,15 +961,15 @@ export default ({ match, location }) => {
                                     <TableCell align="center" classes={{
                                       root: classes.tableCellContainer
                                     }}>{radiusFilter()}</TableCell>
-                                    <TableCell align="center" classes={{
+                                    { /* <TableCell align="center" classes={{
                                       root: classes.tableCellContainer
-                                    }}>{incomeFilter()}</TableCell>
-                                    <TableCell align="center" classes={{
+                                      }}>{incomeFilter()}</TableCell> */ }
+                                    { /* <TableCell align="center" classes={{
                                       root: classes.tableCellContainer
-                                    }}>{accessibleProfileFilter()}</TableCell>
-                                    <TableCell align="center" classes={{
+                                    }}>{accessibleProfileFilter()}</TableCell> */ }
+                                    { /* <TableCell align="center" classes={{
                                       root: classes.tableCellContainer
-                                    }}>{walkInHoursFilter()}</TableCell>
+                                    }}>{walkInHoursFilter()}</TableCell> */ }
                                     <TableCell align="center" classes={{
                                       root: classes.tableCellContainer
                                     }}>{programLanguageFilter()}</TableCell>
@@ -943,6 +984,11 @@ export default ({ match, location }) => {
                         </Grid>
                       </Grow>
                     </MobileView>
+                    <p className={classes.helpText}>* ​If the information you filtered for is not
+                        available for an agency or program service, the service will still be
+                        included in the search results. Not all results may match your filter,
+                        but none conflict. For better results, please go to "Help complete this
+                        profile" from the agency or program page and add this information</p>
                   </React.Fragment>
                 ) : null
               }
@@ -952,12 +998,13 @@ export default ({ match, location }) => {
             root: classes.resultsCountContainer
           }}>
           {
-            <span>{results && results.totalRecords ? `${results.totalRecords} results` : `0 results`}</span>
+            <span className={classes.resultsNumber}>{results && results.totalRecords ? `${results.totalRecords} results` : `0 results`}</span>
           }
           </Container>
         </Toolbar>
       </AppBar>
       <Container>
+      <div className="resultsContainer2">
         <div className={getResultsContainerStyle()}>
           {
             <React.Fragment>
@@ -984,11 +1031,19 @@ export default ({ match, location }) => {
                         variant={'info'}
                         message={'Sorry, No results'}
                       />
+                      <div className={classes.messagesHelp}>
+                        <p><strong>Didn't find what you're looking for? Try some of these search tips:</strong></p>
+                        <ol><li>Type just a portion of your search:
+                            <ul><li>"immi" instead of "immigration" or "baker" instead of "BakerRipley".</li></ul></li>
+                        <li>Try different punctuation:
+                            <ul><li>"U Visa" and "U-Visa"</li></ul></li></ol>
+                        </div>
                     </div>
                   )
                 }
             </React.Fragment>
           }
+        </div>
         </div>
       </Container>
       <PublicFooter />

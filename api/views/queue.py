@@ -52,17 +52,21 @@ class QueueListView(APIView):
             })
 
         program_queue = ProgramQueue.objects.all().order_by('created_at')
+        print(program_queue.count())
         for program_q in program_queue:
-            results.append({
-                "id": program_q.id,
-                "name": program_q.name,
-                "model": "Program",
-                "model_id": program_q.related_program_id,
-                "action": program_q.action,
-                "requestor_name": program_q.requested_by_name,
-                "requestor_email": program_q.requested_by_email,
-                "emergency_mode": program_q.emergency_mode
-            })
+            print('sauce')
+
+            # results.append({
+            #     "id": program_q.id,
+            #     "name": program_q.name,
+            #     "model": "Program",
+            #     "model_id": program_q.related_program_id,
+            #     "action": program_q.action,
+            #     "requestor_name": program_q.requested_by_name,
+            #     "requestor_email": program_q.requested_by_email,
+            #     "emergency_mode": program_q.emergency_mode
+            # })
+
 
         # Paginate results
         paginator = Paginator(results, 10)  # Show 10 results per page
@@ -122,7 +126,7 @@ class QueueAgencyView(APIView):
           "message": "Error getting agency queue",
         }, status=500
       )
-    
+
   @transaction.atomic
   def post(self, request):
     # Approve or Reject
@@ -256,7 +260,7 @@ class QueueAgencyView(APIView):
                   "slug":slug,
                   "website":request.data.get("website", None),
                   "phone":request.data.get("phone", None),
-                  
+
                   # Address
                   "street":street,
                   "city":city,
@@ -327,7 +331,7 @@ class QueueAgencyView(APIView):
 
 class QueueProgramView(APIView):
   permission_classes = [IsAuthenticated]
-  
+
   def get(self, request, id):
     try:
       program_queue = ProgramQueue.objects.get(id=id)
@@ -346,7 +350,7 @@ class QueueProgramView(APIView):
       program_queue_dict["agency_slug"] = program_queue.agency.slug
       if not program_dict:
         program_dict = program_queue_dict
-        
+
       app_settings = AppSettings.objects.first()
 
       return JsonResponse(
@@ -364,7 +368,7 @@ class QueueProgramView(APIView):
           "message": "Error getting Program queue",
         }, status=500
       )
-  
+
   @transaction.atomic
   def post(self, request):
     try:
@@ -552,6 +556,7 @@ class QueueProgramView(APIView):
             ),
             "transportation": request.data.get("transportation", None),
             "client_consult": request.data.get("client_consult", None),
+            "muc_requirements": request.data.get("muc_requirements", None),
             "updated_by": request.user,
             "updated_at": now
           },
@@ -566,7 +571,7 @@ class QueueProgramView(APIView):
               "message": "Program agency was updated successfully.",
           }
         )
-      
+
       raise Exception('User does not have permissions.')
     except Exception as e:
         logger.error("Error updating program: {}".format(str(e)))
@@ -575,4 +580,3 @@ class QueueProgramView(APIView):
                 "message": "Program cannot be updated. Please try again!"
             }, status=500
         )
-

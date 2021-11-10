@@ -205,6 +205,19 @@ export default () => {
             <div className={classes.countingBadge}>{`${values.emergency_message ? values.emergency_message.length : 0}/250`}</div>
           </Grid>
           <Grid item xs={12} sm={12} md={12}>
+            <Button
+                style={{'marginLeft':'10px'}}
+              variant="contained"
+              component="label"
+            >
+              Sync Active Users To Mailchimp
+              <input
+                type="file"
+                hidden
+              />
+            </Button>
+          </Grid>
+          <Grid item xs={12} sm={12} md={12}>
             <div className={classes.buttons}>
               <Button variant="contained" onClick={handleSaveMessage} color="secondary">Save message</Button>
             </div>
@@ -251,7 +264,7 @@ export default () => {
             Yes
           </Button>
         </DialogActions>
-      </Dialog>          
+      </Dialog>
     </React.Fragment>
   );
 }

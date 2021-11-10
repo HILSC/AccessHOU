@@ -1,6 +1,7 @@
 import logging
 import json
 import re
+import random
 
 from django.core.paginator import Paginator
 from django.db import transaction
@@ -132,7 +133,7 @@ class ProgramQueueView(APIView):
                 walk_in_schedule=request.data.get("walk_in_schedule", None),
                 schedule_notes=request.data.get("schedule_notes", None),
                 holiday_schedule=request.data.get("holiday_schedule", None),
-                
+
                 # Intake
                 service_same_day_intake=request.data.get(
                     "service_same_day_intake", None
@@ -152,7 +153,10 @@ class ProgramQueueView(APIView):
                 requested_by_name=request.data.get("requested_by_name", None),
                 requested_by_email=request.data.get("requested_by_email", None),
                 action=UserActions.ADD.value,
-                created_at=now
+                created_at=now,
+
+                muc_requirements=request.data.get("muc_requirements", None),
+
             )
 
             # Immigration Accessibility Profile
@@ -307,13 +311,13 @@ class ProgramQueueView(APIView):
                         "documents_required": request.data.get("documents_required", None),
                         "appointment_required": request.data.get("appointment_required", None),
                         "appointment_notes": request.data.get("appointment_notes", None),
-                        
+
                         # Schedule
                         "schedule": request.data.get("schedules", None),
                         "walk_in_schedule": request.data.get("walk_in_schedule", None),
                         "schedule_notes": request.data.get("schedule_notes", None),
                         "holiday_schedule": request.data.get("holiday_schedule", None),
-                        
+
                         # Intake
                         "service_same_day_intake": request.data.get(
                             "service_same_day_intake", None
@@ -334,7 +338,10 @@ class ProgramQueueView(APIView):
 
                         "action": UserActions.UPDATE.value,
 
-                        "updated_at": now
+                        "updated_at": now,
+
+                        "muc_requirements": request.data.get("muc_requirements", None),
+
                     },
                 )
             else:
@@ -380,13 +387,13 @@ class ProgramQueueView(APIView):
                     documents_required=request.data.get("documents_required", None),
                     appointment_required=request.data.get("appointment_required", None),
                     appointment_notes=request.data.get("appointment_notes", None),
-                    
+
                     # Schedule
                     schedule=request.data.get("schedules", None),
                     walk_in_schedule=request.data.get("walk_in_schedule", None),
                     schedule_notes=request.data.get("schedule_notes", None),
                     holiday_schedule=request.data.get("holiday_schedule", None),
-                    
+
                     # Intake
                     service_same_day_intake=request.data.get(
                         "service_same_day_intake", None
@@ -423,7 +430,7 @@ class ProgramQueueView(APIView):
                 program.save()
 
                 # Check if the program updated is just a new program created in emergency mode
-                # If it is a new program created during emergency mode, we don't want to 
+                # If it is a new program created during emergency mode, we don't want to
                 # write the update in the ProgramEmergencyQueue
                 if not related_program.emergency_mode:
                     # Save original program in temporary emergency backup table
@@ -513,7 +520,7 @@ class ProgramQueueDeleteView(APIView):
                 walk_in_schedule=related_program.walk_in_schedule,
                 schedule_notes=related_program.schedule_notes,
                 holiday_schedule=related_program.holiday_schedule,
-                
+
                 # Intake
                 service_same_day_intake=related_program.service_same_day_intake,
                 intake_notes=related_program.intake_notes,
@@ -532,6 +539,9 @@ class ProgramQueueDeleteView(APIView):
                 requested_by_email=request.data.get("requested_by_email", None),
                 related_program=related_program,
                 action=UserActions.DELETE.value,
+
+                muc_requirements=request.data.get("muc_requirements", None),
+
             )
 
             # Save public action log
@@ -579,6 +589,7 @@ class ProgramView(APIView):
 
             program_dict["agency_name"] = program.agency.name
             program_dict["agency_slug"] = program.agency.slug
+            program_dict["agency_hilsc_verified"] = program.agency.hilsc_verified
             program_dict['map_url'] = getMapURL(program)
             program_dict['update_at'] = program.updated_at.strftime('%b/%d/%Y')
             return JsonResponse(program_dict, safe=False)
@@ -684,6 +695,7 @@ class ProgramView(APIView):
                     client_consult=request.data.get("client_consult", None),
                     agency=agency,
                     created_by=request.user,
+                    muc_requirements=request.data.get("muc_requirements", None),
                 )
 
                 # Immigration Accessibility Profile
@@ -826,7 +838,8 @@ class ProgramView(APIView):
                         "transportation": request.data.get("transportation", None),
                         "client_consult": request.data.get("client_consult", None),
                         "updated_by": request.user,
-                        "updated_at": now
+                        "updated_at": now,
+                        "muc_requirements": request.data.get("muc_requirements", None),
                     },
                 )
 
@@ -883,7 +896,7 @@ class ProgramView(APIView):
                             "name": program_name,
                             "agency": program_agency_id,
                             "agency_slug": program_agency_slug
-                            
+
                         },
                         "model": "program",
                     }
@@ -894,6 +907,44 @@ class ProgramView(APIView):
             return JsonResponse(
                 {
                     "message": "Program cannot be deleted. Please try again!"
+                }, status=500
+            )
+
+class ProgramCopy(APIView):
+
+    @permission_classes([IsAuthenticated])
+    @transaction.atomic
+    def get(self, request, property_name, property_value, agency_id):
+        try:
+            kw = {property_name: property_value}
+            program = Program.objects.get(**kw, agency_id=agency_id)
+
+            print(program.id)
+
+            # Save New Object
+            program.pk = None
+            program.created_by_id = request.user.id
+            program.updated_by_id = request.user.id
+            program.slug = program.slug + '-' + str(random.randint(10000, 99999))
+            program.save()
+
+            program_dict = model_to_dict(program)
+            program_dict['state'] = None
+            if program.state:
+                program_dict['state'] = program.state.capitalize()
+
+            program_dict["agency_name"] = program.agency.name
+            program_dict["agency_slug"] = program.agency.slug
+            program_dict["agency_hilsc_verified"] = program.agency.hilsc_verified
+            program_dict['map_url'] = getMapURL(program)
+            program_dict['update_at'] = program.updated_at.strftime('%b/%d/%Y')
+            return JsonResponse(program_dict, safe=False)
+        except Program.DoesNotExist:
+            return JsonResponse(
+                {
+                    "message": "Agency with {} {} doesn't exists.".format(
+                        property_name, property_value
+                    ),
                 }, status=500
             )
 
@@ -916,7 +967,7 @@ class ProgramListView(APIView):
                 program_list = Program.objects.all().order_by(
                     "-updated_at", "-created_at", "name"
                 )[:15]
-            
+
             return JsonResponse(
                 {
                     "programs": [{

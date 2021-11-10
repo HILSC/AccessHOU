@@ -17,9 +17,16 @@ export default (theme) => ({
     justifyContent: 'flex-end',
   },
   lastUpdated: {
-    color: '#777879',
-    fontStyle: 'italic',
-    fontSize: '16px'
+    color: '#333',
+    fontStyle: 'normal  ',
+    fontSize: '18px',
+    fontWeight: '400',
+    margin: '10px 0 20px 0',
+    background: '#f9f9f9',
+    padding: '10px 30px',
+    borderRadisu: '20px',
+    display: 'inline-block',
+    marginLeft: '25px',
   },
   button: {
     marginLeft: 5

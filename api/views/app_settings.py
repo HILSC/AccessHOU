@@ -19,7 +19,6 @@ from api.models.program import ProgramEmergencyQueue
 
 logger = logging.getLogger(__name__)
 
-
 @transaction.atomic
 def process_emergency_off(user):
     # Agencies
@@ -59,7 +58,6 @@ def process_emergency_off(user):
             program_emergency.delete()
         except ProgramEmergencyQueue.DoesNotExist:
             program.delete()
-
 
 class AppSettingsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -103,7 +101,7 @@ class AppSettingsView(APIView):
                     if not app_settings.emergency_mode:
                         # If it is turned off, we have to check for changes to rollback
                         process_emergency_off(user=request.user)
-                
+
                     app_settings.emergency_message = request.data.get("emergency_message", None)
                     app_settings.save()
                 else:

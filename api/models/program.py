@@ -74,6 +74,10 @@ class ProgramBase(Base):
         max_length=5, help_text="Client consult before completing paperwork", null=True
     )
 
+    muc_requirements = models.CharField(
+        max_length=5, help_text="Meets Unaccompanied Children system requirements?", null=True
+    )
+
     # Agency
     agency = models.ForeignKey(
         Agency,
@@ -145,18 +149,19 @@ class Program(ProgramBase):
                 documents_required=program.documents_required,
                 appointment_required=program.appointment_required,
                 appointment_notes=program.appointment_notes,
+                muc_requirements=program.muc_requirements,
 
                 # Schedule
                 schedule=program.schedule,
                 walk_in_schedule=program.walk_in_schedule,
                 schedule_notes=program.schedule_notes,
                 holiday_schedule=program.holiday_schedule,
-                
+
                 # Intake
                 service_same_day_intake=program.service_same_day_intake,
                 intake_notes=program.intake_notes,
 
-                # Languages 
+                # Languages
                 languages=program.languages,
 
                 # Services
@@ -215,13 +220,14 @@ class Program(ProgramBase):
                     "documents_required": program.documents_required,
                     "appointment_required": program.appointment_required,
                     "appointment_notes": program.appointment_notes,
+                    "muc_requirements": program.muc_requirements,
 
                     # Schedule
                     "schedule": program.schedule,
                     "walk_in_schedule": program.walk_in_schedule,
                     "schedule_notes": program.schedule_notes,
                     "holiday_schedule": program.holiday_schedule,
-                    
+
                     # Intake
                     "service_same_day_intake": program.service_same_day_intake,
                     "intake_notes": program.intake_notes,
@@ -333,6 +339,7 @@ class ProgramEmergencyQueue(ProgramBase):
                     documents_required=program.documents_required,
                     appointment_required=program.appointment_required,
                     appointment_notes=program.appointment_notes,
+                    muc_requirements=program.muc_requirements,
 
                     # Schedule
                     schedule=program.schedule,

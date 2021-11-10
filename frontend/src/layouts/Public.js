@@ -25,7 +25,7 @@ import styles from './PublicStyles';
 const useStyles = makeStyles(styles);
 
 export default ({ children }) =>{
-  
+
   const classes = useStyles();
 
   const [emergencyMode, setEmergencyMode] = useState(null);
@@ -71,7 +71,7 @@ export default ({ children }) =>{
               className={classes.emergencyMode}
               iconClassName={classes.emergencyModeIcon}
               variant={"warning"}
-              message={emergencyMode.message} /> 
+              message={emergencyMode.message} />
           ) : null
         }
         {children}

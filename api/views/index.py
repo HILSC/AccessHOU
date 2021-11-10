@@ -5,17 +5,20 @@ import os
 from pytz import timezone
 import re
 import requests
+import magic
 from datetime import datetime
 from datetime import timedelta
 
 from django.forms.models import model_to_dict
 from django.http import HttpResponse
 from django.http import JsonResponse
+from django.http import FileResponse
 from django.views.generic import View
 from django.conf import settings
 from django.db import models
 from django.db.models.expressions import RawSQL
 from django.core.paginator import Paginator
+from django.contrib.auth.hashers import make_password
 
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -38,6 +41,7 @@ from api.models.app_settings import AppSettings
 from api.utils import getZipCodeRadiusRawSQL
 
 logger = logging.getLogger(__name__)
+# logging.basicConfig(filename='debug.log', level=logging.INFO)
 
 ENTITY_PROGRAM = "program"
 ENTITY_AGENCY = "agency"
@@ -46,14 +50,23 @@ class FrontendAppView(View):
     """
     Serves the compiled frontend entry point (only works if you have run `yarn
     run build`).
+
+    Modded by Digital Impulse to handle loading static files
     """
 
     def get(self, request):
-        print(os.path.join(settings.REACT_APP_DIR, "build", "index.html"))
         try:
-            with open(os.path.join(settings.REACT_APP_DIR, "build", "index.html")) as f:
-                return HttpResponse(f.read())
-        except FileNotFoundError:
+            file_path = "files"
+            full_path = request.get_full_path()
+            if full_path != None and full_path != '' and file_path in full_path:
+                with open(os.path.join(settings.REACT_APP_DIR, "build", request.path.lstrip('/')),'rb') as f:
+                    mime = magic.Magic(mime=True)
+                    mime_type = mime.from_file(os.path.join(settings.REACT_APP_DIR, "build", request.path.lstrip('/')))
+                    return HttpResponse(f.read(), mime_type)
+            else:
+                with open(os.path.join(settings.REACT_APP_DIR, "build", "index.html")) as f:
+                    return HttpResponse(f.read())
+        except FileNotFoundError as err:
             logging.exception("Production build of app not found")
             return HttpResponse(
                 """
@@ -85,7 +98,7 @@ class SearchAppView(APIView):
             if HILSC_verified_get_value and HILSC_verified_get_value == "1":
                 HILSC_verified = True
             elif not HILSC_verified_get_value and not emergency_mode:
-                HILSC_verified = True
+                HILSC_verified = False # was set to True?
 
             service_types = request.GET.getlist("serviceType[]", None)
             immigration_status = request.GET.get("immigrationStatus", None)
@@ -147,12 +160,17 @@ class SearchAppView(APIView):
 
                 agency_filters &= models.Q(zip_code=zip_code)
                 agency_filters |= models.Q(zip_codes__icontains=zip_code)
-                
+
             # Program languages
             if languages and len(languages):
                 for l in languages:
-                    program_filters &= models.Q(languages__contains=[l.lower()])
-                    agency_filters &= models.Q(languages__contains=[l.lower()])
+                    agency_filters &= models.Q(languages__contains=[l.lower()]) | models.Q(languages__isnull=True)
+                    # program_filters &= models.Q(languages__isnull=True)
+                    # agency_filters &= models.Q(languages__contains=[l.lower()]) | models.Q(languages__isnull=True)
+                # program_filters |= models.Q(languages__isnull=True)
+                # agency_filters |= models.Q(languages__isnull=True)
+
+            # logging.info(program_filters)
 
             # Annual medium income
             if annual_media_income:
@@ -162,7 +180,7 @@ class SearchAppView(APIView):
 
             # ADA accesible
             if ada_accessible:
-                agency_filters &= models.Q(ada_accessible__icontains="Yes")
+                agency_filters &= models.Q(ada_accessible__icontains="Yes") | models.Q(ada_accessible__isnull=True)
 
             # Immigration accessibility profile
             if immigrant_acc_profile and immigrant_acc_profile == '1':
@@ -171,7 +189,8 @@ class SearchAppView(APIView):
             # HILSC Verified Program's agency
 
             if entity == ENTITY_PROGRAM and not emergency_mode:
-                program_filters &= models.Q(agency__hilsc_verified=HILSC_verified,)
+                if HILSC_verified == True :
+                    program_filters &= models.Q(agency__hilsc_verified=HILSC_verified,)
 
             # Walk in hours
             if walk_in_hours:
@@ -190,7 +209,8 @@ class SearchAppView(APIView):
 
             # HILSC Verified
             if entity == ENTITY_AGENCY and not emergency_mode:
-                agency_filters &= models.Q(hilsc_verified=HILSC_verified,)
+                if HILSC_verified == True :
+                    agency_filters &= models.Q(hilsc_verified=HILSC_verified,)
 
             # Apply filters to agencies queryset
             agencies_queryset = Agency.objects.filter(
@@ -283,6 +303,7 @@ class SearchAppView(APIView):
                                 "state": state,
                                 "zipcode": program.agency.zip_code,
                                 "website": program.agency.website,
+                                "hilsc_verified": program.agency.hilsc_verified,
                             },
                             "programs": [
                                 {
@@ -291,6 +312,7 @@ class SearchAppView(APIView):
                                     "phone": program.phone,
                                     "slug": program.slug,
                                     "agency": program.agency.id,
+                                    "hilsc_verified": program.agency.hilsc_verified,
                                 }
                             ],
                         }
@@ -301,7 +323,8 @@ class SearchAppView(APIView):
                                 "description": program.description,
                                 "phone": program.phone,
                                 "slug": program.slug,
-                                "agency": program.agency.id
+                                "agency": program.agency.id,
+                                "hilsc_verified": program.agency.hilsc_verified,
                             }
                         )
 
@@ -329,6 +352,7 @@ class SearchAppView(APIView):
                         results.append(
                             {
                                 "agency": {
+                                    # "query": agencies_queryset.query,
                                     "name": agency.name,
                                     "slug": agency.slug,
                                     "phone": agency.phone,
@@ -337,6 +361,7 @@ class SearchAppView(APIView):
                                     "state": state,
                                     "zipcode": agency.zip_code,
                                     "website": agency.website,
+                                    "hilsc_verified": agency.hilsc_verified,
                                 },
                                 "programs": [{
                                         "name": program.name,
@@ -344,6 +369,7 @@ class SearchAppView(APIView):
                                         "phone": program.phone,
                                         "slug": program.slug,
                                         "agency": program.agency.id,
+                                        "hilsc_verified": agency.hilsc_verified,
                                     } for program in agency_programs],
                             }
                         )
@@ -362,6 +388,7 @@ class SearchAppView(APIView):
                                         "state": state,
                                         "zipcode": agency.zip_code,
                                         "website": agency.website,
+                                        "hilsc_verified": agency.hilsc_verified,
                                     },
                                     "programs": [],
                                 }
@@ -501,4 +528,3 @@ class ExportPublicActionLogsView(APIView):
                     "message": "Program cannot be updated. Please try again!"
                 }, status=500
             )
-        

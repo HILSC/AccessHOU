@@ -24,9 +24,6 @@ export default () => {
       <Container maxWidth="lg">
         <div className={isMobile ? classes.mobileFooter : null}>
           <div className={classes.footerMobileP}>
-            <span id="google_translate_element" />
-          </div>
-          <div className={classes.footerMobileP}>
             <Typography variant="body1">
               Want to request adding a new agency or program? <a className={classes.editorLink} rel="noopener noreferrer" href="/editor" target="_blank">Request here</a>
             </Typography>
@@ -38,12 +35,18 @@ export default () => {
           </div>
           <div className={classes.footerMobileP}>
             <Typography variant="body2">
-              The AccessHOU Houston Social Services Database is a product of <a rel="noopener noreferrer" href="https://www.houstonimmigration.org/" target="_blank"><abbr title="Houston Immigration Legal Services Collaborative">HILSC</abbr></a>. Only HILSC Verified data has been accounted for by HILSC.
+            For staff training on how to update or use AccessHOU, please email <a href="mailto:accesshou@houstonimmigration.org">accesshou@houstonimmigration.org</a>.
             </Typography>
           </div>
           <div className={classes.footerMobileP}>
             <Typography variant="body2">
-              Made with <img alt="love" src={Heart}/> by <a className={classes.footerLink} rel="noopener noreferrer" href="https://www.brightanchor.com" target="_blank">BrightAnchor</a>
+              The AccessHOU Houston Social Services Database is a product of <a rel="noopener noreferrer" href="https://www.houstonimmigration.org/" target="_blank"><abbr title="Houston Immigration Legal Services Collaborative">HILSC</abbr></a>.
+            </Typography>
+          </div>
+
+          <div className={classes.footerMobileP}>
+            <Typography variant="body2">
+              Made with <img alt="love" src={Heart}/> by <a className={classes.footerLink} rel="noopener noreferrer" href="https://www.brightanchor.com" target="_blank">BrightAnchor</a>. Updates by <a className={classes.footerLink} rel="noopener noreferrer" href="https://di-verge.com/" target="_blank">DI-Vege</a>.
             </Typography>
           </div>
         </div>

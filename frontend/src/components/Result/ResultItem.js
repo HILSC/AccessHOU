@@ -13,6 +13,7 @@ import Typography from '@material-ui/core/Typography';
 import PhoneIcon from '@material-ui/icons/Phone';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import LinkIcon from '@material-ui/icons/Link';
+import VerifiedIcon from "../../images/hilsc-verified-icon.png";
 
 import { formatURL } from 'utils';
 
@@ -30,11 +31,15 @@ const ProgramItem = ({ classes, program, handleProgramSelect }) => {
   return (
     <div className={classes.program} onClick={handleSelect}>
       <BrowserView>
+         {/* <span className={ agency.hilsc_verified ? classes.verifiedTrue : classes.verifiedFalse}>
+            HILSC Network Partner</span> */}
         <Typography className={classes.programTitle}>
           {program.name}
         </Typography>
       </BrowserView>
       <MobileView>
+      {/* <span className={ agency.hilsc_verified ? classes.verifiedTrue : classes.verifiedFalse}>
+        HILSC Network Partner</span> */}
         <Typography variant="h6">
           {program.name}
         </Typography>
@@ -71,8 +76,10 @@ const AgencyItem = ({ classes, agency, programs, handleAgencySelect, handleProgr
   return (
     <React.Fragment>
       <div className={classes.agency} onClick={handleSelect}>
+          <span className={ agency.hilsc_verified ? classes.verifiedTrue : classes.verifiedFalse}>
+            HILSC Network Partner</span>
         <Typography className={classes.agencyTitle}>
-          {agency.name}
+         {agency.name}
         </Typography>
         {
           (agency.street && agency.city && agency.state && agency.zipcode) || agency.street ? (
@@ -127,6 +134,6 @@ export default ({ data, handleOnClickAgency, handleOnClickProgram}) => {
         </Card>
       ))}
     </React.Fragment>
-    
+
   )
 }

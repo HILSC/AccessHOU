@@ -1,6 +1,7 @@
 import logging
 import json
 import re
+import random
 
 from django.core import serializers
 from django.core.paginator import Paginator
@@ -29,6 +30,7 @@ from api.utils import getGeocodingByAddress
 from api.utils import getMapURL
 from api.utils import UserActions
 from api.utils import addPublicActionLog
+from api.utils import isInteger
 
 
 logger = logging.getLogger(__name__)
@@ -36,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 class AgencyQueueView(APIView):
     permission_classes = [AllowAny]
-    
+
     @is_registered_api_consumer
     @transaction.atomic
     def post(self, request, *args, **kwargs):
@@ -52,11 +54,10 @@ class AgencyQueueView(APIView):
                 Agency.objects.filter(slug=slug).exists()
                 or AgencyQueue.objects.filter(slug=slug).exists()
             ):
-                return JsonResponse(
-                    {
-                        "message": "An agency with that name already exists.",
-                    }, status=500
-                )
+                print('slug exists already')
+                return JsonResponse({
+                        "message": "An agency with that name already exists."
+                    }, status=500 )
 
             # Address
             street = request.data.get("street", None)
@@ -79,7 +80,7 @@ class AgencyQueueView(APIView):
                 slug=slug,
                 website=request.data.get("website", None),
                 phone=request.data.get("phone", None),
-                
+
                 # Address
                 street=street,
                 city=city,
@@ -133,8 +134,14 @@ class AgencyQueueView(APIView):
                 requested_by_email=request.data.get("requested_by_email", None),
                 action=UserActions.ADD.value,
 
-                created_at=now
+                created_at=now,
+
+                hilsc_verified=request.data.get("hilsc_verified", None),
+
             )
+
+            print(agency.name)
+            print(agency.id)
 
             # Check if in Emergency Mode
             app_settings = AppSettings.objects.first()
@@ -147,7 +154,7 @@ class AgencyQueueView(APIView):
                 agency.related_agency = new_agency
                 agency.save()
 
-            
+
             # Save public action log
             addPublicActionLog(
                 entity_name=agency.name,
@@ -244,7 +251,7 @@ class AgencyQueueView(APIView):
                         "slug":slug,
                         "website":request.data.get("website", None),
                         "phone":request.data.get("phone", None),
-                        
+
                         # Address
                         "street":street,
                         "city":city,
@@ -297,7 +304,10 @@ class AgencyQueueView(APIView):
                         "requested_by_name":request.data.get("requested_by_name", None),
                         "requested_by_email":request.data.get("requested_by_email", None),
 
-                        "updated_at": now
+                        "updated_at": now,
+
+                        "hilsc_verified":request.data.get("hilsc_verified", None),
+
                     },
                 )
             else:
@@ -306,7 +316,7 @@ class AgencyQueueView(APIView):
                     slug=slug,
                     website=request.data.get("website", None),
                     phone=request.data.get("phone", None),
-                    
+
                     # Address
                     street=street,
                     city=city,
@@ -371,7 +381,7 @@ class AgencyQueueView(APIView):
                 agency.save()
 
                 # Check if the agency updated is just a new agency created in emergency mode
-                # If it is a new agency created during emergency mode, we don't want to 
+                # If it is a new agency created during emergency mode, we don't want to
                 # write the update in the AgencyEmergencyQueue
                 if not related_agency.emergency_mode:
                     # Save original agency in temporary emergency backup table
@@ -429,7 +439,7 @@ class AgencyQueueDeleteView(APIView):
 
                 website=related_agency.website,
                 phone=related_agency.phone,
-                
+
                 # Address
                 street=related_agency.street,
                 city=related_agency.city,
@@ -507,7 +517,35 @@ class AgencyQueueDeleteView(APIView):
                 }, status=500
             )
 
-    
+class AgencyBulkVerify(APIView):
+
+    @permission_classes([IsAuthenticated])
+    def get(self, request):
+        try:
+
+            Agency.objects.all().update(hilsc_verified=False)
+
+            # agencies_verified = ["BakerRipley","Baylor College of Medicine","Bonding Against Adversity","Casa Juan Diego ","Catholic Charities Archdiocese Galveston-Houston ","Catholic Charities, Cabrini Center for Immigrant Legal Assistance","Children's Assessment Center Foundation","Chinese Community Center, inc.","DAYA Houston","East Harris County Empowerment Center","El Centro de Corazon","Fe y Justicia Worker Center","GHIRP, Galveston-Houston Immigration Representation Project","Harris County Public Health","HAWC, Houston Area Women's Center","Houston Food Bank","Houston Volunteer Lawyers","Human Rights First","Ibn Sina Foundation","IEDA Relief","Interfaith Ministries for Greater Houston","Justice for All Immigrants","KIND Houston, Kids in Need of Defense","La Unidad 11","Legacy Community Health","Living Hope Wheelchair Association","Lone Star Legal Aid","MAM, Memorial Assistance Ministires","Memorial Hermann","Mi Familia Vota","NALEO Education Fund","Northwest Assistance Ministries","OCA - Greater Houston","PAIR Houston, Partnership for the Advancement & Immersion of Refugees","RAICES, Refugee Immigrant Center for Education and Legal Services","South Texas College of Law -- Immigration Clinic","TAG, Trauma and Grief Center at Texas Children's Hospital","Tahirih Justice Center","Texas Childrens Hospital","The Harris Center","University of Houston Law Center","West Street Recovery","Workers Defense Project","YMCA International Services","Young Center for Immigrant Children's Rights"];
+
+            agencies_verified = ["BakerRipley","BakerRipley: Gulfton Sharpstown Campus","Baylor College of Medicine: Menninger Department of Psychiatry and Behavioral Sciences","Bonding Against Adversity","Casa Juan Diego ","Catholic Charities - Main Office","Catholic Charities Cabrini Center","Children's Assessment Center","Chinese Community Center","Daya Houston","El Centro de Corazon - Eastwood Health Center","El Centro de Corazon - John S. Dunn Health Center (Children's Services)","El Centro de Corazon - Magnolia Health Center","Fe y Justicia Worker Center","Fe y Justicia Worker Center Houston","Galveston-Houston Immigration Representation Project (GHIRP)","Harris County Public Health: Antoine Community Health Center","Harris County Public Health: Humble Clinic","Harris County Public Health: Refugee Health Screening Program","Harris County Public Health: Southeast Clinic","Houston Area Women's Center (HAWC)","Houston Food Bank","Houston Volunteer Lawyers","Ibn Sina Foundation:Clear Lake Community Medical Center","Ibn Sina Foundation: North Shepherd Community Medical Center","Ibn Sina Foundation: Port Arthur Community Medical Center","Ibn Sina Foundation: Wilcrest Children's Clinic","IEDA Relief","Interfaith Ministries","Justice for All Immigrants (formerly JFON)","Kids In Need of Defense (KIND)","La Unidad 11","Legacy Community Health: BakerRipley","Legacy Community Health: Branard","Legacy Community Health: Central Beaumont","Legacy Community Health: Central Stagg","Legacy Community Health: Deer Park","Legacy Community Health: Lyons","Legacy Community Health: Mapleridge","Legacy Community Health: Montrose","Legacy Community Health: Northline","Legacy Community Health: San Jacinto","Legacy Community Health: Santa Clara","Legacy Community Health: Sharpstown Rookin","Legacy Community Health: Southwest","Legacy Community Health: Southpark","Living Hope Wheelchair Association","Lone Star Legal Aid","Memorial Assistance Ministires (MAM)","Memorial Hermann Health Centers for Schools: Alief Clinic","Mi Familia Vota","NALEO Educational Fund","Northwest Assistance Ministries","OCA Greater Houston","PAIR Houston (Partnership for the Advancement & Immersion of Refugees)","RACIES - Refugee Immigrant Center for Education and Legal Services","South Texas College of Law: Randall O Sorrels Legal Clinic","Tahirih Justice Center","The Alliance","The Beacon","Texas Center for Community Services","University of Houston Law Center - Civil Practice Clinic","West Street Recovery","Workers Defense Project","Workers Defense Fund","YMCA International Services","The Young Center for Immigrant Children's Rights"]
+
+            agencies_updates = [];
+            agencies_not_updated = [];
+            for agency in agencies_verified:
+                agency_search = Agency.objects.filter(name=agency)
+                if agency_search :
+                    agency_search.update(hilsc_verified=True)
+                    agencies_updates.append(agency)
+                if not agency_search :
+                    agencies_not_updated.append(agency)
+
+            return JsonResponse(agencies_not_updated, safe=False)
+        except :
+            return JsonResponse({
+                    "message": "Bulkification failed.",
+                }, status=500
+            )
+
 class AgencyView(APIView):
     @is_registered_api_consumer
     def get(self, request, property_name, property_value):
@@ -527,6 +565,7 @@ class AgencyView(APIView):
             agency_dict["programs"] = agency_program_list
             agency_dict['map_url'] = getMapURL(agency)
             agency_dict['update_at'] = agency.updated_at.strftime('%b/%d/%Y')
+
             return JsonResponse(agency_dict, safe=False)
         except (Agency.DoesNotExist, Program.DoesNotExist):
             return JsonResponse(
@@ -608,7 +647,8 @@ class AgencyView(APIView):
                     ada_accessible=request.data.get("ada_accessible", None),
                     response_requests=request.data.get("response_requests", None),
                     cultural_training=request.data.get("cultural_training", None),
-                    hilsc_verified=request.user.profile.role.HILSC_verified,
+                    # hilsc_verified=request.user.profile.role.HILSC_verified,
+                    hilsc_verified=request.data.get("hilsc_verified", False),
                     created_by=request.user,
                     created_at=now,
                 )
@@ -728,7 +768,8 @@ class AgencyView(APIView):
                         "cultural_training": request.data.get(
                             "cultural_training", None
                         ),
-                        "hilsc_verified": request.user.profile.role.HILSC_verified,
+                        # "hilsc_verified": request.user.profile.role.HILSC_verified,
+                        "hilsc_verified": request.data.get("hilsc_verified", False),
                         "updated_by": request.user,
                         "updated_at": now
                     },
@@ -792,6 +833,58 @@ class AgencyView(APIView):
                 }, status=500
             )
 
+class AgencyCopy(APIView):
+
+    @permission_classes([IsAuthenticated])
+    @transaction.atomic
+    def get(self, request, property_name, property_value):
+        try:
+            kw = {property_name: property_value}
+            agency = Agency.objects.get(**kw)
+            agency_programs = Program.objects.filter(agency_id=agency.id)
+
+            # Increment Slug
+            agency.slug = agency.slug + '-' + str(random.randint(10000, 99999))
+
+            # Save New Object
+            agency.pk = None
+            agency.created_by_id = request.user.id
+            agency.updated_by_id = request.user.id
+            agency.save()
+
+            # Copy Programs
+            for program in agency_programs:
+                program.pk = None
+                program.agency_id = agency.id
+                program.created_by_id = request.user.id
+                program.updated_by_id = request.user.id
+                program.slug = program.slug + '-' + str(random.randint(10000, 99999))
+                program.save()
+
+            new_agency_programs = Program.objects.filter(agency_id=agency.id)
+            agency_program_list = []
+            for program in new_agency_programs:
+                agency_program_list.append(model_to_dict(program))
+
+            agency_dict = model_to_dict(agency)
+
+            agency_dict['state'] = None
+            if agency.state:
+                agency_dict['state'] = agency.state.capitalize()
+
+            agency_dict["programs"] = agency_program_list
+            agency_dict['map_url'] = getMapURL(agency)
+            agency_dict['update_at'] = agency.updated_at.strftime('%b/%d/%Y')
+
+            return JsonResponse(agency_dict, safe=False)
+        except (Agency.DoesNotExist, Program.DoesNotExist):
+            return JsonResponse(
+                {
+                    "message": "Agency with {} {} doesn't exists.".format(
+                        property_name, property_value
+                    ),
+                }, status=500
+            )
 
 class AgencyListView(APIView):
     permission_classes = [AllowAny]
@@ -822,6 +915,42 @@ class AgencyListView(APIView):
                 },
                 safe=False,
             )
+        except Agency.DoesNotExist:
+            logger.error("Agency does not exists.")
+            return JsonResponse(
+                {
+                    "message": "Agency with {} {} doesn't exists.".format(
+                        property_name, property_value
+                    ),
+                }, status=500
+            )
+
+class AgencyMapView(APIView):
+    permission_classes = [AllowAny]
+
+    # @is_registered_api_consumer
+    def get(self, request):
+        agency_list = None
+        try:
+            agency_list = Agency.objects.all().filter(hilsc_verified=True)
+            paginator = Paginator(agency_list, 1000)  # Show 10 agencies per page
+            agencies = paginator.get_page(1)
+            agency_list = [];
+
+            for agency in agencies:
+                agency_programs = Program.objects.filter(agency_id=agency.id)
+                agency_program_list = []
+                if ( agency_programs ) :
+                    for program in agency_programs:
+                        agency_program_list.append(model_to_dict(program))
+                    agency_list.append({ 'name' : agency.name, 'geocode' : agency.geocode, 'slug' : agency.slug,
+                        'website' : agency.website, 'phone' : agency.phone, 'street' : agency.street,
+                        'city' : agency.city, 'state' : agency.state, 'zip_code' : agency.zip_code,
+                        'verified' : agency.hilsc_verified, 'schedule' : agency.schedule, 'notes' : agency.notes,
+                        'schedule' : agency.schedule, 'programs' : agency_program_list, 'languages' : agency.languages });
+
+            return JsonResponse({ "results": agency_list }, safe=False,)
+
         except Agency.DoesNotExist:
             logger.error("Agency does not exists.")
             return JsonResponse(

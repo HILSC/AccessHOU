@@ -88,8 +88,8 @@ export default () => {
             </li>
           </ul>
         </Grid>
-        <Grid item xs={12} sm={12} md={12}>
-          <h2 id="intro">Introduction</h2>
+        <Grid item xs={12} sm={12} md={12} className={classes.bodyClass}>
+          <h2 id="intro"><strong>Introduction</strong></h2>
           <p>
             The AccessHOU Management console allows registered users to control
             behind the scenes functions of AccessHOU. If you would like to add a
@@ -106,7 +106,7 @@ export default () => {
             offers a menu on the left side of the page. Access to menu items
             depends on your Role in the AccessHOU system:
           </p>
-          <table>
+          <table className={classes.table}>
             <thead>
               <tr>
                 <th>Role</th>
@@ -119,8 +119,8 @@ export default () => {
               <td>
                 <ul className={classes.circlesUL}>
                   <li>Access to entire dashboard.</li>
-                  <li>Edits to agencies/programs skip the queue and go live immediately and marked HILSC verify</li>
-                  <li>Records approved by this role will have access to the HILSC verified’ checkbox.</li>
+                  <li>Edits to agencies/programs skip the queue and go live immediately with option to mark as HILSC Network Partner</li>
+                  <li>Records approved by this role will have access to the HILSC Network Partner checkbox.</li>
                   <li>Can add advocacy reports.</li>
                 </ul>
               </td>
@@ -130,8 +130,8 @@ export default () => {
               <td>
                 <ul className={classes.circlesUL}>
                   <li>Access to queue -- can approve database edits.</li>
-                  <li>Edits to agencies/programs skip the queue and go live immediately and marked HILSC verify</li>
-                  <li>Records approved by this role will have access to the HILSC verified checkbox.</li>
+                  <li>Edits to agencies/programs skip the queue and go live immediately</li>
+                  <li>Records approved by this role will have access to the HILSC Network Partner checkbox.</li>
                   <li>Can add advocacy reports.</li>
                 </ul>
               </td>
@@ -140,7 +140,7 @@ export default () => {
               <td>AccessHOU Partner</td>
               <td>
                 <ul className={classes.circlesUL}>
-                  <li>Edits to agencies/programs skip the queue and go live immediately and are NOT marked HILSC verify.</li>
+                  <li>Edits to agencies/programs skip the queue and go live immediately and are NOT marked HILSC Network Partner.</li>
                 </ul>
               </td>
             </tr>
@@ -154,24 +154,24 @@ export default () => {
             </tr>
             </tbody>
           </table>
-          <h2 id="dashboard">Dashboard</h2>
+          <h2 id="dashboard"><strong>Dashboard</strong></h2>
           <p>
             The Dashboard is the home page of the AccessHOU Management console.
             It displays the status of the queue and offers a menu on the left
             side of the page.
           </p>
-          <h2 id="home">Home</h2>
+          <h2 id="home"><strong>Home</strong></h2>
           <p>
             Home takes a user to the AccessHOU homepage:{" "}
             <a href="/">accesshou.org</a>.
           </p>
-          <h2 id="editor">Editor</h2>
+          <h2 id="editor"><strong>Editor</strong></h2>
           <p>
             Editor takes a user to the AccessHOU editor page, from which they
             can add a new agency or program or edit an existing agency and its
             programs.
           </p>
-          <h2 id="queue">Queue</h2>
+          <h2 id="queue"><strong>Queue</strong></h2>
           <p>
             When an unregistered user adds a new agency or program, or submits a
             change to an existing agency or program, the edits go to the queue
@@ -210,12 +210,12 @@ export default () => {
           <p>
             Admins and Quality Team members then review the information and
             approve, edit or reject the requested changes. Before accepting
-            users should check the ‘HILSC Verified’ box if the listing is a
+            users should check the 'HILSC Network Partner' box if the listing is a
             trusted source of services for immigrants. If a request is approved,
             the information goes into the database and is made public via
             AccessHOU. If the request is rejected, the changes are dismissed.
           </p>
-          <h2 id="user_management">Users (Management)</h2>
+          <h2 id="user_management"><strong>Users (Management)</strong></h2>
           <p>
             Admin can add, edit or delete users, including changing their role
             and permissions. The red icon of a person at the top of the page
@@ -286,7 +286,7 @@ export default () => {
             the table. To close the overlay without saving changes, click
             ‘Close’.
           </p>
-          <h3 id="edit_user">Edit User</h3>
+          <h3 id="edit_user"><strong>Edit User</strong></h3>
           <p>
             Locate the user in the table (remember you can filter using the
             search box). In the table’s last column you’ll see the edit user
@@ -300,7 +300,7 @@ export default () => {
             successfully and the new information will be visible in the table.
             To close the overlay without saving changes, click ‘Close’.
           </p>
-          <h3 id="deactivate_user">Deactivate User</h3>
+          <h3 id="deactivate_user"><strong>Deactivate User</strong></h3>
           <p>
             To keep the integrity of the data, users are deactivated instead of
             deleted. The user will no longer be able to log into the site and
@@ -309,7 +309,7 @@ export default () => {
           <p>
             To reactivate a user, click ‘Activate’ on the table for that user.
           </p>
-          <h2 id="settings">Settings</h2>
+          <h2 id="settings"><strong>Settings</strong></h2>
           <p>Only Admins have permission to view and alter Settings. </p>
           <h3 id="emergency_mode">Emergency Mode</h3>
           <p>
@@ -345,7 +345,7 @@ export default () => {
             queue for review from Admin and Quality Team members and removed
             from the live site.
           </p>
-          <h2 id="profile">Profile</h2>
+          <h2 id="profile"><strong>Profile</strong></h2>
           <p>Registered users can update their information, including:</p>
           <ul className={classes.circlesUL}>
             <li>

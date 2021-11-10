@@ -2,7 +2,7 @@ import React, {
   useState,
   useEffect,
 } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 
 import {
@@ -10,7 +10,7 @@ import {
 } from 'react-redux';
 
 // API
-import { 
+import {
   getProgram
 } from 'api';
 
@@ -32,7 +32,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import styles from './ProgramDetailsStyles';
 const useStyles = makeStyles(styles);
 
-export default ({ match }) => {
+export default (props) => {
+
+  const { match } = props;
+
+  const history = useHistory();
+
   const classes = useStyles();
 
   const {
@@ -40,6 +45,8 @@ export default ({ match }) => {
   } = match;
 
   const user = useSelector(state => state.user);
+  const token = useSelector(state => state.user.accessToken);
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
 
   const [data, setData] = useState({
     program: null,
@@ -47,9 +54,40 @@ export default ({ match }) => {
     error: false,
   });
 
+    const [formState, setFormState ] = useState({
+      agency: null,
+      message: '',
+      messageType: null,
+      messageAction: null,
+      messageQueue: false,
+      agencySlug: false,
+    });
+
   const [edit, setEdit] = useState(false);
   const [addAdvocacyReport, setAddAdvocacyReport] = useState(false);
   const [goSearch, setGoSearch] = useState(false);
+
+  // const handleCopy = (data) => {
+  //     copyProgram({property: 'slug', value: slug, agency: agency}).then(result => {
+  //         history.push(result.data.slug);
+  //       setFormState( data => ({ ...data,
+  //           messageType: 'success',
+  //           message: 'Program copied successfully! You can edit the program by clicking the edit button below.',
+  //           // agencySlug: result.data.slug
+  //       }))
+  //     }).catch(() => {
+  //         setFormState(data => ({
+  //           ...data,
+  //           messageType: 'error',
+  //           message: 'There was a problem copying this program.'
+  //         }));
+  //     })
+  // }
+
+  useEffect(() => {
+      if (props.location?.state?.initialMessage)
+          setFormState( data => ({ ...data, ...props.location.state.initialMessage }));
+  }, []);
 
   useEffect(() => {
     getProgram({
@@ -117,6 +155,17 @@ export default ({ match }) => {
   if(data.program && !data.error){
     return (
       <Container maxWidth="lg">
+      {
+        formState.messageType === 'success' ? (
+          <div className={classes.messages}>
+            <Alert
+              variant={formState.messageType}
+              message={formState.message}
+              queueMessage={formState.messageQueue}
+            />
+            </div>
+            ) : ''
+        }
         <Paper className={classes.paper}>
           <FormGroup>
             <FormControlLabel classes={{

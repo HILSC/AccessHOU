@@ -9,7 +9,7 @@ import {
 } from 'react-redux';
 
 // API
-import { 
+import {
   updateProgram,
   getProgram,
   deleteProgram,
@@ -37,7 +37,7 @@ const useStyles = makeStyles(styles);
 
 export default ({ match }) => {
   const classes = useStyles();
-  
+
   const {
     params: { slug, agency }
   } = match;
@@ -45,7 +45,7 @@ export default ({ match }) => {
   const [formState, setFormState ] = useState({
     program: null,
     message: '',
-    messageType: null,    
+    messageType: null,
     messageAction: null,
     messageQueue: false,
   });
@@ -56,7 +56,7 @@ export default ({ match }) => {
   const [goEditor, setGoEditor] = useState(false);
   const [goSearch, setGoSearch] = useState(false);
 
-  useEffect(() => { 
+  useEffect(() => {
     getProgram({
       property: 'slug',
       value: slug,
@@ -80,7 +80,7 @@ export default ({ match }) => {
 
   const token = useSelector(state => state.user.accessToken);
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
-  
+
   const handleSave = (data) => {
     updateProgram(token, data).then((result) => {
       if(result.data.program) {
@@ -89,7 +89,8 @@ export default ({ match }) => {
           messageType: 'success',
           messageQueue: result.data.model === "queue" && !result.data.program.emergency_mode ? true: false,
           messageAction: USER_ACTIONS.UPDATE,
-          message: `Program "${result.data.program.name}" was updated successfully.`,
+          message: 'Your edits have been submitted for review. When approved, it will appear in the agency or program profile. For questions, please contact accesshou@houstonimmigration.org.',
+          // message: `Program "${result.data.program.name}" was updated successfully.`,
           programSlug: result.data.program.slug,
           agencySlug: result.data.program.agency_slug,
           agencyId: result.data.program.agency,
@@ -178,7 +179,7 @@ export default ({ match }) => {
 
     return <Redirect push to={url} />
   }
-  
+
   window.scrollTo(0, 0);
 
   if(formState.program && !formState.error){
@@ -221,8 +222,9 @@ export default ({ match }) => {
                         Go back to search results
                       </Button>
                     </React.Fragment>
-                  ) : 
+                  ) :
                   (
+                  <React.Fragment>
                     <Button
                       variant="outlined"
                       color="secondary"
@@ -231,6 +233,15 @@ export default ({ match }) => {
                     >
                       Go back to editor
                     </Button>
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={handleGoSearch}
+                        className={classes.button}
+                      >
+                        Go back to search results
+                      </Button>
+                  </React.Fragment>
                   )
                 }
                   <Button
@@ -258,7 +269,7 @@ export default ({ match }) => {
                 {
                   formState.program ? (
                     <ProgramForm
-                      isAuthenticated={isAuthenticated} 
+                      isAuthenticated={isAuthenticated}
                       handleSave={handleSave}
                       handleDelete={handleDelete}
                       data={formState.program}

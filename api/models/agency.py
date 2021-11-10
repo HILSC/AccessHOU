@@ -103,7 +103,7 @@ class Agency(AgencyBase):
                 slug=agency.slug,
                 website=agency.website,
                 phone=agency.phone,
-                
+
                 # Address
                 street=agency.street,
                 city=agency.city,
@@ -169,7 +169,7 @@ class Agency(AgencyBase):
                     "slug": agency.slug,
                     "website": agency.website,
                     "phone": agency.phone,
-                    
+
                     # Address
                     "street": agency.street,
                     "city": agency.city,
@@ -309,7 +309,7 @@ class AgencyEmergencyQueue(AgencyBase):
                     schedule=agency.schedule,
                     schedule_notes=agency.schedule_notes,
                     holiday_schedule=agency.holiday_schedule,
-                    
+
                     # Languages
                     languages=agency.languages,
                     documents_languages=agency.documents_languages,

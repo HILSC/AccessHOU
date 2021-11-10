@@ -8,7 +8,11 @@
 
 ```cd accesshouapp```
 
-**2. Create a virtual env for python3.**
+**2. Create a virtual env for python3. **
+
+```python -m venv [env-name]```
+
+or
 
 ```python3 -m venv [env-name]```
 
@@ -18,7 +22,7 @@
 
     ```deactivate ```
 
-**3. Copy project folder into your new `accesshouapp` folder.**
+**3. Then copy the project folder into your new `accesshouapp` folder. **
 
 **4. Install dependencies**
 
@@ -30,11 +34,15 @@ and run
 
 ```pip install -r requirements.txt```
 
+If using pip3 run
+
+```pip3 install -r requirements.txt```
+
 This will install all required dependencies to run the Django app in the environment created.
 
 **5. Local configurations**
 
-The Djanog app needs to important configurations in order to be able to start.
+The Djanog app needs a few important configurations in order to be able to start.
 
 Open the `needhou/settings.py` and make sure you modify the SECRET_KEY and DATABASE info. Should look something like this.
 
@@ -53,15 +61,53 @@ DATABASES = {
 }
 </code></pre>
 
+You may also want to comment out these lines disable HTTPS for local environment.
+
+<pre><code>
+# HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+</code></pre>
+
+Make sure to add localhost to ALLOWED_CLIENTS otherwise you'll run into CORS issues.
+
+<pre><code>
+# ALLOWED CLIENTS
+ALLOWED_CLIENTS = (
+    'http://accesshou.brightanchor.com',
+    'https://accesshou.brightanchor.com',
+    'https://dev-accesshou.herokuapp.com',
+    'https://prod-accesshou.herokuapp.com',
+    'https://accesshou.org',
+    'http://accesshou.org',
+    'https://www.accesshou.org',
+    'http://www.accesshou.org',
+    'http://localhost:8000',
+    'http://localhost:3000',
+)
+</pre></code>
+
 **6. Run the app**
 
 When the configuration is ready, you should be able to run the app by going to.
 
 ```cd accesshouapp/needhou```
 
-and run 
+The react app requires the python server to be running to work. After running `npm run build` in the `frontend` directory you may need to run the following command to update the Python apps static files:
+
+```python manage.py collectstatic```
+
+or
+
+```python3 manage.py collectstatic```
+
+then run
 
 ```python manage.py runserver 0:8000```
+
+or
+
+```python3 manage.py runserver localhost:8000```
 
 The application should be running here:
 
@@ -69,7 +115,7 @@ The application should be running here:
 
 **7. See the api endpoints**
 
-To see the api endpoints, you should be able to go to 
+To see the api endpoints, you should be able to go to
 
 ```cd accesshouapp/api/urls.py```
 
@@ -95,7 +141,7 @@ To prepare your app to be deploy, you need to make sure of a couple of things.
 
   - Procfile
   - runtime.txt
-  
+
   5. If you have Heroku CLI configure, you should be able to deploy your changes by running
 
   ```git push heroku master```

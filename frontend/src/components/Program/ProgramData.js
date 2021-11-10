@@ -24,7 +24,7 @@ import {
 } from 'constants.js';
 
 // Utils
-import { 
+import {
   formatURL,
   hasSchedule,
   sameSchedule,
@@ -51,6 +51,8 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                 </NavLink>
               ) : (
                 <NavLink to={`/program/${program.slug}`} target="_blank" className={classes.programCustomLink}>
+                <span className={ program.agency_hilsc_verified ? classes.verifiedTrue : classes.verifiedFalse}>
+                  HILSC Network Partner</span>
                   <Typography className={classes.programTitle}>
                     {program.name}
                   </Typography>
@@ -128,7 +130,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               </Grid>
             ) : null
           }
-          {
+          { /*
             // Case management notes
             queueProgramData && queueProgramData.case_management_notes !== program.case_management_notes ? (
               <Grid item xs={12} sm={12} md={6}>
@@ -147,7 +149,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                 />
               </Grid>
             ) : null
-          }
+          */ }
           {
             // Website
             queueProgramData && queueProgramData.website !== program.website ? (
@@ -251,7 +253,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
             queueProgramData ? null :
             showMissingData || (program && program.map_url) ? (
               <Grid item xs={12} sm={12} md={12}>
-                <a 
+                <a
                 className={classes.customLink}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -382,10 +384,12 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                   isAList={true}
                   listOptions={IMMIGRATION_STATUSES}
                   labelText={'Immigrant status(es)'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueProgramData.immigrant_statuses ? queueProgramData.immigrant_statuses : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueProgramData.immigrant_statuses ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) :
             showMissingData || (program && program.immigrant_statuses && program.immigrant_statuses.length) ? (
@@ -394,9 +398,11 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                   isAList={true}
                   listOptions={IMMIGRATION_STATUSES}
                   labelText={'Immigrant status(es)'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={program ? program.immigrant_statuses : ''}
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) : null
           }
@@ -447,9 +453,11 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
             (queueProgramData && queueProgramData.documents_required) ||
             (queueProgramData && queueProgramData.appointment_required) ||
             (queueProgramData && queueProgramData.appointment_notes) ||
+            (queueProgramData && queueProgramData.muc_requirements) ||
             showMissingData || (program && program.requires_enrollment_in) ||
             (program && program.other_requirements) || (program && program.documents_required) ||
-            (program && program.appointment_required) || (program && program.appointment_notes) ? (
+            (program && program.appointment_required) || (program && program.appointment_notes) ||
+            (program && program.muc_requirements) ? (
               <Grid item xs={12} sm={12} md={12}>
                 <Label text="Requirements" variant="h5" color="primary" />
               </Grid>
@@ -540,7 +548,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
             queueProgramData && queueProgramData.appointment_notes !== program.appointment_notes ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
-                  labelText={'Appointment notes'}
+                  labelText={'Notes'}
                   dataText={queueProgramData.appointment_notes ? queueProgramData.appointment_notes : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueProgramData.appointment_notes ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
@@ -549,12 +557,34 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
             showMissingData || (program && program.appointment_notes) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
-                  labelText={'Appointment notes'}
+                  labelText={'Notes'}
                   dataText={program ? program.appointment_notes : ''}
                 />
               </Grid>
             ) : null
           }
+
+          {
+            // MUC Requirements
+            queueProgramData && queueProgramData.muc_requirements !== program.muc_requirements ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Meets Unaccompanied Children system requirements?'}
+                  dataText={queueProgramData.muc_requirements ? queueProgramData.muc_requirements : ACTION_MESSAGE.DELETED }
+                  dataTextClass={queueProgramData.muc_requirements ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
+                />
+              </Grid>
+            ) :
+            showMissingData || (program && program.muc_requirements) ? (
+              <Grid item xs={12} sm={12} md={6}>
+                <DataLabel
+                  labelText={'Meets Unaccompanied Children system requirements'}
+                  dataText={program.muc_requirements}
+                />
+              </Grid>
+            ) : null
+          }
+
           {
             // Schedule section
             (queueProgramData && hasSchedule(queueProgramData.schedule)) ||
@@ -573,7 +603,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
             queueProgramData && hasSchedule(queueProgramData.schedule) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <ScheduleData
-                  values={queueProgramData.schedule ? queueProgramData.schedule : []} 
+                  values={queueProgramData.schedule ? queueProgramData.schedule : []}
                   dataTextClass={sameSchedule(queueProgramData.schedule, program.schedule) ? null : ACTION_CLASS.CHANGED}
                 />
               </Grid>
@@ -598,7 +628,7 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
             queueProgramData && hasSchedule(queueProgramData.walk_in_schedule) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <ScheduleData
-                  values={queueProgramData.walk_in_schedule ? queueProgramData.walk_in_schedule : []} 
+                  values={queueProgramData.walk_in_schedule ? queueProgramData.walk_in_schedule : []}
                   dataTextClass={sameSchedule(queueProgramData.walk_in_schedule, program.walk_in_schedule) ? null : ACTION_CLASS.CHANGED}
                 />
               </Grid>
@@ -666,10 +696,12 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                   isAList={true}
                   listOptions={LANGUAGES}
                   labelText={'Languages'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueProgramData.languages ? queueProgramData.languages : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueProgramData.languages ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) :
             showMissingData || (program && program.languages) ? (
@@ -678,9 +710,11 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
                   isAList={true}
                   listOptions={LANGUAGES}
                   labelText={'Languages'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={program ? program.languages : ''}
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) : null
           }
@@ -707,19 +741,23 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Are services available same day as intake?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueProgramData.service_same_day_intake ? queueProgramData.service_same_day_intake : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueProgramData.service_same_day_intake ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) :
             showMissingData || (program && program.service_same_day_intake) ? (
               <Grid item xs={12} sm={12} md={12}>
                 <DataLabel
                   labelText={'Are services available same day as intake?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={program.service_same_day_intake}
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) : null
           }
@@ -813,19 +851,23 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Client consult before completing paperwork?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueProgramData.client_consult ? queueProgramData.client_consult : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueProgramData.client_consult ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) :
             showMissingData || (program && program.client_consult) ? (
               <Grid item xs={12} sm={12} md={12}>
                 <DataLabel
                   labelText={'Client consult before completing paperwork?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={program.client_consult}
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) : null
           }
@@ -835,5 +877,5 @@ export default ({ program, showMissingData, queueProgramData=null }) => {
   }
 
   return null;
-  
+
 }

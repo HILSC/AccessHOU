@@ -29,6 +29,7 @@ import styles from './PublicHeaderStyles';
 const useStyles = makeStyles(styles);
 
 export default () => {
+
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -69,6 +70,7 @@ export default () => {
         <NavLink to="/" className={classes.customLink}>
           <Logo />
         </NavLink>
+
       </div>
       {
         isAuthenticated ? (

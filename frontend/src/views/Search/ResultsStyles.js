@@ -1,4 +1,24 @@
 export default (theme) => ({
+    messagesHelp: {
+        textAlign: 'left',
+        fontSize: '18px',
+        maxWidth: '620px',
+        margin: '20px auto 0',
+        paddingTop: '10px',
+        opacity: '.7',
+    },
+    hilscFalse: {
+        display: 'none',
+    },
+    helpText: {
+        // color: '#444',
+        fontSize: '18px',
+        color: '#888',
+        fontSize: '16px',
+        padding: '0 5px',
+        maxWidth: '980px',
+        margin: '10px 0 0',
+    },
   appBarContainer: {
     paddingLeft: 24,
     paddingRight: 24,
@@ -17,7 +37,7 @@ export default (theme) => ({
     paddingLeft:24,
     paddingRight: 24,
     alignItems: 'center',
-    boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)',
+    boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.05), 0px 1px 10px 0px rgba(0,0,0,0.05)',
   },
   toolbarContainer: {
     flexShrink: 0,
@@ -25,20 +45,25 @@ export default (theme) => ({
     paddingLeft: 0,
     paddingRight: 0,
   },
+  resultsNumber: {
+      margin: '10px 5px 15px',
+      borderBottom: '1px solid #eee',
+      fontSize: '16px',
+  },
   resultsContainer: {
-    marginTop: theme.spacing(25),
+    marginTop: theme.spacing(28.5),
     marginBottom: theme.spacing(3),
   },
   resultsContainerMobile: {
-    marginTop: theme.spacing(42),
+    marginTop: theme.spacing(45),
     marginBottom: theme.spacing(3),
   },
   resultsContainersOpenFilters: {
-    marginTop: theme.spacing(38),
+    marginTop: theme.spacing(43.5),
     marginBottom: theme.spacing(3),
   },
   resultsContainersOpenFiltersMobile: {
-    marginTop: 385,
+    marginTop: theme.spacing(77.5),
     marginBottom: theme.spacing(3),
   },
   loading: {
@@ -51,7 +76,7 @@ export default (theme) => ({
   },
   filters: {
     backgroundColor: '#F3F3F3',
-    borderRadius: '4px',
+    borderRadius: '0 0 5px 5px',
     padding: '15px',
   },
   serviceTypeFilter: {
@@ -78,6 +103,9 @@ export default (theme) => ({
   },
   hilscButton: {
     minWidth: '120px',
+    '& span' : {
+        lineHeight: '15px',
+    },
   },
   filtersButton: {
     minWidth: '120px',

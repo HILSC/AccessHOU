@@ -2,7 +2,10 @@ import React , {
   useEffect,
   useState,
   useRef,
+  useSelector,
 } from 'react';
+
+import { useHistory } from 'react-router-dom';
 
 import { loadReCaptcha, ReCaptcha } from 'react-recaptcha-google';
 
@@ -17,14 +20,20 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import Switch from '@material-ui/core/Switch';
 
 // Custom Components
 import CustomInput from "components/CustomInput/CustomInput";
 import ScheduleForm from "components/Schedule/ScheduleForm";
 import Label from "components/Label/Label";
 
+// API
+import {
+  copyAgency
+} from 'api';
+
 // Utils
-import { 
+import {
   isEmailValid,
   isValidURL
 } from 'utils';
@@ -51,13 +60,15 @@ const useStyles = makeStyles(styles);
 export default ({ isAuthenticated, title, handleSave, handleDelete, agency, showDeleteButton=true }) => {
   const classes = useStyles();
 
+  const history = useHistory();
+
   const captchaEl = useRef(null);
   const nameRef = useRef(null);
   const phoneRef = useRef(null);
   const websiteRef = useRef(null);
   const requestorNameRef = useRef(null);
   const requestorEmailRef = useRef(null);
-  
+
   const [values, setValues] = useState({
     ...agency,
     'agency_id': agency && agency.id,
@@ -169,17 +180,61 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
     setDialogOpen(false);
   }
 
+  const handleSwitchChange = (event) => {
+      setValues( values => ({ ...values,
+        hilsc_verified: event.target.checked ? true : false
+      }));
+  }
+
+  const handleCopy = (data) => {
+      copyAgency({property: 'slug', value: values.slug}).then(result => {
+          history.push({
+              pathname: '/agency/'+result.data.slug,
+              state: { initialMessage: { messageType: 'success',
+                  message: 'Agency copied successfully! You can edit the agency by clicking the edit button below.',
+                  agencySlug: result.data.slug } }});
+      }).catch(() => {
+          alert('Sorry we are unable to copy this agency');
+      })
+  }
+
+  function HilscVerified() {
+      return isAuthenticated ? (
+          <Grid item xs={12} sm={12} md={12}>
+              HILSC Network Partner: {values.hilsc_verified ? 'Yes': 'No'}
+              <Switch
+                checked={values.hilsc_verified}
+                onChange={handleSwitchChange}
+                value="hilsc_verified"
+                inputProps={{ 'aria-label': 'secondary checkbox' }}
+              />
+            </Grid>
+      ) : '';
+  }
+
   return (
     <Container>
-      <Typography component="h4" variant="h4">
+      <Typography component="h4" variant="h4" style={{float:'left'}}>
         {title}
       </Typography>
+      { isAuthenticated ? (
+          <Button
+          style={{float:'right',margin:'0'}}
+            variant="outlined"
+            color="secondary"
+            onClick={handleCopy}
+            className={classes.button}
+          >
+            Copy Agency
+          </Button>
+      ) : '' }
       <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={12} md={12}>
               <Label text="General Info" variant="h5" color="primary" />
               <Label text="* Required fields" variant="caption" color="textSecondary" />
             </Grid>
+            <HilscVerified />
             <Grid item xs={12} sm={12} md={12}>
               <CustomInput
                 id="name"
@@ -198,7 +253,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                   value: values.name ? values.name : '',
                 }}
               />
-            </Grid>
+              </Grid>
             <Grid item xs={12} sm={12} md={6}>
               <CustomInput
                 id="website"
@@ -363,7 +418,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                 }}
               />
             </Grid>
-            <Grid item xs={12} sm={12} md={6}>
+            { /* <Grid item xs={12} sm={12} md={6}>
               <CustomInput
                 id="gender"
                 formControlProps={{
@@ -376,7 +431,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                   value: values.gender ? values.gender : '',
                 }}
               />
-            </Grid>
+            </Grid> */ }
             <Grid item xs={12} sm={12} md={6}>
               <CustomInput
                 id="zip_codes"
@@ -402,7 +457,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                 labelText="IDs accepted -- current"
                 id="accepted_ids_current"
                 options={IDS}
-                labelInfo={{show: true, msg: IAI_MESSAGE}}
+                // labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -412,6 +467,8 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                   value: values.accepted_ids_current ? values.accepted_ids_current : [],
                 }}
               />
+              <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+              Informs Immigrant Accessibility Profile</a>
             </Grid>
             <Grid item xs={12} sm={12} md={6}>
               <CustomInput
@@ -419,7 +476,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                 labelText="IDs accepted -- expired"
                 id="accepted_ids_expired"
                 options={IDS}
-                labelInfo={{show: true, msg: IAI_MESSAGE}}
+                // labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -429,6 +486,8 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                   value: values.accepted_ids_expired ? values.accepted_ids_expired : [],
                 }}
               />
+              <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+              Informs Immigrant Accessibility Profile</a>
             </Grid>
             <Grid item xs={12} sm={12} md={12}>
               <CustomInput
@@ -452,7 +511,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                 labelText="Proof of address?"
                 id="proof_of_address"
                 options={PROOF_OF_ADDRESS}
-                labelInfo={{show: true, msg: IAI_MESSAGE}}
+                // labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -462,6 +521,8 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                   value: values.proof_of_address && values.proof_of_address[0] !== null ? values.proof_of_address : [],
                 }}
               />
+              <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+              Informs Immigrant Accessibility Profile</a>
             </Grid>
             <Grid item xs={12} sm={12} md={12}>
               <Label text="Schedule" variant="h5" color="primary" />
@@ -529,7 +590,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                 labelText="Documents"
                 id="documents_languages"
                 options={LANGUAGES}
-                labelInfo={{show: true, msg: IAI_MESSAGE}}
+                // labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -539,6 +600,8 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                   value: values.documents_languages ? values.documents_languages : [],
                 }}
               />
+              <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+              Informs Immigrant Accessibility Profile</a>
             </Grid>
             <Grid item xs={12} sm={12} md={6}>
               <CustomInput
@@ -546,7 +609,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                 labelText="Website"
                 id="website_languages"
                 options={LANGUAGES}
-                labelInfo={{show: true, msg: IAI_MESSAGE}}
+                // labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -556,6 +619,8 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                   value: values.website_languages ? values.website_languages : [],
                 }}
               />
+              <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+              Informs Immigrant Accessibility Profile</a>
             </Grid>
             <Grid item xs={12} sm={12} md={6}>
               <CustomInput
@@ -563,7 +628,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                 labelText="Frontline Staff"
                 id="frontline_staff_languages"
                 options={LANGUAGES}
-                labelInfo={{show: true, msg: IAI_MESSAGE}}
+                // labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -573,6 +638,8 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                   value: values.frontline_staff_languages ? values.frontline_staff_languages : [],
                 }}
               />
+              <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+              Informs Immigrant Accessibility Profile</a>
             </Grid>
             <Grid item xs={12} sm={12} md={12}>
               <CustomInput
@@ -580,7 +647,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                 labelText="Interpretation Available?"
                 id="interpretations_available"
                 options={AVAILABLE_INTERPRETATION}
-                labelInfo={{show: true, msg: IAI_MESSAGE}}
+                // labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -590,6 +657,8 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                   value: values.interpretations_available ? values.interpretations_available : [],
                 }}
               />
+              <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+              Informs Immigrant Accessibility Profile</a>
             </Grid>
             <Grid item xs={12} sm={12} md={12}>
               <Label text="Services" variant="h5" color="primary" />
@@ -600,7 +669,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                 labelText="Assistance to fill out intake forms?"
                 id="assistance_with_forms"
                 options={YES_NO_OPTIONS}
-                labelInfo={{show: true, msg: IAI_MESSAGE}}
+                // labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -610,6 +679,8 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                   value: values.assistance_with_forms ? values.assistance_with_forms : '',
                 }}
               />
+              <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+              Informs Immigrant Accessibility Profile</a>
             </Grid>
             <Grid item xs={12} sm={12} md={6}>
               <CustomInput
@@ -617,7 +688,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                 labelText="Visual aids for low-literacy clients?"
                 id="visual_aids"
                 options={YES_NO_OPTIONS}
-                labelInfo={{show: true, msg: IAI_MESSAGE}}
+                // labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -627,6 +698,8 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                   value: values.visual_aids ? values.visual_aids : '',
                 }}
               />
+              <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+              Informs Immigrant Accessibility Profile</a>
             </Grid>
             <Grid item xs={12} sm={12} md={12}>
               <CustomInput
@@ -650,7 +723,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                 labelText="Policy for response to Immigrations and Customs Enforcement requests?"
                 id="response_requests"
                 options={YES_NO_OPTIONS}
-                labelInfo={{show: true, msg: IAI_MESSAGE}}
+                // labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -660,6 +733,8 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                   value: values.response_requests ? values.response_requests : '',
                 }}
               />
+              <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+              Informs Immigrant Accessibility Profile</a>
               <FormHelperText>For example, <a href="https://www.houstonimmigration.org/disaster-resources-for-immigrants/#AdvocateResources" target="_blank" rel="noopener noreferrer">please see here</a></FormHelperText>
             </Grid>
             <Grid item xs={12} sm={12} md={12}>
@@ -668,7 +743,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                 labelText="Staff cultural competency/effectiveness training?"
                 id="cultural_training"
                 options={STAFF_CULTURAL_TRAINING}
-                labelInfo={{show: true, msg: IAI_MESSAGE}}
+                // labelInfo={{show: true, msg: IAI_MESSAGE}}
                 formControlProps={{
                   fullWidth: true
                 }}
@@ -678,6 +753,8 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
                   value: values.cultural_training ? values.cultural_training : [],
                 }}
               />
+              <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+              Informs Immigrant Accessibility Profile</a>
             </Grid>
             {
               isAuthenticated ? null : (
@@ -735,7 +812,7 @@ export default ({ isAuthenticated, title, handleSave, handleDelete, agency, show
             <Grid item xs={12} sm={12} md={12}>
               <div className={classes.buttons}>
               {
-                values.agency_id && showDeleteButton ? 
+                values.agency_id && showDeleteButton ?
                 (
                   <Button
                   variant="contained"

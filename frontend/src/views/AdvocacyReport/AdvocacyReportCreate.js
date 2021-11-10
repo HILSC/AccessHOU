@@ -9,7 +9,7 @@ import {
 import queryString from 'query-string';
 
 // API
-import { 
+import {
   createAdvocacyReport
 } from 'api'
 
@@ -42,7 +42,7 @@ export default ({ location }) => {
     messageType: null,
     message: '',
   });
-  
+
   const handleSave = (data) => {
     createAdvocacyReport(token, data).then((result) => {
       setFormState(() => ({

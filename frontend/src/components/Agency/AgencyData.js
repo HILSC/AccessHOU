@@ -25,7 +25,7 @@ import {
   IAI_MESSAGE
 } from 'constants.js';
 
-import { 
+import {
   formatURL,
   hasSchedule,
   sameSchedule,
@@ -64,11 +64,15 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               </NavLink>
             ) : (
               <NavLink to={`/agency/${agency.slug}`} target="_blank" className={classes.agencyCustomLink}>
+              <span className={ agency.hilsc_verified ? classes.verifiedTrue : classes.verifiedFalse}>
+                HILSC Network Partner</span>
                 <Label text={agency.name} variant="h4" color="inherit" />
+
               </NavLink>
             )
           }
           </Grid>
+
           <Grid item xs={12} sm={12} md={12}>
             <Label text="General Info" variant="h5" color="primary" />
           </Grid>
@@ -175,7 +179,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
             queueAgencyData ? null :
             showMissingData || (agency && agency.map_url) ? (
               <Grid item xs={12} sm={12} md={6}>
-                <a 
+                <a
                 className={classes.customLink}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -278,7 +282,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               </Grid>
             ) : null
           }
-          {
+          { /*
             // Gender
             queueAgencyData && queueAgencyData.gender !== agency.gender ? (
               <Grid item xs={12} sm={12} md={6}>
@@ -297,7 +301,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                 />
               </Grid>
             ) : null
-          }
+          */}
           {
             // Zip Codes
             queueAgencyData && queueAgencyData.zip_codes !== agency.zip_codes ? (
@@ -364,10 +368,11 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={IDS}
                   labelText={'IDs accepted -- current'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.accepted_ids_current !== '' ? queueAgencyData.accepted_ids_current : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.accepted_ids_current !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
+                <a style={{ fontSize: '14px', color: '#999'}} href="/user-manual#iiap">Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) :
             showMissingData || (agency && agency.accepted_ids_current && agency.accepted_ids_current.length) ? (
@@ -376,9 +381,10 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={IDS}
                   labelText={'IDs accepted -- current'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.accepted_ids_current}
                 />
+                <a style={{ fontSize: '14px', color: '#999'}} href="/user-manual#iiap">Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) : null
           }
@@ -390,10 +396,11 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={IDS}
                   labelText={'IDs accepted -- expired'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.accepted_ids_expired !== '' ? queueAgencyData.accepted_ids_expired : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.accepted_ids_expired !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
+                <a style={{ fontSize: '14px', color: '#999'}} href="/user-manual#iiap">Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) :
             showMissingData || (agency && agency.accepted_ids_expired && agency.accepted_ids_expired.length) ? (
@@ -402,9 +409,10 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={IDS}
                   labelText={'IDs accepted -- expired'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.accepted_ids_expired}
                 />
+                <a style={{ fontSize: '14px', color: '#999'}} href="/user-manual#iiap">Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) : null
           }
@@ -436,10 +444,12 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={PROOF_OF_ADDRESS}
                   labelText={'Proof of address?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.proof_of_address !== '' ? queueAgencyData.proof_of_address : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.proof_of_address !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) :
             showMissingData || (agency && agency.proof_of_address && agency.proof_of_address.length && agency.proof_of_address[0] !== null) ? (
@@ -448,9 +458,11 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={PROOF_OF_ADDRESS}
                   labelText={'Proof of address?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.proof_of_address}
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) : null
           }
@@ -471,7 +483,7 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
             queueAgencyData && hasSchedule(queueAgencyData.schedule) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <ScheduleData
-                  values={queueAgencyData.schedule ? queueAgencyData.schedule : []} 
+                  values={queueAgencyData.schedule ? queueAgencyData.schedule : []}
                   dataTextClass={sameSchedule(queueAgencyData.schedule, agency.schedule) ? null : ACTION_CLASS.CHANGED}
                 />
               </Grid>
@@ -571,10 +583,12 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={LANGUAGES}
                   labelText={'Documents'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.documents_languages !== '' ? queueAgencyData.documents_languages : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.documents_languages !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) :
             showMissingData || (agency && agency.documents_languages && agency.documents_languages.length) ? (
@@ -583,9 +597,11 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={LANGUAGES}
                   labelText={'Documents'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.documents_languages}
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) : null
           }
@@ -597,10 +613,12 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={LANGUAGES}
                   labelText={'Website'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.website_languages !== '' ? queueAgencyData.website_languages : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.website_languages !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) :
             showMissingData || (agency && agency.website_languages && agency.website_languages.length) ? (
@@ -609,9 +627,11 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={LANGUAGES}
                   labelText={'Website'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.website_languages}
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) : null
           }
@@ -623,10 +643,12 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={LANGUAGES}
                   labelText={'Frontline staff'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.frontline_staff_languages !== '' ? queueAgencyData.frontline_staff_languages : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.frontline_staff_languages !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) :
             showMissingData || (agency && agency.frontline_staff_languages && agency.frontline_staff_languages.length) ? (
@@ -635,9 +657,11 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={LANGUAGES}
                   labelText={'Frontline staff'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.frontline_staff_languages}
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) : null
           }
@@ -649,10 +673,12 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={AVAILABLE_INTERPRETATION}
                   labelText={'Interpretation available?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.interpretations_available !== '' ? queueAgencyData.interpretations_available : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.interpretations_available !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) :
             showMissingData || (agency && agency.interpretations_available && agency.interpretations_available.length) ? (
@@ -661,9 +687,11 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
                   isAList={true}
                   listOptions={AVAILABLE_INTERPRETATION}
                   labelText={'Interpretation available?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.interpretations_available}
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) : null
           }
@@ -688,19 +716,23 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Assitance to fill out intake forms?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.assistance_with_forms !== '' ? queueAgencyData.assistance_with_forms : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.assistance_with_forms !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) :
             showMissingData || (agency && agency.assistance_with_forms) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Assitance to fill out intake forms?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.assistance_with_forms}
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) : null
           }
@@ -710,19 +742,23 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Visual aids for low-literacy clients?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.visual_aids !== '' ? queueAgencyData.visual_aids : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.visual_aids !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) :
             showMissingData || (agency && agency.visual_aids) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Visual aids for low-literacy clients?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.visual_aids}
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) : null
           }
@@ -752,19 +788,23 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Response to Immigrations and Customs Enforcement requests?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.response_requests !== '' ? queueAgencyData.response_requests : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.response_requests !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) :
             showMissingData || (agency && agency.response_requests) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Response to Immigrations and Customs Enforcement requests?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.response_requests}
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) : null
           }
@@ -774,19 +814,23 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Staff cultural competency/effectiveness training?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={queueAgencyData.cultural_training !== '' ? queueAgencyData.cultural_training : ACTION_MESSAGE.DELETED }
                   dataTextClass={queueAgencyData.cultural_training !== '' ? ACTION_CLASS.CHANGED : ACTION_CLASS.DELETED }
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) :
             showMissingData || (agency && agency.cultural_training) ? (
               <Grid item xs={12} sm={12} md={6}>
                 <DataLabel
                   labelText={'Staff cultural competency/effectiveness training?'}
-                  labelInfo={{show: true, msg: IAI_MESSAGE}}
+                  // labelInfo={{show: true, msg: IAI_MESSAGE}}
                   dataText={agency.cultural_training}
                 />
+                <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+                Informs Immigrant Accessibility Profile</a>
               </Grid>
             ) : null
           }
@@ -810,5 +854,5 @@ export default ({ agency, showMissingData, queueAgencyData=null }) => {
   }
 
   return null;
-  
+
 }

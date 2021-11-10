@@ -2,7 +2,10 @@ import React , {
   useEffect,
   useState,
   useRef,
+  useSelector,
 } from 'react';
+
+import { useHistory } from 'react-router-dom';
 
 import { loadReCaptcha, ReCaptcha } from 'react-recaptcha-google';
 
@@ -24,10 +27,15 @@ import ScheduleForm from "components/Schedule/ScheduleForm";
 import Label from "components/Label/Label";
 
 // Utils
-import { 
+import {
   isEmailValid,
   isValidURL
 } from 'utils';
+
+// API
+import {
+  copyProgram
+} from 'api';
 
 import {
   LANGUAGES,
@@ -49,6 +57,8 @@ const useStyles = makeStyles(styles);
 
 export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, showDeleteButton=true }) => {
   const classes = useStyles();
+
+  const history = useHistory();
 
   const captchaEl = useRef(null);
   const nameRef = useRef(null);
@@ -92,6 +102,19 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
     event.persist();
     setValues(values => ({ ...values, [event.target.name]: event.target.value }));
   };
+
+  const handleCopy = (data) => {
+      copyProgram({property: 'slug', value: values.slug, agency: values.agency }).then(result => {
+          console.log('result data: ',result);
+          history.push({
+              pathname: '/program/'+result.data.agency+'/'+result.data.slug,
+              state: { initialMessage: { messageType: 'success',
+                  message: 'Program copied successfully! You can edit the program by clicking the edit button below.',
+                  agencySlug: result.data.slug } }});
+      }).catch(() => {
+          alert('Sorry we are unable to copy this program');
+      })
+  }
 
   const isFormValid = () => {
     if (!values['name'] ||
@@ -143,6 +166,12 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
     return true;
   }
 
+  const handleMCUChange = (event) => {
+      setValues( values => ({ ...values,
+        mcu_requirement: event.target.checked ? true : false
+      }));
+  }
+
   const handleSubmit = async (event) => {
     if (event) event.preventDefault();
 
@@ -176,12 +205,23 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
 
   return (
     <Container>
-      <Typography variant="h4">
+      <Typography variant="h4" style={{float:'left'}}>
         {data.name}
       </Typography>
+      { isAuthenticated ? (
+          <Button
+          style={{float:'right',margin:'0'}}
+            variant="outlined"
+            color="secondary"
+            onClick={handleCopy}
+            className={classes.button}
+          >
+            Copy Program
+          </Button>
+      ) : '' }
       {
         data && data.agency_name ? (
-          <NavLink to={`/agency/${data.agency_slug}`} target="_blank" className={classes.agencyCustomLink}>
+          <NavLink style={{clear:'both',display:'block',margin:'5px 0 20px 0'}} to={`/agency/${data.agency_slug}`} target="_blank" className={classes.agencyCustomLink}>
             {`A program from: ${data.agency_name}`}
           </NavLink>
         ) : null
@@ -257,7 +297,7 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
             }}
           />
         </Grid>
-        <Grid item xs={12} sm={12} md={12}>
+        {/* <Grid item xs={12} sm={12} md={12}>
           <CustomInput
             id="case_management_notes"
             formControlProps={{
@@ -272,7 +312,7 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
               rows: 2
             }}
           />
-        </Grid>
+        </Grid> */}
         <Grid item xs={12} sm={12} md={6}>
           <CustomInput
             id="website"
@@ -443,7 +483,7 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
             labelText="Immigration status(es)"
             id="immigration_statuses"
             options={IMMIGRATION_STATUSES}
-            labelInfo={{show: true, msg: IAI_MESSAGE}}
+            // labelInfo={{show: true, msg: IAI_MESSAGE}}
             formControlProps={{
               fullWidth: true
             }}
@@ -453,6 +493,8 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
               value: values.immigration_statuses ? values.immigration_statuses : [],
             }}
           />
+          <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+          Informs Immigrant Accessibility Profile</a>
         </Grid>
         <Grid item xs={12} sm={12} md={6}>
           <CustomInput
@@ -560,7 +602,7 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
               fullWidth: true
             }}
             inputProps={{
-              label: "Appointment notes",
+              label: "Notes",
               onChange: handleChange,
               name: "appointment_notes",
               value: values.appointment_notes ? values.appointment_notes : '',
@@ -569,8 +611,28 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
             }}
           />
         </Grid>
+        <Grid item xs={12} sm={12} md={12} style={{paddingTop:'20px'}}>
+          <CustomInput
+            type="select"
+            labelText="Meets Unaccompanied Children system requirements?"
+            id="muc_requirements"
+            options={YES_NO_OPTIONS}
+            formControlProps={{
+              fullWidth: true
+            }}
+            inputProps={{
+              onChange: handleChange,
+              name: "muc_requirements",
+              value: values.muc_requirements,
+            }}
+          />
+        </Grid>
         <Grid item xs={12} sm={12} md={12}>
-          <Label text="Program schedule" variant="h5" color="primary" labelInfo={{show: true, msg: IAI_MESSAGE}} />
+          <Label text="Program schedule" variant="h5" color="primary"
+              // labelInfo={{show: true, msg: IAI_MESSAGE}}
+          />
+          <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+          Informs Immigrant Accessibility Profile</a>
         </Grid>
         <Grid item xs={12} sm={12} md={12}>
           <ScheduleForm
@@ -628,7 +690,7 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
             type="multiselect"
             labelText="Languages"
             id="languages"
-            labelInfo={{show: true, msg: IAI_MESSAGE}}
+            // labelInfo={{show: true, msg: IAI_MESSAGE}}
             options={LANGUAGES}
             formControlProps={{
               fullWidth: true
@@ -639,6 +701,8 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
               value: values.languages ? values.languages : [],
             }}
           />
+          <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+          Informs Immigrant Accessibility Profile</a>
         </Grid>
         <Grid item xs={12} sm={12} md={12}>
           <Label text="Program services" variant="h5" color="primary" />
@@ -649,7 +713,7 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
             labelText="Are services available same day as intake?"
             id="service_same_day_intake"
             options={YES_NO_OPTIONS}
-            labelInfo={{show: true, msg: IAI_MESSAGE}}
+            // labelInfo={{show: true, msg: IAI_MESSAGE}}
             formControlProps={{
               fullWidth: true
             }}
@@ -659,6 +723,8 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
               value: values.service_same_day_intake,
             }}
           />
+          <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+          Informs Immigrant Accessibility Profile</a>
         </Grid>
         <Grid item xs={12} sm={12} md={12}>
           <CustomInput
@@ -730,7 +796,7 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
             labelText="Client consult before completing paperwork?"
             id="client_consult"
             options={YES_NO_OPTIONS}
-            labelInfo={{show: true, msg: IAI_MESSAGE}}
+            // labelInfo={{show: true, msg: IAI_MESSAGE}}
             formControlProps={{
               fullWidth: true
             }}
@@ -740,6 +806,8 @@ export default ({ isAuthenticated, data, handleSave, handleDelete, isNew=false, 
               value: values.client_consult,
             }}
           />
+          <a style={{ fontSize: '14px', color: '#bbb', marginTop: '7px', display: 'block'}} href="/user-manual#iiap">
+          Informs Immigrant Accessibility Profile</a>
         </Grid>
         {
           isAuthenticated ? null : (

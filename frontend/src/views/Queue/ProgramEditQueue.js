@@ -98,7 +98,7 @@ const ProgramEditQueue = ({ match }) => {
         pageData.programQueue ? (
           <ProgramForm
             isAuthenticated={isAuthenticated}
-            title={'Update Program in Queue'} 
+            title={'Update Program in Queue'}
             handleSave={handleSave}
             showDeleteButton={false}
             data={pageData.programQueue}

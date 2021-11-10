@@ -35,6 +35,7 @@ import Education from 'images/education.svg';
 import Legal from 'images/legal.svg';
 import Employment from 'images/employment.svg';
 import Money from 'images/money.svg';
+import InfoIcon from "../../images/info-bubble.png";
 
 // Styles
 import { makeStyles } from '@material-ui/core/styles';
@@ -124,24 +125,43 @@ export default () => {
     <React.Fragment>
       <div className={classes.heroContent}>
         <Container maxWidth="lg">
+        <BrowserView>
+        <div className={classes.stormMessage}>
+          <img className={classes.stormIcon} alt="Disaster Resource Guide Information" src={InfoIcon} />
+          <p className={classes.stormMessageText}>AccessHOU is a directory of information for on-going social services.
+          For real-time emergency information and resources use the <a className={classes.stormMessageLink} href="http://bit.ly/37GE4n4" target="_blank" rel="noopener noreferrer">Immigrant Disaster Resource Guide.</a></p>
+          <a className={classes.stormMessageButton} href="http://bit.ly/37GE4n4" target="_blank" rel="noopener noreferrer">View The Guide</a>
+        </div>
+        </BrowserView>
+        <MobileView>
+        <div className={classes.stormMessage}>
+          <p className={classes.stormMessageText} style={{maxWidth:'100%',marginBottom:'20px'}}>AccessHOU is a directory of information for on-going social services.
+          For real-time emergency information and resources use the <a className={classes.stormMessageLink} href="http://bit.ly/37GE4n4" target="_blank" rel="noopener noreferrer">Immigrant Disaster Resource Guide.</a></p>
+          <a className={classes.stormMessageButton} style={{maxWidth:'100%',display:'block',boxSizing:'border-box',clear:'both',float:'none',textAlign:'center'}} href="http://bit.ly/37GE4n4" target="_blank" rel="noopener noreferrer">View The Guide</a>
+        </div>
+        </MobileView>
           <BrowserView>
-            <Typography component="h1" variant="h2" align="center" color="textPrimary" gutterBottom>
-              What kind of help do you need?
-            </Typography>
-            <Typography variant="h5" align="center" color="textSecondary" paragraph>
-              Search through hundreds of agencies and programs that are ready to help you.
-            </Typography>
+            <div className={classes.heroTextSecondary} style={{textAlgin:'center'}}>
+              <strong className={classes.heroStrong}>This website was created by and for immigrant advocates. It will:</strong>
+                <ol className={classes.heroList}>
+                    <li>Help you find appropriate programs for your immigrant clients</li>
+                    <li>Provide you a place to share the work of keeping resources up to date.</li>
+                </ol>
+                <p>By everyone editing services -- for their own and other agencies -- the burden to keep a referal list current doesn't fall on one agency. Don't worry -- you can't mess it up! All edits are vetted before going live. Please help keep this resource relevant by adding updates today!</p>
+            </div>
             <div className={classes.entityOptions}>
               <EntityOptions handleChange={handleEntityChange} entity={entity} />
             </div>
           </BrowserView>
           <MobileView>
-            <Typography component="h1" variant="h4" align="center" color="textPrimary" gutterBottom>
-              What kind of help do you need?
-            </Typography>
-            <Typography variant="body1" align="center" color="textSecondary" paragraph>
-              Search through hundreds of agencies and programs that are ready to help you.
-            </Typography>
+              <div className={classes.heroTextSecondary} style={{textAlgin:'center'}}>
+                <strong className={classes.heroStrong}>This website was created by and for immigrant advocates. It will:</strong>
+                  <ol className={classes.heroList}>
+                      <li>Help you find appropriate programs for your immigrant clients</li>
+                      <li>Provide you a place to share the work of keeping resources up to date.</li>
+                  </ol>
+                  <p>By everyone editing services -- for their own and other agencies -- the burden to keep a referal list current doesn't fall on one agency. Don't worry -- you can't mess it up! All edits are vetted before going live. Please help keep this resource relevant by adding updates today!</p>
+              </div>
             <div>
               <EntityOptions handleChange={handleEntityChange} entity={entity} />
             </div>
@@ -149,7 +169,7 @@ export default () => {
           <div className={isMobile ? classes.heroButtons : clsx(classes.heroButtons, classes.heroButtonsSize)}>
             <InputBase
               className={classes.input}
-              placeholder={`Search ${entity}`}
+              placeholder={ entity == 'agency' ? `Search ${entity} by title` : `Search ${entity} by title and description`}
               inputProps={{
                 'aria-label': 'search',
                 'onKeyPress': handleKeyPress,
@@ -158,18 +178,16 @@ export default () => {
               }}
             />
             <Divider className={classes.divider} orientation="vertical" />
-            <Button 
+            <Button
               variant="contained"
               color="primary"
               onClick={handleOnClickSearch}
             >Find Help</Button>
           </div>
+          <p style={{ fontSize:'15px', margin: '10px auto', maxWidth: '612px' }}><a style={{color:'#666',textDecoration:'underline'}} href="/agencies/map">Click here to view a map of our HILSC Network Partners</a></p>
         </Container>
       </div>
       {<Container className={isMobile ? classes.cardGridMobile : classes.cardGrid} maxWidth="lg">
-          <div className={classes.stormMessage}>
-            For short-term disaster resources, find and share help <a className={classes.stormMessageText} href="http://bit.ly/37GE4n4" target="_blank" rel="noopener noreferrer">here</a>.
-          </div>
         <Grid container spacing={4}>
           {PROGRAM_SERVICES.map(service => (
             <Grid item key={service.value} xs={6} sm={6} md={3}>

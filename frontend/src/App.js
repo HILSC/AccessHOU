@@ -40,8 +40,10 @@ import UserManualPrivate from 'views/UserManual/UserManualPrivate';
 import CreateAdvocacyReport from 'views/AdvocacyReport/AdvocacyReportCreate';
 import AdvocacyReports from 'views/AdvocacyReport/AdvocacyReports';
 
-import NotFound from 'views/NotFound/NotFound';
+import PartnersMap from 'views/PartnersMap/PartnersMap';
+import AgenciesVerify from 'views/AgenciesVerify/AgenciesVerify';
 
+import NotFound from 'views/NotFound/NotFound';
 
 const App = () => {
   return (
@@ -57,6 +59,10 @@ const App = () => {
           <PublicRoute path="/agency/create" component={AgencyCreate} layout={PublicLayout} />
           <PublicRoute path="/agency/edit/:slug" component={AgencyEdit} layout={PublicLayout} />
           <PublicRoute path="/agency/:slug" component={AgencyDetails} layout={PublicLayout} />
+
+          <PublicRoute path="/agencies/map" component={PartnersMap} layout={PublicLayout}/>
+          <PublicRoute path="/agencies/verify" component={AgenciesVerify} layout={PublicLayout}/>
+
 
           <PublicRoute exact path="/program/create/" component={ProgramCreate} layout={PublicLayout} />
           <PublicRoute path="/program/create/:agencySlug" component={ProgramCreate} layout={PublicLayout} />

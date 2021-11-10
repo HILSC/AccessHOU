@@ -222,7 +222,7 @@ const ProgramQueue = ({ match }) => {
               Yes
             </Button>
           </DialogActions>
-        </Dialog>    
+        </Dialog>
       </Grid>
     </Grid>
   )

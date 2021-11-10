@@ -9,7 +9,7 @@ import {
 } from 'react-redux';
 
 // API
-import { 
+import {
   updateAgency,
   getAgency,
   deleteAgency,
@@ -35,13 +35,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import styles from './AgencyEditStyles';
 const useStyles = makeStyles(styles);
 
-export default ({ match }) => {
+const AgencyEdit = ({ match }) => {
   const classes = useStyles();
 
   const {
     params: { slug }
   } = match;
-  
+
   const [formState, setFormState ] = useState({
     agency: null,
     message: '',
@@ -68,20 +68,22 @@ export default ({ match }) => {
         message: 'There is a problem getting the agency details.'
       }));
     });
-  }, [slug]); 
+  }, [slug]);
 
   const token = useSelector(state => state.user.accessToken);
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
-  
+
   const handleSave = (data) => {
     updateAgency(token, data).then((result) => {
       if(result.data.agency) {
+          console.log('handleSave data:',result.data.agency)
         setFormState(stateData => ({
           ...stateData,
           messageType: 'success',
           messageQueue: result.data.model === "queue" && !result.data.agency.emergency_mode ? true: false,
           messageAction: USER_ACTIONS.UPDATE,
-          message: `Agency "${result.data.agency.name}" was updated successfully.`,
+          // message: `Agency "${result.data.agency.name}" was updated successfully.`,
+          message: 'Your edits have been submitted for review. When approved, it will appear in the agency or program profile. For questions, please contact accesshou@houstonimmigration.org.',
           agencySlug: result.data.agency.slug
         }));
       }
@@ -156,11 +158,11 @@ export default ({ match }) => {
 
     return <Redirect push to={url} />
   }
-  
+
   window.scrollTo(0, 0);
 
   return (
-    <Container maxWidth="lg">      
+    <Container maxWidth="lg">
       {
         formState.messageType === 'success' ? (
           <div className={classes.messages}>
@@ -191,6 +193,7 @@ export default ({ match }) => {
                     </Button>
                   </React.Fragment>
                 ) : (
+                <React.Fragment>
                   <Button
                     variant="outlined"
                     color="secondary"
@@ -199,6 +202,15 @@ export default ({ match }) => {
                   >
                     Go back to editor
                   </Button>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={handleGoSearch}
+                    className={classes.button}
+                  >
+                    Go back to search results
+                  </Button>
+                </React.Fragment>
                 )
               }
               <Button
@@ -225,8 +237,8 @@ export default ({ match }) => {
             {
               formState.agency ? (
                 <AgencyForm
-                  isAuthenticated={isAuthenticated} 
-                  title={'Update Agency'} 
+                  isAuthenticated={isAuthenticated}
+                  title={'Update Agency'}
                   handleSave={handleSave}
                   handleDelete={handleDelete}
                   agency={formState.agency}
@@ -243,3 +255,5 @@ export default ({ match }) => {
     </Container>
   );
 }
+
+export default AgencyEdit

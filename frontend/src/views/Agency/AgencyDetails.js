@@ -2,7 +2,7 @@ import React, {
   useState,
   useEffect,
 } from 'react';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 
 import {
@@ -10,7 +10,7 @@ import {
 } from 'react-redux';
 
 // API
-import { 
+import {
   getAgency
 } from 'api';
 
@@ -32,7 +32,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import styles from './AgencyDetailsStyles';
 const useStyles = makeStyles(styles);
 
-export default ({ match }) => {
+export default (props) => {
+
+    const { match } = props;
+
+    const history = useHistory();
+
   const classes = useStyles();
 
   const {
@@ -40,11 +45,22 @@ export default ({ match }) => {
   } = match;
 
   const user = useSelector(state => state.user);
+  const token = useSelector(state => state.user.accessToken);
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
 
   const [data, setData] = useState({
     agency: null,
     showMissingData: false,
     error: false,
+  });
+
+  const [formState, setFormState ] = useState({
+    agency: null,
+    message: '',
+    messageType: null,
+    messageAction: null,
+    messageQueue: false,
+    agencySlug: false,
   });
 
   const [edit, setEdit] = useState(false);
@@ -53,11 +69,16 @@ export default ({ match }) => {
   const [addProgram, setAddProgram] = useState(false);
 
   useEffect(() => {
+      if (props.location?.state?.initialMessage)
+          setFormState( data => ({ ...data, ...props.location.state.initialMessage }));
+  }, []);
+
+  useEffect(() => {
     getAgency({property: 'slug', value: slug}).then(result => {
       setData(oldData => ({
         ...oldData,
         agency: result.data.error ? null : result.data,
-        error: result.data.error ? true : false
+        error: result.data.error ? true : false,
       }));
     }).catch(() => {
       setData(data => ({
@@ -66,6 +87,24 @@ export default ({ match }) => {
       }));
     })
   }, [slug]);
+
+  // const handleCopy = (data) => {
+  //     copyAgency({property: 'slug', value: slug}).then(result => {
+  //         console.log(result.data.slug);
+  //         history.push(result.data.slug);
+  //       setFormState( data => ({ ...data,
+  //           messageType: 'success',
+  //           message: 'Agency copied successfully! You can edit the agency by clicking the edit button below.',
+  //           agencySlug: result.data.slug
+  //       }))
+  //     }).catch(() => {
+  //         setFormState(data => ({
+  //           ...data,
+  //           messageType: 'error',
+  //           message: 'There was a problem copying this agency.'
+  //         }));
+  //     })
+  // }
 
   const handleEdit = () => {
     setEdit(true);
@@ -120,6 +159,17 @@ export default ({ match }) => {
   if (data.agency && !data.error) {
     return (
       <Container maxWidth="lg">
+      {
+        formState.messageType === 'success' ? (
+          <div className={classes.messages}>
+            <Alert
+              variant={formState.messageType}
+              message={formState.message}
+              queueMessage={formState.messageQueue}
+            />
+            </div>
+            ) : ''
+        }
         <Paper className={classes.paper}>
           <FormGroup>
             <FormControlLabel classes={{
@@ -150,7 +200,7 @@ export default ({ match }) => {
                 variant="outlined"
                 color="secondary"
                 onClick={handleGoSearch}
-                className={classes.button}
+                className={ classes.button}
               >
                 Go back to search results
               </Button>

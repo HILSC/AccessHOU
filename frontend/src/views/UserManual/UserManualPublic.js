@@ -11,8 +11,9 @@ import Grid from "@material-ui/core/Grid";
 // IMAGES
 import SearchBar from "../../images/manual/search_bar.PNG";
 import ServiceTile from "../../images/manual/service_tile.PNG";
-import PrimaryFilters from "../../images/manual/primary_filters.PNG";
-import SecondaryFilters from "../../images/manual/secondary_filters.PNG";
+import PrimaryFilters from "../../images/manual/primary-filters.png";
+import SecondaryFilters from "../../images/manual/advanced-filters.png";
+
 
 // Styles
 import { makeStyles } from "@material-ui/core/styles";
@@ -23,9 +24,10 @@ export default () => {
   const classes = useStyles();
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" className={classes.bodyClass}>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={12} md={12}>
+            <h1>User Manual</h1>
           <ul className={classes.mainUL}>
             <li>
               <a className={classes.primaryAnchor} href="#intro">
@@ -124,11 +126,11 @@ export default () => {
                 </ul>
               </ul>
             </li>
-            <li>
+            { /* <li>
               <a className={classes.primaryAnchor} href="#emergency_mode">
                 Emergency Mode
               </a>
-            </li>
+            </li> */ }
             <li>
               <a className={classes.primaryAnchor} href="#iiap">
                 Immigrant Accessibility Profile
@@ -173,20 +175,22 @@ export default () => {
             </a>
             . In the homepage you will be presented with 2 options:
           </p>
-          <ol type="1">
+          <ol type="1" className={classes.specialOL}>
             <li>
               <strong>Perform a search based on a search term:</strong>
               <p>
+                First select to search for an Agency or Program.
                 To conduct a search by using a search term, just type the
                 desired word in the search textbox and either click ‘Find Help’
                 to the right of the textbox or hit return on your keyboard. The
                 search will return all listings with your search term in the
-                name or description, but not necessarily as an exact phrase.
+                name, but not necessarily as an exact phrase. If searching for
+                programs, the search will also include matches in the description.
               </p>
                 {
                   isMobile ? (
                     <img className={classes.mobileImage} src={SearchBar} alt="search-bar" />
-                  ) :  <img src={SearchBar} alt="search-bar" />
+                ) :  <img className={classes.desktopImage} src={SearchBar} alt="search-bar" />
               }
             </li>
             <li>
@@ -254,8 +258,8 @@ export default () => {
               <p>These filters are always visible at the top of the page</p>
               {
                   isMobile ? (
-                    <img className={classes.mobileImage} src={PrimaryFilters} alt="primary-filters" />
-                  ) :  <img src={PrimaryFilters} alt="primary-filters" />
+                    <img style={{maxWidth:'800px'}} className={classes.mobileImage} src={PrimaryFilters} alt="primary-filters" />
+                ) :  <img style={{maxWidth:'800px'}} src={PrimaryFilters} alt="primary-filters" />
               }
             </li>
             <li>
@@ -266,8 +270,8 @@ export default () => {
               </p>
               {
                   isMobile ? (
-                    <img className={classes.mobileImage} src={SecondaryFilters} alt="secondary-filters" />
-                  ) :  <img src={SecondaryFilters} alt="secondary-filters" />
+                    <img style={{maxWidth:'800px'}} className={classes.mobileImage} src={SecondaryFilters} alt="secondary-filters" />
+                  ) :  <img style={{maxWidth:'800px'}} src={SecondaryFilters} alt="secondary-filters" />
               }
             </li>
           </ol>
@@ -281,33 +285,35 @@ export default () => {
             name, you could add that word to the box and only agencies and
             programs with that term will be shown.
           </p>
-          <strong>HILSC Verified (agency and program)</strong>
+          <strong>HILSC Network Partner (agency and program)</strong>
           <p>
-            Selected by default on all searches. HILSC verified means that the
+            HILSC Network Partner means that the
             information shown for a given program or agency has been accounted
-            for by HILSC staff or partners. Unchecking this filter, will show
+            for by HILSC staff or partners. Checking this filter, will show
             you agencies and programs that have not been accounted for by HILSC
             staff, but have been added by the general public.
           </p>
           <strong>Service Type (program)</strong>
           <p>Select one or more service type at the same time, including .</p>
-          <strong>Immigration Status (agency and program)</strong>
+          <div style={{ display: 'none' }}>
+         <strong>Immigration Status (agency and program)</strong>
           <p>
             Choose from immigration status requirements an agency/program may
             have. This is a priority for AccessHOU, given that it is a database
             built for immigrant advocates.
           </p>
+          </div>
           <strong>Filters</strong>
           <p>
             Displays all the secondary filters available including: zip code,
-            radius from zip code, annual median income requirements, immigrant
-            accessibility profile, if walk in hours are available, program
-            languages, and whether a facility is ADA accessible
+            radius from zip code, program languages, and whether a facility is ADA accessible.
+            <div style={{ display: 'none' }}>eligibility: % of FPL, immigrant
+            accessibility profile, if walk in hours are available, </div>
           </p>
           <strong>Clear</strong>
           <p>
             Clears all the filters selections -- with the exception of HILSC
-            Verified which is set to true by default -- and hides the secondary
+            Network Partner which is set to true by default -- and hides the secondary
             filters.
           </p>
           <h4 id="secondary_filters">Secondary Filters</h4>
@@ -319,7 +325,8 @@ export default () => {
             filter, it will show agencies/programs within the selected radius
             range from the zip code.
           </p>
-          <strong>Annual Median Income (program)</strong>
+          <div style={{ display: 'none' }}>
+          <strong>Eligibility: % of FPL (program)</strong>
           <p>
             Refine by AMI served from percentages in the dropdown menu,
             including: all, less than 80%, less than 110% or less than 140%.
@@ -348,6 +355,7 @@ export default () => {
           </p>
           <strong>Walk In Hours Available (program)</strong>
           <p>View only programs/agencies that have walk in hours available</p>
+          </div>
           <strong>Program Languages (program)</strong>
           <p>
             Select from the languages available for any given program,
@@ -510,6 +518,7 @@ export default () => {
             your request for deletion will be sent to the queue for site
             administrators to review.
           </p>
+          { /*
           <h2 id="emergency_mode">Emergency Mode</h2>
           <p>
             Emergency Mode is activated during an emergency in the Houston
@@ -532,13 +541,14 @@ export default () => {
             during the emergency, and approve information that is accurate for
             longer-term recovery
           </p>
+          */ }
           <h2 id="iiap">Immigrant Accessibility Profile</h2>
           <p>
-            Profile questions are based on <a target="_blank" rel="noopener noreferrer" href="https://www.dropbox.com/s/9xqzhusuc69ypi9/HILSC%20IAI_10_22_19.docx?dl=0">HILSC's Immigrant Accessibility Index</a> which is a self-assessment tool to help social service organizations assess the extent to which their services 
+            Profile questions are based on <a target="_blank" rel="noopener noreferrer" href="https://www.houstonimmigration.org/projects/accesstoservices/iai/">HILSC's Immigrant Accessibility Index</a> which is a self-assessment tool to help social service organizations assess the extent to which their services
             are accessible to all immigrants, regardless of legal status.
           </p>
-          <p>The Immigrant Accessibility Profile helps navigators determine if services are 
-          appropriate for their immigrant clients. Programs are considered to have a full Profile if 
+          <p>The Immigrant Accessibility Profile helps navigators determine if services are
+          appropriate for their immigrant clients. Programs are considered to have a full Profile if
           information has been provided for the following fields:</p>
           <ol>
             <li>Agency

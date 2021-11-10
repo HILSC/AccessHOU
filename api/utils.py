@@ -17,6 +17,14 @@ class UserActions(Enum):
   DELETE = 'delete'
   UPDATE = 'edited'
 
+def isInteger(n):
+    try:
+        float(n)
+    except ValueError:
+        return False
+    else:
+        return float(n).is_integer()
+
 
 def randomStringGenerator():
   digits = "".join([random.choice(string.digits) for i in range(8)])
@@ -65,7 +73,7 @@ def isProgramAccessibilityCompleted(program=None, **extra_fields):
 
     if agency.documents_languages is None or len(agency.documents_languages) <= 0:
       return False
-    
+
     if agency.frontline_staff_languages is None or len(agency.frontline_staff_languages) <= 0:
       return False
 

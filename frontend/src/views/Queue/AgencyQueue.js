@@ -55,7 +55,7 @@ const AgencyQueue = ({ match }) => {
   const [confirmation, setConfirmation] = useState({ isOpen: false });
   const [editQueue, setEditQueue] = useState(false);
   const [goBackToQueue, setGoBackToQueue] = useState(false);
-  
+
   useEffect(() => {
     getAgencyQueue(token, queueId).then(resulSet => {
       setPageData(data => ({
@@ -185,7 +185,7 @@ const AgencyQueue = ({ match }) => {
                     control={
                       <Checkbox checked={pageData.hilscVerified} onChange={handleHilscVerifiedChange} />
                     }
-                    label="HILSC Verified"
+                    label="HILSC Network Partner"
                   />
                 </FormGroup>
               </div>
@@ -241,7 +241,7 @@ const AgencyQueue = ({ match }) => {
               Yes
             </Button>
           </DialogActions>
-        </Dialog>          
+        </Dialog>
       </Grid>
     </Grid>
   )
